@@ -8,6 +8,10 @@ export default class App extends React.Component {
     isLoadingComplete: false,
   };
 
+  props: {
+   skipLoadingScreen: boolean,
+  }
+
   render() {
     if (!this.state.isLoadingComplete && !this.props.skipLoadingScreen) {
       return (
@@ -28,7 +32,7 @@ export default class App extends React.Component {
   }
 
   _loadResourcesAsync = async () => {
-    return Promise.all([
+    await Promise.all([
       Asset.loadAsync([
         require('./assets/images/robot-dev.png'),
         require('./assets/images/robot-prod.png'),
@@ -43,7 +47,7 @@ export default class App extends React.Component {
     ]);
   };
 
-  _handleLoadingError = error => {
+  _handleLoadingError = (error: any) => {
     // In this case, you might want to report the error to your error
     // reporting service, for example Sentry
     console.warn(error);
