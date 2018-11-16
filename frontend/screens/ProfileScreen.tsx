@@ -1,6 +1,5 @@
 import React from 'react';
 import { ScrollView, StyleSheet, Text } from 'react-native';
-import { ExpoLinksView } from '@expo/samples';
 
 export default class LinksScreen extends React.Component {
   static navigationOptions = {
@@ -10,7 +9,7 @@ export default class LinksScreen extends React.Component {
   render() {
     return (
       <ScrollView style={styles.container}>
-        <Text>Your Profile</Text>
+        <Text>Your Profile, on TypeScript.</Text>
       </ScrollView>
     );
   }
