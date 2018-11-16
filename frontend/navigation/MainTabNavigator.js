@@ -3,12 +3,12 @@ import { Platform } from 'react-native';
 import { createStackNavigator, createMaterialTopTabNavigator } from 'react-navigation';
 
 import TabBarIcon from '../components/TabBarIcon';
+import ProfileScreen from '../screens/ProfileScreen';
 import HomeScreen from '../screens/HomeScreen';
-import LinksScreen from '../screens/LinksScreen';
-import SettingsScreen from '../screens/SettingsScreen';
+import MessagesScreen from '../screens/MessagesScreen';
 
 const ProfileStack = createStackNavigator({
-  Profile: LinksScreen,
+  Profile: ProfileScreen,
 });
 
 ProfileStack.navigationOptions = {
@@ -40,7 +40,7 @@ HomeStack.navigationOptions = {
 };
 
 const MessagesStack = createStackNavigator({
-  Messages: SettingsScreen,
+  Messages: MessagesScreen,
 });
 
 MessagesStack.navigationOptions = {
