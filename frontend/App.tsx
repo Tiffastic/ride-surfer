@@ -62,5 +62,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+
+    // TODO (ethan): this is kinda messy
+    paddingTop: Platform.OS === 'ios' ? 20 : StatusBar.currentHeight,
   },
 });
