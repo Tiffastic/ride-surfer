@@ -1,0 +1,18 @@
+{
+  "name": "ride-surfer-backend",
+  "version": "1.0.0",
+  "description": "This is the main repo for Ride Surfer team. Fall 2018 Senior Capstone Project \r with Jim de St Germain.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://capstone-cs.eng.utah.edu/ride-surfer/ride-surfer.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.16.4"
+  }
+}
