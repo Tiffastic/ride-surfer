@@ -1,5 +1,8 @@
 import React from 'react';
 import {
+  FlatList,
+  TextInput,
+  TouchableHighlight,
   Image,
   Platform,
   ScrollView,
@@ -8,7 +11,84 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { createStackNavigator } from 'react-navigation';
 import { WebBrowser } from 'expo';
+
+const dummyAutofill = [
+  {
+    key: 'home',
+    name: "Home",
+    address: "123 Easy Street",
+  },
+  {
+    key: 'work',
+    name: "Work",
+    address: "5678 Campus Drive",
+  },
+  {
+    key: 'lib',
+    name: "Marriott Library",
+    address: "295 S Campus Dr, Salt Lake City, UT 84112",
+  },
+];
+
+class AddressPicker extends React.Component {
+  state = {
+    text: '',
+    selectedItem: null as null | {key: string, name: string, address: string},
+  };
+
+  _onPress(item) {
+    this.props.navigation.push('SearchResults', {address: item});
+  }
+
+  render() {
+    return (
+      <View style={styles.container}>
+        <TextInput
+          placeholder="Where to?"
+          style={styles.queryBox}
+          onChangeText={(text) => this.setState({text})}/>
+
+        <Text>Text: {this.state.text}</Text>
+
+        {this.state.text !== "" &&
+          <FlatList
+            style={styles.searchResultsList}
+            data={dummyAutofill}
+            renderItem={({item, separators}) => (
+              <TouchableHighlight
+                style={styles.searchResultsItem}
+                onPress={() => this._onPress(item)}
+                onShowUnderlay={separators.highlight}
+                onHideUnderlay={separators.unhighlight}>
+                <View>
+                  <Text style={styles.searchResultsName}>{item.name}</Text>
+                  <Text style={styles.searchResultsAddress}>{item.address}</Text>
+                </View>
+              </TouchableHighlight>
+            )}/>}
+      </View>
+    );
+  }
+}
+
+function SearchResults(props) {
+  let item = props.navigation.getParam('address', {name: 'Not Found', address: '-'});
+  return (
+    <View style={styles.container}>
+      <Text>Search Results</Text>
+      <Text>Here's how to get to:</Text>
+      <Text>{item.name}</Text>
+      <Text>{item.address}</Text>
+    </View>
+  );
+}
+
+const HomeStack = createStackNavigator({
+  AddressPicker: AddressPicker,
+  SearchResults: SearchResults,
+})
 
 export default class HomeScreen extends React.Component {
   static navigationOptions = {
@@ -18,82 +98,10 @@ export default class HomeScreen extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <ScrollView style={styles.container}>
-          <View style={styles.welcomeContainer}>
-            <Image
-              source={
-                __DEV__
-                  ? require('../assets/images/robot-dev.png')
-                  : require('../assets/images/robot-prod.png')
-              }
-              style={styles.welcomeImage}
-            />
-          </View>
-
-          <View style={styles.getStartedContainer}>
-            {this._maybeRenderDevelopmentModeWarning()}
-
-            <Text style={styles.getStartedText}>Get started by opening</Text>
-
-            <View style={[styles.codeHighlightContainer, styles.homeScreenFilename]}>
-              <Text style={styles.codeHighlightText}>screens/HomeScreen.js</Text>
-            </View>
-
-            <Text style={styles.getStartedText}>
-              Change this text and your app will automatically reload.
-            </Text>
-          </View>
-
-          <View style={styles.helpContainer}>
-            <TouchableOpacity onPress={this._handleHelpPress} style={styles.helpLink}>
-              <Text style={styles.helpLinkText}>Help, it didn’t automatically reload!</Text>
-            </TouchableOpacity>
-          </View>
-        </ScrollView>
-
-        <View style={styles.tabBarInfoContainer}>
-          <Text style={styles.tabBarInfoText}>This is a tab bar. You can edit it in:</Text>
-
-          <View style={[styles.codeHighlightContainer, styles.navigationFilename]}>
-            <Text style={styles.codeHighlightText}>navigation/MainTabNavigator.js</Text>
-          </View>
-        </View>
+        <HomeStack/>
       </View>
     );
   }
-
-  _maybeRenderDevelopmentModeWarning() {
-    if (__DEV__) {
-      const learnMoreButton = (
-        <Text onPress={this._handleLearnMorePress} style={styles.helpLinkText}>
-          Learn more
-        </Text>
-      );
-
-      return (
-        <Text style={styles.developmentModeText}>
-          Development mode is enabled, your app will be slower but you can use useful development
-          tools. {learnMoreButton}
-        </Text>
-      );
-    } else {
-      return (
-        <Text style={styles.developmentModeText}>
-          You are not in development mode, your app will run at full speed.
-        </Text>
-      );
-    }
-  }
-
-  _handleLearnMorePress = () => {
-    WebBrowser.openBrowserAsync('https://docs.expo.io/versions/latest/guides/development-mode');
-  };
-
-  _handleHelpPress = () => {
-    WebBrowser.openBrowserAsync(
-      'https://docs.expo.io/versions/latest/guides/up-and-running.html#can-t-see-your-changes'
-    );
-  };
 }
 
 const styles = StyleSheet.create({
@@ -101,83 +109,28 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
-  developmentModeText: {
-    marginBottom: 20,
-    color: 'rgba(0,0,0,0.4)',
-    fontSize: 14,
-    lineHeight: 19,
-    textAlign: 'center',
-  },
-  welcomeContainer: {
-    alignItems: 'center',
+  queryBox: {
+    borderColor: '#c3c3c3',
+    borderWidth: 1,
     marginTop: 10,
-    marginBottom: 20,
+    marginBottom: 10,
+    marginLeft: 15,
+    marginRight: 15,
+    fontSize: 36,
   },
-  welcomeImage: {
-    width: 100,
-    height: 80,
-    resizeMode: 'contain',
-    marginTop: 3,
-    marginLeft: -10,
+  searchResultsList: {
+    marginTop: 10,
+    marginBottom: 10,
   },
-  getStartedContainer: {
-    alignItems: 'center',
-    marginHorizontal: 50,
+  searchResultsItem: {
+    borderColor: '#c3c3c3',
+    borderBottomWidth: 1,
   },
-  homeScreenFilename: {
-    marginVertical: 7,
+  searchResultsName: {
+    fontSize: 20,
   },
-  codeHighlightText: {
-    color: 'rgba(96,100,109, 0.8)',
-  },
-  codeHighlightContainer: {
-    backgroundColor: 'rgba(0,0,0,0.05)',
-    borderRadius: 3,
-    paddingHorizontal: 4,
-  },
-  getStartedText: {
-    fontSize: 17,
-    color: 'rgba(96,100,109, 1)',
-    lineHeight: 24,
-    textAlign: 'center',
-  },
-  tabBarInfoContainer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    ...Platform.select({
-      ios: {
-        shadowColor: 'black',
-        shadowOffset: { height: -3 },
-        shadowOpacity: 0.1,
-        shadowRadius: 3,
-      },
-      android: {
-        elevation: 20,
-      },
-    }),
-    alignItems: 'center',
-    backgroundColor: '#fbfbfb',
-    paddingVertical: 20,
-  },
-  tabBarInfoText: {
-    fontSize: 17,
-    color: 'rgba(96,100,109, 1)',
-    textAlign: 'center',
-  },
-  navigationFilename: {
-    marginTop: 5,
-  },
-  helpContainer: {
-    marginTop: 15,
-    alignItems: 'center',
-  },
-  helpLink: {
-    paddingVertical: 15,
-  },
-  helpLinkText: {
-    fontSize: 14,
-    color: '#2e78b7',
+  searchResultsAddress: {
+    fontSize: 20,
+    color: 'grey',
   },
 });
