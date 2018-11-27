@@ -13,6 +13,8 @@ import {
 } from 'react-native';
 import { createStackNavigator, NavigationEvents } from 'react-navigation';
 import { WebBrowser } from 'expo';
+import DriverPickerScreen from './DriverPickerScreen';
+import RideDetailScreen from './RideDetailScreen';
 
 const dummyAutofill = [
   {
@@ -75,7 +77,7 @@ class AddressPicker extends React.Component<{ navigation: any }> {
   };
 
   _onPress(item: any) {
-    this.props.navigation.push('SearchResults', { address: item });
+    this.props.navigation.push('DriverPicker', {address: item});
   }
 
   render() {
@@ -112,39 +114,11 @@ class AddressPicker extends React.Component<{ navigation: any }> {
   }
 }
 
-
-
-
-
-
-
-function SearchResults(props: any) {
-  let item = props.navigation.getParam('address', { name: 'Not Found', address: '-' });
-  return (
-    <View style={styles.container}>
-      <Text>Search Results</Text>
-      <Text>Here's how to get to:</Text>
-      <Text>{item.name}</Text>
-      <Text>{item.address}</Text>
-      <FlatList
-  data={[{key: 'a'}, {key: 'b'}]}
-  renderItem={({item}) => <Text>{item.key}</Text>}
-/>
-    </View>
-    
-  );
-}
-
 const HomeStack = createStackNavigator({
   AddressPicker: AddressPicker,
-  SearchResults: SearchResults,
-  
-},
-  {
-    // headerMode: 'none',
-
-  } 
-)
+  DriverPicker: DriverPickerScreen,
+  RideDetail: RideDetailScreen,
+})
 
 export default class HomeScreen extends React.Component {
   static navigationOptions = {
@@ -157,7 +131,7 @@ export default class HomeScreen extends React.Component {
 
   render() {
     return (
-      
+
       <View style={styles.container}>
         <HomeStack />
       </View>
