@@ -14,7 +14,7 @@ import {
 import { createStackNavigator, NavigationEvents } from 'react-navigation';
 import { WebBrowser } from 'expo';
 import DriverPickerScreen from './DriverPickerScreen';
-import RideDetailScreen from './RideDetailScreen';
+import DriverDetailsScreen from './DriverDetailsScreen';
 
 const dummyAutofill = [
   {
@@ -117,7 +117,7 @@ class AddressPicker extends React.Component<{ navigation: any }> {
 const HomeStack = createStackNavigator({
   AddressPicker: AddressPicker,
   DriverPicker: DriverPickerScreen,
-  RideDetail: RideDetailScreen,
+  DriverDetails: DriverDetailsScreen,
 })
 
 export default class HomeScreen extends React.Component {
