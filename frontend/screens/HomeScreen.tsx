@@ -83,12 +83,11 @@ const HomeStack = createStackNavigator({
   AddressPicker: AddressPicker,
   DriverPicker: DriverPickerScreen,
   DriverDetails: DriverDetailsScreen,
-})
+});
 
 export default class HomeScreen extends React.Component {
   static navigationOptions = {
     header: null,
-
   };
   static HomeStack = {
     header: null,
@@ -112,7 +111,7 @@ const styles = StyleSheet.create({
   },
   queryBox: {
     borderColor: '#c3c3c3',
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: 'white',
     borderWidth: 1,
     marginTop: 10,
     marginBottom: 10,
@@ -124,8 +123,7 @@ const styles = StyleSheet.create({
   searchResultsList: {
     marginTop: 10,
     marginBottom: 10,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-
+    backgroundColor: 'white',
   },
   searchResultsItem: {
     borderColor: '#c3c3c3',
