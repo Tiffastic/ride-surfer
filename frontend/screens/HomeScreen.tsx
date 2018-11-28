@@ -18,19 +18,54 @@ const dummyAutofill = [
   {
     key: 'home',
     name: "Home",
-    address: "123 Easy Street",
+    address: "2011 1100 E, Salt Lake City, UT 84106",
   },
   {
     key: 'work',
     name: "Work",
-    address: "5678 Campus Drive",
+    address: "295 1500 E, Salt Lake City, UT 84112",
   },
   {
-    key: 'lib',
-    name: "Marriott Library",
-    address: "295 S Campus Dr, Salt Lake City, UT 84112",
+    key: 'class',
+    name: "Warnock Engineering Building",
+    address: "72 Central Campus Dr, Salt Lake City, UT 84112",
   },
 ];
+
+const dummyDrivers = [
+  {
+    key: 'bob',
+    name: "Bob",
+    home: require('./../assets/images/h-s1.png'),
+    class: require('./../assets/images/h-l1.png'),
+    work: require('./../assets/images/h-w1.png'),
+    homeDirs: [{ key: '1', time: '1 min', desc: 'Walk to  4689 Holladay Blvd E' }, { key: '2', time: '16 mins', desc: 'Drive to 2000 1100 E' }, { key: '3', time: '5 mins', desc: 'Walk to 2011 1100 E' }],
+    workDirs: [{ key: '1', time: '5 mins', desc: 'Walk to 4501 2565 E' }, { key: '2', time: '15 mins', desc: 'Drive to 290 1500 E' }, { key: '3', time: '2 mins', desc: 'Walk to 295 1500 E' }],
+    classDirs: [{ key: '1', time: '5 mins', desc: 'Walk to 4501 2565 E' }, { key: '2', time: '15 mins', desc: 'Drive to 70 Central Campus Drive' }, { key: '3', time: '2 mins', desc: 'Walk to 72 Central Campus Dr' }],
+  },
+  {
+    key: 'fred',
+    name: "Fred",
+    home: require('./../assets/images/h-s2.png'),
+    class: require('./../assets/images/h-l2.png'),
+    work: require('./../assets/images/h-w2.png'),
+    homeDirs: [{ key: '1', time: '6 mins', desc: 'Walk to 2301 E Sky Pines Ct' }, { key: '2', time: '16 mins', desc: 'Drive to 2000 1100 E' }, { key: '3', time: '2 mins', desc: 'Walk to 2011 1100 E' }],
+    workDirs: [{ key: '1', time: '1 min', desc: 'Walk to 4689 Holladay Blvd E' }, { key: '2', time: '15 mins', desc: 'Drive to 290 1500 E' }, { key: '3', time: '2 mins', desc: 'Walk to 295 1500 E' }],
+    classDirs: [{ key: '2', time: '5 mins', desc: 'Walk to 4501 2565 E' }, { key: '2', time: '15 mins', desc: 'Drive to 70 Central Campus Drive' }, { key: '3', time: '2 mins', desc: 'Walk to 72 Central Campus Dr' }],
+  },
+  {
+    key: 'daphne',
+    name: "Daphne",
+    home: require('./../assets/images/h-s3.png'),
+    class: require('./../assets/images/h-l3.png'),
+    work: require('./../assets/images/h-w3.png'),
+    homeDirs: [{ key: '1', time: '5 mins', desc: 'Walk to 4501 2565 E' }, { key: '2', time: '16 mins', desc: 'Drive to 2000 1100 E' }, { key: '3', time: '2 mins', desc: 'Walk to 2011 1100 E' }],
+    workDirs: [{ key: '1', time: '6 mins', desc: 'Walk to 2301 E Sky Pines Ct' }, { key: '2', time: '15 mins', desc: 'Drive to 290 1500 E' }, { key: '3', time: '2 mins', desc: 'Walk to 295 1500 E' }],
+    classDirs: [{ key: '1', time: '1 min', desc: 'Walk to 4689 Holladay Blvd E' }, { key: '2', time: '15 mins', desc: 'Drive to 70 Central Campus Drive' }, { key: '3', time: '2 mins', desc: 'Walk to 72 Central Campus Dr' }],
+  }
+]
+
+
 
 class AddressPicker extends React.Component<{ navigation: any }> {
   state = {
