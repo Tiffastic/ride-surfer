@@ -34,4 +34,6 @@ export default createMaterialTopTabNavigator({
   ProfileStack,
   HomeStack,
   MessagesStack,
+}, {
+  initialRouteName: 'HomeStack',
 });
