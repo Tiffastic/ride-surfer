@@ -1,17 +1,17 @@
-import React from 'react';
+import React, { Component } from 'react';
 import {
   FlatList,
   TextInput,
   TouchableHighlight,
   Image,
-  Platform,
+  ImageBackground,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
-import { createStackNavigator } from 'react-navigation';
+import { createStackNavigator, NavigationEvents } from 'react-navigation';
 import { WebBrowser } from 'expo';
 
 const dummyAutofill = [
@@ -32,31 +32,33 @@ const dummyAutofill = [
   },
 ];
 
-class AddressPicker extends React.Component {
+class AddressPicker extends React.Component<{ navigation: any }> {
   state = {
     text: '',
-    selectedItem: null as null | {key: string, name: string, address: string},
+    selectedItem: null as null | { key: string, name: string, address: string },
+
   };
 
-  _onPress(item) {
-    this.props.navigation.push('SearchResults', {address: item});
+  _onPress(item: any) {
+    this.props.navigation.push('SearchResults', { address: item });
   }
 
   render() {
     return (
       <View style={styles.container}>
+        <ImageBackground source={require('./../assets/images/map.jpg')} style={{width: '100%', height: '100%'}}>
+
         <TextInput
           placeholder="Where to?"
           style={styles.queryBox}
-          onChangeText={(text) => this.setState({text})}/>
+          onChangeText={(text) => this.setState({ text })} />
 
-        <Text>Text: {this.state.text}</Text>
 
         {this.state.text !== "" &&
           <FlatList
             style={styles.searchResultsList}
             data={dummyAutofill}
-            renderItem={({item, separators}) => (
+            renderItem={({ item, separators }) => (
               <TouchableHighlight
                 style={styles.searchResultsItem}
                 onPress={() => this._onPress(item)}
@@ -67,39 +69,64 @@ class AddressPicker extends React.Component {
                   <Text style={styles.searchResultsAddress}>{item.address}</Text>
                 </View>
               </TouchableHighlight>
-            )}/>}
+            )} />}
+
+         </ImageBackground>
       </View>
     );
   }
 }
 
-function SearchResults(props) {
-  let item = props.navigation.getParam('address', {name: 'Not Found', address: '-'});
+
+
+
+
+
+
+function SearchResults(props: any) {
+  let item = props.navigation.getParam('address', { name: 'Not Found', address: '-' });
   return (
     <View style={styles.container}>
       <Text>Search Results</Text>
       <Text>Here's how to get to:</Text>
       <Text>{item.name}</Text>
       <Text>{item.address}</Text>
+      <FlatList
+  data={[{key: 'a'}, {key: 'b'}]}
+  renderItem={({item}) => <Text>{item.key}</Text>}
+/>
     </View>
+    
   );
 }
 
 const HomeStack = createStackNavigator({
   AddressPicker: AddressPicker,
   SearchResults: SearchResults,
-})
+  
+},
+  {
+    // headerMode: 'none',
+
+  } 
+)
 
 export default class HomeScreen extends React.Component {
   static navigationOptions = {
+    header: null,
+
+  };
+  static HomeStack = {
     header: null,
   };
 
   render() {
     return (
+      
       <View style={styles.container}>
-        <HomeStack/>
+        <HomeStack />
       </View>
+
     );
   }
 }
@@ -107,20 +134,24 @@ export default class HomeScreen extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: 'transparent'
   },
   queryBox: {
     borderColor: '#c3c3c3',
+    backgroundColor: 'rgba(0,0,0,0.5)',
     borderWidth: 1,
     marginTop: 10,
     marginBottom: 10,
     marginLeft: 15,
     marginRight: 15,
     fontSize: 36,
+
   },
   searchResultsList: {
     marginTop: 10,
     marginBottom: 10,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+
   },
   searchResultsItem: {
     borderColor: '#c3c3c3',
@@ -133,4 +164,5 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: 'grey',
   },
+
 });
