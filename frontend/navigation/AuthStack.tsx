@@ -3,16 +3,7 @@ import { StyleSheet, View, Button, Text } from 'react-native';
 import { createStackNavigator } from 'react-navigation';
 
 import LoginScreen from '../screens/LoginScreen';
-
-function SignupScreen(props: any) {
-    return (
-        <View>
-            <Text style={styles.item}>Signup Screen</Text>
-
-            <Button title="Sign Up" onPress={() => props.navigation.navigate('Main')}/>
-        </View>
-    );
-}
+import SignupScreen from '../screens/SignupScreen';
 
 export default createStackNavigator({
     AuthLanding: AuthLandingScreen,
