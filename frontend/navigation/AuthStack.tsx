@@ -2,16 +2,8 @@ import React from 'react';
 import { StyleSheet, View, Button, Text } from 'react-native';
 import { createStackNavigator } from 'react-navigation';
 
-// TODO: have these in separate classes
-function LoginScreen(props: any) {
-    return (
-        <View>
-            <Text style={styles.item}>Login Screen (Thuy's Screen)</Text>
+import LoginScreen from '../screens/LoginScreen';
 
-            <Button title="Log in" onPress={() => props.navigation.navigate('Main')}/>
-        </View>
-    );
-}
 function SignupScreen(props: any) {
     return (
         <View>

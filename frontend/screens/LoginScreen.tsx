@@ -17,7 +17,11 @@ export default class HomeScreen extends React.Component {
     header: null,
   };
 
-  render() 
+  props: {
+    navigation: any,
+  };
+
+  render()
   {
     return (
       <View style={styles.container}>
@@ -25,17 +29,17 @@ export default class HomeScreen extends React.Component {
           <View style={styles.welcomeContainer}>
             <Image
               source={
-                require('../assets/images/Loginsurfboard.png')             
-              } 
+                require('../assets/images/Loginsurfboard.png')
+              }
               style={styles.welcomeImage}
             />
           </View>
 
-          <View style={styles.getStartedContainer}>           
+          <View style={styles.getStartedContainer}>
 
             <Text style={styles.getStartedText}>Log into Ride Surfer </Text>
 
-              <View style={styles.loginContainer}>              
+              <View style={styles.loginContainer}>
                   <View style={[styles.codeHighlightContainer, styles.homeScreenFilename]}>
                     <Text>Email:</Text>
                     <TextInput placeholder='rideSurfer@waves.com' style={styles.input}></TextInput>
@@ -51,8 +55,8 @@ export default class HomeScreen extends React.Component {
 
           </View>
 
-          <View style={styles.surfButton}>        
-              <Button  title='Log in!' onPress={this._handleLearnMorePress}></Button>
+          <View style={styles.surfButton}>
+              <Button  title='Log in!' onPress={this._logIn}></Button>
           </View>
         </ScrollView>
 
@@ -60,36 +64,33 @@ export default class HomeScreen extends React.Component {
     );
   }
 
-
-
-  _handleLearnMorePress = () => 
-  {
-    WebBrowser.openBrowserAsync('https://docs.expo.io/versions/latest/guides/development-mode');
+  private _logIn = () => {
+    this.props.navigation.navigate('Main');
   };
 
-  
+
 }
 
 const styles = StyleSheet.create({
-  container: 
+  container:
   {
       flex: 1,
       backgroundColor: '#34889b'
   },
 
-  contentContainer: 
+  contentContainer:
   {
     paddingTop: 30,
   },
-  
-  welcomeContainer: 
+
+  welcomeContainer:
   {
     alignItems: 'center',
     marginTop: 10,
     marginBottom: 10,
   },
 
-  welcomeImage: 
+  welcomeImage:
   {
     width: 200,
     height: 150,
@@ -98,13 +99,13 @@ const styles = StyleSheet.create({
     marginLeft: -10,
   },
 
-  getStartedContainer: 
+  getStartedContainer:
   {
     alignItems: 'center',
     marginHorizontal: 50,
   },
 
-  getStartedText: 
+  getStartedText:
   {
     fontSize: 17,
     color: 'black',
@@ -112,7 +113,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 
-  homeScreenFilename: 
+  homeScreenFilename:
   {
     marginVertical: 7,
   },
@@ -130,7 +131,7 @@ const styles = StyleSheet.create({
       justifyContent: 'center'
   },
 
-  logo: 
+  logo:
   {
       width: 100,
       height: 100
