@@ -9,14 +9,14 @@ import {
   View,
 } from 'react-native';
 
+import NavigateButton from '../components/NavigateButton';
 
-
-export default class DriverDetailsScreen extends React.Component<{ navigation: any }> {
+export default class RideInProgressScreen extends React.Component<{ navigation: any }> {
   state = {
     address: this.props.navigation.getParam('address', { key: '', name: 'Not Found', address: '-' }),
     driver: this.props.navigation.getParam('driver', { name: 'Not Found', home: '', class: '', work: '' }),
-
   };
+
   render() {
     let image = this.state.driver.home;
     let dirs = this.state.driver.homeDirs;
@@ -53,17 +53,13 @@ export default class DriverDetailsScreen extends React.Component<{ navigation: a
                 </View>
               </TouchableHighlight>
             )} />
-          <Button title="Request" onPress={this.onRequest}/>
+
+          <NavigateButton dest={dirs[0].addr}/>
+
+          <Button title="Finish" onPress={() => this.props.navigation.navigate('RateDriver')} />
         </View>
       </View>
     );
-  }
-
-  onRequest = () => {
-    this.props.navigation.navigate('RideInProgress', {
-      address: this.state.address,
-      driver: this.state.driver
-    });
   }
 }
 
