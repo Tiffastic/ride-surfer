@@ -1,20 +1,20 @@
-import React, { Component } from 'react';
+import * as React from 'react';
 import {
   FlatList,
   TextInput,
   TouchableHighlight,
   Image,
   ImageBackground,
-  ScrollView,
   StyleSheet,
   Text,
-  TouchableOpacity,
+  Button,
   View,
 } from 'react-native';
-import { createStackNavigator, NavigationEvents } from 'react-navigation';
-import { WebBrowser } from 'expo';
+import { createStackNavigator} from 'react-navigation';
 import DriverPickerScreen from './DriverPickerScreen';
 import DriverDetailsScreen from './DriverDetailsScreen';
+import ProfileScreen from '../screens/ProfileScreen';
+import MessagesScreen from '../screens/MessagesScreen';
 
 const dummyAutofill = [
   {
@@ -34,7 +34,11 @@ const dummyAutofill = [
   },
 ];
 
-class AddressPicker extends React.Component<{ navigation: any }> {
+class AddressPicker extends React.Component<{navigation: any}> {
+  static navigationOptions = {
+    title: 'Ride Surfer', // can be overidden from inside the stack
+
+  };
   state = {
     text: '',
     selectedItem: null as null | { key: string, name: string, address: string },
@@ -42,67 +46,87 @@ class AddressPicker extends React.Component<{ navigation: any }> {
   };
 
   _onPress(item: any) {
-    this.props.navigation.push('DriverPicker', {address: item});
+    this.props.navigation.push('DriverPicker', { address: item });
   }
 
   render() {
     return (
       <View style={styles.container}>
-        <ImageBackground source={require('./../assets/images/map.jpg')} style={{width: '100%', height: '100%'}}>
+        <ImageBackground source={require('./../assets/images/map.jpg')} style={{ width: '100%', height: '100%' }}>
 
-        <TextInput
-          placeholder="Where to?"
-          style={styles.queryBox}
-          onChangeText={(text) => this.setState({ text })} />
+          <TextInput
+            placeholder="Where to?"
+            style={styles.queryBox}
+            onChangeText={(text) => this.setState({ text })} />
 
 
-        {this.state.text !== "" &&
-          <FlatList
-            style={styles.searchResultsList}
-            data={dummyAutofill}
-            renderItem={({ item, separators }) => (
-              <TouchableHighlight
-                style={styles.searchResultsItem}
-                onPress={() => this._onPress(item)}
-                onShowUnderlay={separators.highlight}
-                onHideUnderlay={separators.unhighlight}>
-                <View>
-                  <Text style={styles.searchResultsName}>{item.name}</Text>
-                  <Text style={styles.searchResultsAddress}>{item.address}</Text>
-                </View>
-              </TouchableHighlight>
-            )} />}
+          {this.state.text !== "" &&
+            <FlatList
+              style={styles.searchResultsList}
+              data={dummyAutofill}
+              renderItem={({ item, separators }) => (
+                <TouchableHighlight
+                  style={styles.searchResultsItem}
+                  onPress={() => this._onPress(item)}
+                  onShowUnderlay={separators.highlight}
+                  onHideUnderlay={separators.unhighlight}>
+                  <View>
+                    <Text style={styles.searchResultsName}>{item.name}</Text>
+                    <Text style={styles.searchResultsAddress}>{item.address}</Text>
+                  </View>
+                </TouchableHighlight>
+              )} />}
 
-         </ImageBackground>
+        </ImageBackground>
       </View>
     );
   }
-}
+} // end of address picker class
 
-const HomeStack = createStackNavigator({
-  AddressPicker: AddressPicker,
-  DriverPicker: DriverPickerScreen,
-  DriverDetails: DriverDetailsScreen,
-});
+export default createStackNavigator(
+  {//RouteConfigs
 
-export default class HomeScreen extends React.Component {
-  static navigationOptions = {
-    header: null,
-  };
-  static HomeStack = {
-    header: null,
-  };
+    AddressPicker: {
+      screen: AddressPicker,
+      navigationOptions: ({ navigation }: { navigation: any }) => ({
+        //  title: `from inside the stack`,
+        headerRight: (
+          <Button
+            onPress={() => navigation.push('MessagesScreen')}
+            title="Messages"
+            color="#ffa64d"
+          />
+        ),
+        headerLeft: (
+          <Button
+            onPress={() => navigation.push('ProfileScreen')}
+            title="Profile"
+            color="#ffa64d"
+          />
+        ),
+        // headerBackTitle: null
+      }),
+    },
+    ProfileScreen: ProfileScreen,
+    DriverPicker: DriverPickerScreen,
+    DriverDetails: DriverDetailsScreen,
+    MessagesScreen: MessagesScreen,
 
-  render() {
-    return (
+  }, {//StackNavigatorConfig
 
-      <View style={styles.container}>
-        <HomeStack />
-      </View>
+    initialRouteName: 'AddressPicker',
+    // headerMode: 'none',
+    navigationOptions: {//in react nav ver 3, this is called defaultNavigationOptions
+      headerStyle: {
+        backgroundColor: '#f4511e',
+      },
+      headerTintColor: '#fff',
+      headerTitleStyle: {
+        fontWeight: 'bold',
+      },
+    },
 
-    );
-  }
-}
+  });
 
 const styles = StyleSheet.create({
   container: {
