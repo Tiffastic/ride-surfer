@@ -8,6 +8,7 @@ module.exports = (app) => {
   app.get('/users/', usersController.retrieveAll);
   app.get('/users/:id', usersController.retrieve);
   app.post('/users', usersController.create);
+  app.post('/users/login', usersController.retrieveByLoginInfo);
   app.put('/users/:id', usersController.update);
   app.delete('/users/:id', usersController.destroy);
 

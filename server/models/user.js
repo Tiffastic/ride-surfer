@@ -9,6 +9,7 @@ module.exports = (sequelize, DataTypes) => {
     first_name: DataTypes.TEXT,
     last_name: DataTypes.TEXT,
     email: DataTypes.TEXT,
+    password: DataTypes.TEXT,
     car_plate: DataTypes.TEXT,
     car_make: DataTypes.TEXT,
     car_model: DataTypes.TEXT,
