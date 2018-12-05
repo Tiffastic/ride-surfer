@@ -54,7 +54,7 @@ export default class DriverDetailsScreen extends React.Component<{ navigation: a
               </TouchableHighlight>
             )} />
           <Button title="Request" onPress={this.onRequest}/>
-          <Button title="RateDriver" onPress={() => this.navigation.push("RateDriver")}/>
+          
         </View>
       </View>
     );

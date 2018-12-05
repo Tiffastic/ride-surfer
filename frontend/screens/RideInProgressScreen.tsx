@@ -55,7 +55,6 @@ export default class RideInProgressScreen extends React.Component<{ navigation: 
             )} />
 
           <NavigateButton dest={dirs[0].addr}/>
-
           <Button title="Finish" onPress={() => this.props.navigation.navigate('RateDriver')} />
         </View>
       </View>
