@@ -11,6 +11,9 @@ import {
   View,
 } from 'react-native';
 import { createStackNavigator} from 'react-navigation';
+
+import Colors from '../constants/Colors';
+
 import DriverPickerScreen from './DriverPickerScreen';
 import DriverDetailsScreen from './DriverDetailsScreen';
 import ProfileScreen from '../screens/ProfileScreen';
@@ -23,16 +26,19 @@ const dummyAutofill = [
     key: 'home',
     name: "Home",
     address: "2011 1100 E, Salt Lake City, UT 84106",
+    preview: require('../assets/images/h-s-preview.png'),
   },
   {
     key: 'work',
     name: "Work",
     address: "295 1500 E, Salt Lake City, UT 84112",
+    preview: require('../assets/images/h-l-preview.png'),
   },
   {
     key: 'class',
     name: "Warnock Engineering Building",
     address: "72 Central Campus Dr, Salt Lake City, UT 84112",
+    preview: require('../assets/images/h-w-preview.png'),
   },
 ];
 
@@ -43,8 +49,6 @@ class AddressPicker extends React.Component<{navigation: any}> {
   };
   state = {
     text: '',
-    selectedItem: null as null | { key: string, name: string, address: string },
-
   };
 
   _onPress(item: any) {
@@ -96,14 +100,14 @@ export default createStackNavigator(
           <Button
             onPress={() => navigation.push('MessagesScreen')}
             title="Messages"
-            color="#ffa64d"
+            color={Colors.primary}
           />
         ),
         headerLeft: (
           <Button
             onPress={() => navigation.push('ProfileScreen')}
             title="Profile"
-            color="#ffa64d"
+            color={Colors.primary}
           />
         ),
         // headerBackTitle: null
@@ -122,9 +126,9 @@ export default createStackNavigator(
     // headerMode: 'none',
     navigationOptions: {//in react nav ver 3, this is called defaultNavigationOptions
       headerStyle: {
-        backgroundColor: '#f4511e',
+        backgroundColor: 'white',
       },
-      headerTintColor: '#fff',
+      headerTintColor: 'black',
       headerTitleStyle: {
         fontWeight: 'bold',
       },

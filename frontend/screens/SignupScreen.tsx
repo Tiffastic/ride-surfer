@@ -9,14 +9,13 @@ import {
     View,
 } from 'react-native';
 
-export default class SignupScreen extends React.Component {
+import Colors from '../constants/Colors';
+import Styles from '../constants/Styles';
+
+export default class SignupScreen extends React.Component<{navigation: any}> {
     static navigationOptions = {
         header: null,
     };
-    
-  props: {
-    navigation: any,
-  };
 
     state = {
         first_name: '',
@@ -33,33 +32,35 @@ export default class SignupScreen extends React.Component {
     render() {
         let showErr = (
             this.state.error ?
-              <Text>
+              <Text style={{color: 'red'}}>
                 {this.state.error}
               </Text> :
               <View></View>
           );
         return (
-            <ScrollView>
-                <Text>Register</Text>
+            <ScrollView style={[Styles.wrapper, Styles.container]}>
+                <Text style={Styles.titleText}>Ride Surfer</Text>
 
-                <TextInput style={styles.textInput} placeholder="First Name" onChangeText={(data) => this.setState({ first_name: data })} />
+                <Text style={Styles.paragraphText}>Create an Account</Text>
 
-                <TextInput style={styles.textInput} placeholder="Last Name" onChangeText={(data) => this.setState({ last_name: data })}/>
+                <TextInput style={Styles.textInput} placeholder="First Name" onChangeText={(data) => this.setState({ first_name: data })} />
 
-                <TextInput style={styles.textInput} placeholder="Email" onChangeText={(data) => this.setState({ email: data })}/>
+                <TextInput style={Styles.textInput} placeholder="Last Name" onChangeText={(data) => this.setState({ last_name: data })}/>
+
+                <TextInput style={Styles.textInput} placeholder="Email" onChangeText={(data) => this.setState({ email: data })}/>
 
                 {/* TODO: this needs to hide what the user types in */}
-                <TextInput style={styles.textInput} placeholder="Password" onChangeText={(data) => this.setState({ password: data })}/>
+                <TextInput style={Styles.textInput} placeholder="Password" onChangeText={(data) => this.setState({ password: data })}/>
 
-                <TextInput style={styles.textInput} placeholder="Licence Plate" onChangeText={(data) => this.setState({ car_plate: data })}/>
+                <TextInput style={Styles.textInput} placeholder="Licence Plate" onChangeText={(data) => this.setState({ car_plate: data })}/>
 
-                <TextInput style={styles.textInput} placeholder="Car Make" onChangeText={(data) => this.setState({ car_make: data })}/>
+                <TextInput style={Styles.textInput} placeholder="Car Make" onChangeText={(data) => this.setState({ car_make: data })}/>
 
-                <TextInput style={styles.textInput} placeholder="Car Model" onChangeText={(data) => this.setState({ car_model: data })}/>
+                <TextInput style={Styles.textInput} placeholder="Car Model" onChangeText={(data) => this.setState({ car_model: data })}/>
 
-                <TextInput style={styles.textInput} placeholder="Car Year" onChangeText={(data) => this.setState({ car_year: data })}/>
+                <TextInput style={Styles.textInput} placeholder="Car Year" onChangeText={(data) => this.setState({ car_year: data })}/>
 
-                <Button title="Sign Up" onPress={this._register} />
+                <Button color={Colors.primary} title="Sign Up" onPress={this._register}/>
                 {showErr}
             </ScrollView>
         );
@@ -84,7 +85,7 @@ export default class SignupScreen extends React.Component {
           }),
         })
           .then((response) => response.json())
-    
+
           .then((responseJson) => {
             if (responseJson.status == 400) {
               this.setState({
@@ -99,7 +100,7 @@ export default class SignupScreen extends React.Component {
             console.log(error);
           });
       };
-    
+
       private _saveUserAsync = async (userDetails: any) => {
         const jsonString = JSON.stringify(userDetails);
         await AsyncStorage.setItem('userDetails', jsonString);

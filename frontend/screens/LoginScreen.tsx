@@ -10,16 +10,13 @@ import {
   Button,
   AsyncStorage
 } from 'react-native';
-import { WebBrowser } from 'expo';
 
+import Colors from '../constants/Colors';
+import Styles from '../constants/Styles';
 
-export default class HomeScreen extends React.Component {
+export default class LoginScreen extends React.Component<{navigation: any}> {
   static navigationOptions = {
     header: null,
-  };
-
-  props: {
-    navigation: any,
   };
 
   state = {
@@ -31,54 +28,41 @@ export default class HomeScreen extends React.Component {
   render() {
     let showErr = (
       this.state.error ?
-        <Text>
+        <Text style={{color: 'red'}}>
           {this.state.error}
         </Text> :
         <View></View>
     );
     return (
-      <View style={styles.container}>
-        <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-          <View style={styles.welcomeContainer}>
-            <Image
-              source={
-                require('../assets/images/Loginsurfboard.png')
-              }
-              style={styles.welcomeImage}
-            />
-          </View>
+      <ScrollView style={[Styles.wrapper, Styles.container]}>
 
-          <View style={styles.getStartedContainer}>
+        <View>
+          <Text style={Styles.titleText}>Ride Surfer</Text>
 
-            <Text style={styles.getStartedText}>Log into Ride Surfer </Text>
+          <Text style={{fontSize: 16}}>Please Log In to Continue </Text>
+        </View>
 
-            <View style={styles.loginContainer}>
-              <View style={[styles.codeHighlightContainer, styles.homeScreenFilename]}>
-                <Text>Email:</Text>
-                <TextInput placeholder='rideSurfer@waves.com' style={styles.input}
-                  onChangeText={(email) => this.setState({ email })}>
-                </TextInput>
-              </View>
-
-              <View style={[styles.codeHighlightContainer, styles.homeScreenFilename]}>
-                <Text>Password: </Text>
-                <TextInput placeholder='********' style={styles.input}
-                  onChangeText={(password) => this.setState({ password })}>
-                </TextInput>
-              </View>
-
+        <View style={styles.loginContainer}>
+            <View>
+              <Text style={Styles.infoText}>Email:</Text>
+              <TextInput placeholder='Email' style={Styles.textInput}
+                onChangeText={(email) => this.setState({ email })}/>
             </View>
 
+            <View>
+              <Text style={Styles.infoText}>Password: </Text>
+              <TextInput placeholder='Password' style={Styles.textInput}
+                onChangeText={(password) => this.setState({ password })}/>
+            </View>
 
-          </View>
+        </View>
 
-          <View style={styles.surfButton}>
-            <Button title='Log in!' onPress={this._logIn}></Button>
-          </View>
-          {showErr}
-        </ScrollView>
+        <View style={Styles.buttonView}>
+            <Button color={Colors.primary} title='Login' onPress={this._logIn}></Button>
+        </View>
 
-      </View>
+        {showErr}
+      </ScrollView>
     );
   }
 
@@ -119,100 +103,11 @@ export default class HomeScreen extends React.Component {
 }
 
 const styles = StyleSheet.create({
-  container:
-  {
-    flex: 1,
-    backgroundColor: '#34889b'
-  },
-
-  contentContainer:
-  {
-    paddingTop: 30,
-  },
-
-  welcomeContainer:
-  {
-    alignItems: 'center',
-    marginTop: 10,
-    marginBottom: 10,
-  },
-
-  welcomeImage:
-  {
-    width: 200,
-    height: 150,
-    resizeMode: 'contain',
-    marginTop: 3,
-    marginLeft: -10,
-  },
-
-  getStartedContainer:
-  {
-    alignItems: 'center',
-    marginHorizontal: 50,
-  },
-
-  getStartedText:
-  {
-    fontSize: 17,
-    color: 'black',
-    lineHeight: 24,
-    textAlign: 'center',
-  },
-
-  homeScreenFilename:
-  {
-    marginVertical: 7,
-  },
-
-  codeHighlightContainer: {
-    backgroundColor: 'rgba(0,0,0,0.05)',
-    borderRadius: 10,
-    paddingHorizontal: 10,
-    paddingTop: 5
-  },
-
-  logoContainer: {
-    alignItems: 'center',
-    flexGrow: 1,
-    justifyContent: 'center'
-  },
-
-  logo:
-  {
-    width: 100,
-    height: 100
-  },
-
-  title: {
-    color: '#FFF',
-    marginTop: 10,
-    width: 160,
-    textAlign: 'center',
-    opacity: 0.9
-  },
-
-  input:
-  {
-    height: 40,
-    backgroundColor: 'rgba(255, 255, 255, 0.7)',
-    marginBottom: 20,
-    color: '#2677A2',
-    paddingHorizontal: 70,
-  },
-
   loginContainer:
   {
     paddingTop: 15,
-    paddingBottom: 10
+    paddingBottom: 10,
+    flex: 1,
   },
-
-  surfButton:
-  {
-
-    alignItems: 'center',
-
-  }
-
 
 });

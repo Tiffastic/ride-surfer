@@ -9,4 +9,6 @@ export default createStackNavigator({
     AuthLanding: AuthLandingScreen,
     Login: LoginScreen,
     Signup: SignupScreen,
+}, {
+    headerMode: 'none',
 });

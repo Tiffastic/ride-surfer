@@ -6,9 +6,12 @@ import {
     FlatList,
     TouchableHighlight,
     StyleSheet,
-    ListRenderItemInfo
+    ListRenderItemInfo,
+    Image,
 } from 'react-native';
 import { ListRenderItem } from 'react-native';
+
+import Styles from '../constants/Styles';
 
 const dummyDrivers = [
     {
@@ -46,11 +49,7 @@ const dummyDrivers = [
     }
 ];
 
-export default class DriverPickerScreen extends React.Component {
-    props: {
-        navigation: any,
-    };
-
+export default class DriverPickerScreen extends React.Component<{navigation: any}> {
     state = {
         address: this.props.navigation.getParam('address', {name: 'Not Found', address: '-'}),
     };
@@ -60,29 +59,36 @@ export default class DriverPickerScreen extends React.Component {
     }
 
     render() {
+        let image = this.state.address.preview;
+
         return (
             <View style={styles.container}>
-                <Text>Here are drivers who can get you to:</Text>
-                <Text>{this.state.address.name}</Text>
-                <Text>{this.state.address.address}</Text>
+                <Image style={{ flex: 2, width: undefined, height: undefined }}
+                    resizeMode='cover'
+                    source={image}
+                />
 
-                <FlatList
-                    style={styles.searchResultsList}
-                    data={dummyDrivers}
-                    renderItem={({item, separators}: any) => (
+                <View style={{flex: 2}}>
+                    <Text style={Styles.paragraphText}>We found 3 drivers going a similar direction:</Text>
 
-                    <TouchableHighlight
-                        style={styles.searchResultsItem}
-                        onPress={() => this.chooseDriver(item)}
-                        onShowUnderlay={separators.highlight}
-                        onHideUnderlay={separators.unhighlight}>
+                    <FlatList
+                        style={styles.searchResultsList}
+                        data={dummyDrivers}
+                        renderItem={({item, separators}: any) => (
 
-                        <View>
-                            <Text style={styles.searchResultsName}>{item.name}</Text>
-                            <Text style={styles.searchResultsAddress}>{item.rating} stars</Text>
-                        </View>
-                    </TouchableHighlight>
-                )}/>
+                        <TouchableHighlight
+                            style={styles.searchResultsItem}
+                            onPress={() => this.chooseDriver(item)}
+                            onShowUnderlay={separators.highlight}
+                            onHideUnderlay={separators.unhighlight}>
+
+                            <View>
+                                <Text style={styles.searchResultsName}>{item.name}</Text>
+                                <Text style={styles.searchResultsAddress}>{item.rating} stars</Text>
+                            </View>
+                        </TouchableHighlight>
+                    )}/>
+                </View>
             </View>
         );
     }

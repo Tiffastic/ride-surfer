@@ -11,6 +11,9 @@ import {
 
 import NavigateButton from '../components/NavigateButton';
 
+import Colors from '../constants/Colors';
+import Styles from '../constants/Styles';
+
 export default class RideInProgressScreen extends React.Component<{ navigation: any }> {
   state = {
     address: this.props.navigation.getParam('address', { key: '', name: 'Not Found', address: '-' }),
@@ -55,7 +58,13 @@ export default class RideInProgressScreen extends React.Component<{ navigation: 
             )} />
 
           <NavigateButton dest={dirs[0].addr}/>
-          <Button title="Finish" onPress={() => this.props.navigation.navigate('RateDriver')} />
+
+          <View style={Styles.buttonView}>
+            <Button
+              title="Finish"
+              onPress={() => this.props.navigation.navigate('RateDriver')}
+              color={Colors.darkAccent}/>
+          </View>
         </View>
       </View>
     );

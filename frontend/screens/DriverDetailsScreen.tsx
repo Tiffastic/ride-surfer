@@ -9,7 +9,7 @@ import {
   View,
 } from 'react-native';
 
-
+import Colors from '../constants/Colors';
 
 export default class DriverDetailsScreen extends React.Component<{ navigation: any }> {
   state = {
@@ -53,8 +53,7 @@ export default class DriverDetailsScreen extends React.Component<{ navigation: a
                 </View>
               </TouchableHighlight>
             )} />
-          <Button title="Request" onPress={this.onRequest}/>
-          
+          <Button title="Request" onPress={this.onRequest} color={Colors.darkAccent}/>
         </View>
       </View>
     );

@@ -1,8 +1,10 @@
 import React from 'react';
 import { ScrollView, View, StyleSheet, Text, Button, Image, AsyncStorage } from 'react-native';
 
-export default class LinksScreen extends React.Component<{ navigation: any }> {
-  constructor(props) {
+import Colors from '../constants/Colors';
+
+export default class ProfileScreen extends React.Component<{ navigation: any }> {
+  constructor(props: any) {
     super(props);
     this._bootstrapAsync();
   }
@@ -37,7 +39,10 @@ export default class LinksScreen extends React.Component<{ navigation: any }> {
           <Text>{this.state.user.car_plate}</Text>
         </View>
 
-        <Button title="Log Out" onPress={this._logOut} />
+        <Button
+          title="Log Out"
+          onPress={this._logOut}
+          color={Colors.darkAccent}/>
       </View>
     );
   }
