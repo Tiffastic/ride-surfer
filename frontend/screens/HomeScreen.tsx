@@ -16,6 +16,7 @@ import DriverDetailsScreen from './DriverDetailsScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import MessagesScreen from '../screens/MessagesScreen';
 import RideInProgressScreen from './RideInProgressScreen';
+import RateDriverScreen from './RateDriverScreen';
 
 const dummyAutofill = [
   {
@@ -113,6 +114,7 @@ export default createStackNavigator(
     DriverDetails: DriverDetailsScreen,
     MessagesScreen: MessagesScreen,
     RideInProgress: RideInProgressScreen,
+    RateDriver: RateDriverScreen
 
   }, {//StackNavigatorConfig
 
