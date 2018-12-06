@@ -99,20 +99,27 @@ export default createStackNavigator(
       navigationOptions: ({ navigation }: { navigation: any }) => ({
         //  title: `from inside the stack`,
         headerRight: (
-          <Button
-            onPress={() => navigation.push('MessagesScreen')}
-            title="Messages"
-            color={Colors.primary}
-          />
+          <View style={{width: 90}}>
+            <Button
+              onPress={() => navigation.push('MessagesScreen')}
+              title="Messages"
+              color={Colors.primary}
+            />
+          </View>
         ),
         headerLeft: (
-          <Button
-            onPress={() => navigation.push('ProfileScreen')}
-            title="Profile"
-            color={Colors.primary}
-          />
+          <View style={{width: 90}}>
+            <Button
+              onPress={() => navigation.push('ProfileScreen')}
+              title="Profile"
+              color={Colors.primary}
+            />
+          </View>
         ),
-        // headerBackTitle: null
+        headerTitleStyle: {
+          textAlign: 'center',
+          flex: 1,
+        }
       }),
     },
     ProfileScreen: ProfileScreen,
