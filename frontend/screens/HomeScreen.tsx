@@ -52,6 +52,7 @@ class AddressPicker extends React.Component<{navigation: any}> {
   };
 
   _onPress(item: any) {
+    this.setState({text: ''});
     this.props.navigation.push('DriverPicker', { address: item });
   }
 
@@ -63,6 +64,7 @@ class AddressPicker extends React.Component<{navigation: any}> {
           <TextInput
             placeholder="Where to?"
             style={styles.queryBox}
+            value={this.state.text}
             onChangeText={(text) => this.setState({ text })} />
 
 
