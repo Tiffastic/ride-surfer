@@ -62,7 +62,7 @@ export default class RideInProgressScreen extends React.Component<{ navigation: 
           <View style={Styles.buttonView}>
             <Button
               title="Finish"
-              onPress={() => this.props.navigation.navigate('RateDriver')}
+              onPress={() => this.props.navigation.navigate('RateDriver', {driver: this.state.driver})}
               color={Colors.darkAccent}/>
           </View>
         </View>

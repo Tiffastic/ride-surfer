@@ -15,8 +15,8 @@ import Styles from '../constants/Styles';
 
 const dummyDrivers = [
     {
-        key: 'bob',
-        name: "Bob",
+        key: 'shaggy',
+        name: "Shaggy",
         rating: 4.2,
         home: require('./../assets/images/h-s1.png'),
         class: require('./../assets/images/h-l1.png'),
@@ -24,6 +24,7 @@ const dummyDrivers = [
         homeDirs: [{ key: '1', time: '1 min', desc: 'Walk to  4689 Holladay Blvd E', addr: '4689 Holladay Blvd E' }, { key: '2', time: '16 mins', desc: 'Drive to 2000 1100 E' }, { key: '3', time: '5 mins', desc: 'Walk to 2011 1100 E' }],
         workDirs: [{ key: '1', time: '5 mins', desc: 'Walk to 4501 2565 E', addr: '4501 2565 E' }, { key: '2', time: '15 mins', desc: 'Drive to 290 1500 E' }, { key: '3', time: '2 mins', desc: 'Walk to 295 1500 E' }],
         classDirs: [{ key: '1', time: '5 mins', desc: 'Walk to 4501 2565 E', addr: '4501 2565 E' }, { key: '2', time: '15 mins', desc: 'Drive to 70 Central Campus Drive' }, { key: '3', time: '2 mins', desc: 'Walk to 72 Central Campus Dr' }],
+        profilePic: require('../assets/images/shaggy.jpg'),
     },
     {
         key: 'fred',
@@ -35,6 +36,7 @@ const dummyDrivers = [
         homeDirs: [{ key: '1', time: '6 mins', desc: 'Walk to 2301 E Sky Pines Ct', addr: '2301 E Sky Pines Ct' }, { key: '2', time: '16 mins', desc: 'Drive to 2000 1100 E' }, { key: '3', time: '2 mins', desc: 'Walk to 2011 1100 E' }],
         workDirs: [{ key: '1', time: '1 min', desc: 'Walk to 4689 Holladay Blvd E', addr: '4689 Holladay Blvd E' }, { key: '2', time: '15 mins', desc: 'Drive to 290 1500 E' }, { key: '3', time: '2 mins', desc: 'Walk to 295 1500 E' }],
         classDirs: [{ key: '2', time: '5 mins', desc: 'Walk to 4501 2565 E', addr: '4501 2565 E' }, { key: '2', time: '15 mins', desc: 'Drive to 70 Central Campus Drive' }, { key: '3', time: '2 mins', desc: 'Walk to 72 Central Campus Dr' }],
+        profilePic: require('../assets/images/fred.jpg'),
     },
     {
         key: 'daphne',
@@ -46,6 +48,7 @@ const dummyDrivers = [
         homeDirs: [{ key: '1', time: '5 mins', desc: 'Walk to 4501 2565 E', addr: '4501 2565 E' }, { key: '2', time: '16 mins', desc: 'Drive to 2000 1100 E' }, { key: '3', time: '2 mins', desc: 'Walk to 2011 1100 E' }],
         workDirs: [{ key: '1', time: '6 mins', desc: 'Walk to 2301 E Sky Pines Ct', addr: '2301 E Sky Pines Ct' }, { key: '2', time: '15 mins', desc: 'Drive to 290 1500 E' }, { key: '3', time: '2 mins', desc: 'Walk to 295 1500 E' }],
         classDirs: [{ key: '1', time: '1 min', desc: 'Walk to 4689 Holladay Blvd E', addr: '4689 Holladay Blvd E' }, { key: '2', time: '15 mins', desc: 'Drive to 70 Central Campus Drive' }, { key: '3', time: '2 mins', desc: 'Walk to 72 Central Campus Dr' }],
+        profilePic: require('../assets/images/daphne.jpg'),
     }
 ];
 
@@ -82,7 +85,8 @@ export default class DriverPickerScreen extends React.Component<{navigation: any
                             onShowUnderlay={separators.highlight}
                             onHideUnderlay={separators.unhighlight}>
 
-                            <View>
+                            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                                <Image source={item.profilePic} style={{width: 50, height: 50}}/>
                                 <Text style={styles.searchResultsName}>{item.name}</Text>
                                 <Text style={styles.searchResultsAddress}>{item.rating} stars</Text>
                             </View>
@@ -119,6 +123,7 @@ const styles = StyleSheet.create({
     },
     searchResultsName: {
       fontSize: 20,
+      marginRight: 10,
     },
     searchResultsAddress: {
       fontSize: 20,

@@ -8,25 +8,32 @@ import {
   Button
 } from 'react-native';
 
+import Styles from '../constants/Styles';
+import Colors from '../constants/Colors';
 
- import Stars from 'react-native-stars';
- import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Stars from 'react-native-stars';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
- import picDriver from '../assets/images/ThuyPic.png';
- 
 
-export default class RateDriverScreen extends React.Component {
+export default class RateDriverScreen extends React.Component<{navigation: any}> {
   static navigationOptions = {
     header: null,
   };
 
+  state = {
+    driver: this.props.navigation.getParam('driver', { name: 'Not Found', home: '', class: '', work: '' }),
+  }
+
   render() {
     return (
-      <View style={styles.container}>
+      <View style={[Styles.container, styles.container]}>
+        <Text style={{fontSize: 20, marginBottom: 20}}>
+          Thanks for riding with {this.state.driver.name}!
+        </Text>
 
         <View style={{marginBottom: 20}}>
-            <Image source={picDriver} style={{width: 200, height: 200, borderRadius: 100}}>
-             
+            <Image source={this.state.driver.profilePic} style={{width: 200, height: 200, borderRadius: 100}}>
+
             </Image>
         </View>
 
@@ -35,7 +42,7 @@ export default class RateDriverScreen extends React.Component {
         Rate Your Ride
        </Text>
 
-      
+
         <View>
           <Stars
             rating={2.5}
@@ -50,23 +57,24 @@ export default class RateDriverScreen extends React.Component {
 
 
         <View style={{marginTop:25}}>
-          <TextInput 
-                            multiline = {true} 
-                            numberOfLines = {5}
-                            style={{height: 80,
-                                    width:220, 
-                                    borderColor: 'gray', 
-                                    borderWidth: 5, 
-                                    paddingHorizontal: 10,
-                                    backgroundColor: 'white'
-                             }}
-                             >
+          <TextInput
+            placeholder="Comments..."
+            multiline = {true}
+            numberOfLines = {5}
+            style={{height: 80,
+                    width: 300,
+                    borderColor: 'gray',
+                    borderWidth: 2,
+                    paddingHorizontal: 10,
+                    backgroundColor: 'white'
+              }}
+              >
         </TextInput>
         </View>
 
 
-        <View style={{marginTop: 20, width: 110}}>
-          <Button title="Rate" color='rgb(48, 70, 226)' onPress={this._handleHelpPress}></Button>
+        <View style={{marginTop: 20, width: '80%'}}>
+          <Button title="Rate" color={Colors.primary} onPress={this._handleHelpPress}></Button>
         </View>
       </View>
     );
@@ -91,13 +99,12 @@ const styles = StyleSheet.create({
 
   myEmptyStarStyle: {
     color: 'white',
-  }, 
+  },
 
   container: {
     flex: 1,
     alignItems: 'center',
    justifyContent: 'center',
-    backgroundColor: 'rgb(51, 170, 234)',
   },
 
 });
