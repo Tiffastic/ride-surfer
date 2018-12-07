@@ -5,7 +5,8 @@ import {
   Text,
   TextInput,
   View,
-  Button
+  Button,
+  ScrollView
 } from 'react-native';
 
 import Styles from '../constants/Styles';
@@ -26,22 +27,14 @@ export default class RateDriverScreen extends React.Component<{navigation: any}>
 
   render() {
     return (
-      <View style={[Styles.container, styles.container]}>
+      <ScrollView contentContainerStyle={[Styles.container, styles.container]}>
         <Text style={{fontSize: 20, marginBottom: 20}}>
           Thanks for riding with {this.state.driver.name}!
         </Text>
 
         <View style={{marginBottom: 20}}>
-            <Image source={this.state.driver.profilePic} style={{width: 200, height: 200, borderRadius: 100}}>
-
-            </Image>
+          <Image source={this.state.driver.profilePic} style={{width: 200, height: 200, borderRadius: 100}}/>
         </View>
-
-
-       <Text style={{fontSize: 20, paddingBottom: 10}}>
-        Rate Your Ride
-       </Text>
-
 
         <View>
           <Stars
@@ -68,15 +61,14 @@ export default class RateDriverScreen extends React.Component<{navigation: any}>
                     paddingHorizontal: 10,
                     backgroundColor: 'white'
               }}
-              >
-        </TextInput>
+            />
         </View>
 
 
         <View style={{marginTop: 20, width: '80%'}}>
           <Button title="Rate" color={Colors.primary} onPress={this._handleHelpPress}></Button>
         </View>
-      </View>
+      </ScrollView>
     );
   }
 
