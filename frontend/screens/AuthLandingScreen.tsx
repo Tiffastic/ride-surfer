@@ -8,7 +8,6 @@ import Colors from '../constants/Colors';
 export default class AuthLandingScreen extends React.Component<{ navigation: any }> {
     constructor(props) {
         super(props);
-        console.log('in constructor')
         this._bootstrapAsync();
     }
 

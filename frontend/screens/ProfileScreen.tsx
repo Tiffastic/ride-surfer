@@ -33,7 +33,7 @@ export default class ProfileScreen extends React.Component<{ navigation: any }> 
           source={require('./../assets/images/default-profile.png')}
         />
         <View style={{ flex: 1, alignItems: 'center' }}>
-          <Text >{name}</Text>
+          <Text style={{fontSize: 25, margin: 10}} >{name}</Text>
           <Text>{this.state.user.email}</Text>
           <Text >{car}</Text>
           <Text>{this.state.user.car_plate}</Text>
