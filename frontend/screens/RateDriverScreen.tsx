@@ -36,6 +36,10 @@ export default class RateDriverScreen extends React.Component<{navigation: any}>
           <Image source={this.state.driver.profilePic} style={{width: 200, height: 200, borderRadius: 100}}/>
         </View>
 
+       <Text style={{fontSize: 20, paddingBottom: 10}}>
+        Rate Your Ride
+       </Text>
+
         <View>
           <Stars
             rating={2.5}
