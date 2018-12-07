@@ -17,7 +17,8 @@ import Colors from '../constants/Colors';
 import DriverPickerScreen from './DriverPickerScreen';
 import DriverDetailsScreen from './DriverDetailsScreen';
 import ProfileScreen from '../screens/ProfileScreen';
-import MessagesScreen from '../screens/MessagesScreen';
+import MessageContactsScreen from '../screens/MessageContactsScreen';
+import MessageConversationsScreen from '../screens/MessageConversationsScreen';
 import RideInProgressScreen from './RideInProgressScreen';
 import RateDriverScreen from './RateDriverScreen';
 
@@ -101,7 +102,7 @@ export default createStackNavigator(
         headerRight: (
           <View style={{width: 90}}>
             <Button
-              onPress={() => navigation.push('MessagesScreen')}
+              onPress={() => navigation.push('MessageContacts')}
               title="Messages"
               color={Colors.primary}
             />
@@ -125,7 +126,8 @@ export default createStackNavigator(
     ProfileScreen: ProfileScreen,
     DriverPicker: DriverPickerScreen,
     DriverDetails: DriverDetailsScreen,
-    MessagesScreen: MessagesScreen,
+    MessageContacts: MessageContactsScreen,
+    MessageConversations: MessageConversationsScreen,
     RideInProgress: RideInProgressScreen,
     RateDriver: RateDriverScreen
 
