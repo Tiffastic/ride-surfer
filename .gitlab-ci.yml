@@ -1,0 +1,14 @@
+# based on the GitLab template:
+# https://gitlab.com/gitlab-org/gitlab-ce/blob/master/lib/gitlab/ci/templates/Nodejs.gitlab-ci.yml
+
+image: node:latest
+
+cache:
+  paths:
+  - frontend/node_modules/
+
+format:
+  script:
+   - cd frontend
+   - npm install
+   - npm run checkFormat

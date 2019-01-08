@@ -1,16 +1,16 @@
-import React from 'react';
-import { Platform, StatusBar, StyleSheet, View } from 'react-native';
-import { AppLoading, Asset, Font } from 'expo';
-import AppNavigator from './navigation/AppNavigator';
+import React from "react";
+import { Platform, StatusBar, StyleSheet, View } from "react-native";
+import { AppLoading, Asset, Font } from "expo";
+import AppNavigator from "./navigation/AppNavigator";
 
 export default class App extends React.Component {
   state = {
-    isLoadingComplete: false,
+    isLoadingComplete: false
   };
 
   props: {
-   skipLoadingScreen: boolean,
-  }
+    skipLoadingScreen: boolean;
+  };
 
   render() {
     if (!this.state.isLoadingComplete && !this.props.skipLoadingScreen) {
@@ -24,7 +24,7 @@ export default class App extends React.Component {
     } else {
       return (
         <View style={styles.container}>
-          {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
+          {Platform.OS === "ios" && <StatusBar barStyle="default" />}
           <AppNavigator />
         </View>
       );
@@ -34,14 +34,14 @@ export default class App extends React.Component {
   _loadResourcesAsync = async () => {
     await Promise.all([
       Asset.loadAsync([
-        require('./assets/images/robot-dev.png'),
-        require('./assets/images/robot-prod.png'),
+        require("./assets/images/robot-dev.png"),
+        require("./assets/images/robot-prod.png")
       ]),
       Font.loadAsync({
         // This is the font that we are using for our tab bar
         // TODO(ethan): we might need Icons later 😬
         // ...Icon.Ionicons.font,
-      }),
+      })
     ]);
   };
 
@@ -59,9 +59,9 @@ export default class App extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
 
     // TODO (ethan): this is kinda messy
-    paddingTop: Platform.OS === 'ios' ? 20 : StatusBar.currentHeight,
-  },
+    paddingTop: Platform.OS === "ios" ? 20 : StatusBar.currentHeight
+  }
 });

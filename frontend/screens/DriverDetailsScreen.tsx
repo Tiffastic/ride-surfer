@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
 import {
   FlatList,
   TouchableHighlight,
@@ -6,39 +6,54 @@ import {
   StyleSheet,
   Text,
   Button,
-  View,
-} from 'react-native';
+  View
+} from "react-native";
 
-import Colors from '../constants/Colors';
+import Colors from "../constants/Colors";
 
-export default class DriverDetailsScreen extends React.Component<{ navigation: any }> {
+export default class DriverDetailsScreen extends React.Component<{
+  navigation: any;
+}> {
   state = {
-    address: this.props.navigation.getParam('address', { key: '', name: 'Not Found', address: '-' }),
-    driver: this.props.navigation.getParam('driver', { name: 'Not Found', home: '', class: '', work: '' }),
-
+    address: this.props.navigation.getParam("address", {
+      key: "",
+      name: "Not Found",
+      address: "-"
+    }),
+    driver: this.props.navigation.getParam("driver", {
+      name: "Not Found",
+      home: "",
+      class: "",
+      work: ""
+    })
   };
+
   render() {
     let image = this.state.driver.home;
     let dirs = this.state.driver.homeDirs;
-    if (this.state.address.key == 'work') {
+    if (this.state.address.key == "work") {
       image = this.state.driver.work;
       dirs = this.state.driver.workDirs;
-    }
-    else if (this.state.address.key == 'class') {
+    } else if (this.state.address.key == "class") {
       image = this.state.driver.class;
       dirs = this.state.driver.classDirs;
     }
 
     return (
       <View style={styles.container}>
-        <Image style={{ flex: 1.25, width: undefined, height: undefined }}
-          resizeMode='stretch'
+        <Image
+          style={{ flex: 1.25, width: undefined, height: undefined }}
+          resizeMode="stretch"
           source={image}
         />
         <View style={{ flex: 1 }}>
-          <Text style={{ fontSize: 25, margin: 5 }}>{this.state.driver.name}</Text>
+          <Text style={{ fontSize: 25, margin: 5 }}>
+            {this.state.driver.name}
+          </Text>
 
-          <Text style={{ fontSize: 15, marginLeft: 5 }}>Directions to {this.state.address.name}</Text>
+          <Text style={{ fontSize: 15, marginLeft: 5 }}>
+            Directions to {this.state.address.name}
+          </Text>
           <FlatList
             data={dirs}
             showsVerticalScrollIndicator={false}
@@ -46,47 +61,51 @@ export default class DriverDetailsScreen extends React.Component<{ navigation: a
               <TouchableHighlight
                 style={styles.searchResultsItem}
                 onShowUnderlay={separators.highlight}
-                onHideUnderlay={separators.unhighlight}>
+                onHideUnderlay={separators.unhighlight}
+              >
                 <View style={styles.flatview}>
                   <Text style={{ flex: 1 }}>{(item as any).time}</Text>
                   <Text style={{ flex: 2 }}>{(item as any).desc}</Text>
                 </View>
               </TouchableHighlight>
-            )} />
-          <Button title="Request" onPress={this.onRequest} color={Colors.darkAccent}/>
+            )}
+          />
+          <Button
+            title="Request"
+            onPress={this.onRequest}
+            color={Colors.darkAccent}
+          />
         </View>
       </View>
     );
   }
 
   onRequest = () => {
-    this.props.navigation.navigate('RideInProgress', {
+    this.props.navigation.navigate("RideInProgress", {
       address: this.state.address,
       driver: this.state.driver
     });
-  }
+  };
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff"
   },
   flatview: {
-    justifyContent: 'center',
+    justifyContent: "center",
     paddingTop: 5,
     borderRadius: 2,
-    flexDirection: 'row',
-    margin: 5,
+    flexDirection: "row",
+    margin: 5
   },
   searchResultsList: {
     marginTop: 10,
-    marginBottom: 10,
+    marginBottom: 10
   },
   searchResultsItem: {
-    borderColor: '#c3c3c3',
-    borderBottomWidth: 1,
-  },
-
-
+    borderColor: "#c3c3c3",
+    borderBottomWidth: 1
+  }
 });
