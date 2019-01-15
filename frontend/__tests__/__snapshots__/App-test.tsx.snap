@@ -60,7 +60,7 @@ exports[`App snapshot renders the root without loading screen 1`] = `
               "bottom": 0,
               "left": 0,
               "opacity": 1,
-              "paddingTop": 64,
+              "paddingTop": 0,
               "position": "absolute",
               "right": 0,
               "shadowColor": "black",
@@ -84,381 +84,141 @@ exports[`App snapshot renders the root without loading screen 1`] = `
         >
           <View
             style={
-              Object {
-                "backgroundColor": "transparent",
-                "flex": 1,
-              }
+              Array [
+                Object {
+                  "padding": 10,
+                },
+                Object {
+                  "backgroundColor": "white",
+                  "flex": 1,
+                },
+              ]
             }
           >
             <View
-              accessibilityIgnoresInvertColors={true}
               style={
                 Object {
-                  "height": "100%",
-                  "width": "100%",
+                  "flex": 2,
+                  "justifyContent": "center",
                 }
               }
             >
-              <Image
-                source={1}
+              <Text
                 style={
                   Array [
                     Object {
-                      "bottom": 0,
-                      "left": 0,
-                      "position": "absolute",
-                      "right": 0,
-                      "top": 0,
+                      "color": "#303D4D",
+                      "fontSize": 48,
+                      "fontWeight": "bold",
                     },
-                    Object {
-                      "height": "100%",
-                      "width": "100%",
-                    },
-                    undefined,
                   ]
                 }
-              />
-              <TextInput
-                allowFontScaling={true}
-                onChangeText={[Function]}
-                placeholder="Where to?"
-                style={
-                  Object {
-                    "backgroundColor": "white",
-                    "borderColor": "#c3c3c3",
-                    "borderWidth": 1,
-                    "fontSize": 36,
-                    "marginBottom": 10,
-                    "marginLeft": 15,
-                    "marginRight": 15,
-                    "marginTop": 10,
-                  }
-                }
-                underlineColorAndroid="transparent"
-                value=""
-              />
+              >
+                Ride Surfer
+              </Text>
             </View>
-          </View>
-        </View>
-      </View>
-      <View
-        onLayout={[Function]}
-        pointerEvents="box-none"
-        style={
-          Object {
-            "left": 0,
-            "position": "absolute",
-            "right": 0,
-            "top": 0,
-          }
-        }
-      >
-        <View
-          style={
-            Object {
-              "backgroundColor": "white",
-              "transform": Array [
-                Object {
-                  "translateX": 0,
-                },
-              ],
-            }
-          }
-        >
-          <View
-            onLayout={[Function]}
-            pointerEvents="box-none"
-            style={
-              Object {
-                "backgroundColor": "white",
-                "borderBottomColor": "#A7A7AA",
-                "borderBottomWidth": 0.5,
-                "height": 65,
-                "paddingBottom": 0,
-                "paddingLeft": 0,
-                "paddingRight": 0,
-                "paddingTop": 20,
-              }
-            }
-          >
             <View
-              style={
-                Object {
-                  "flex": 1,
-                }
-              }
+              style={Object {}}
             >
               <View
                 style={
                   Object {
-                    "bottom": 0,
-                    "flexDirection": "row",
-                    "left": 0,
-                    "position": "absolute",
-                    "right": 0,
-                    "top": 0,
+                    "paddingBottom": 10,
                   }
                 }
               >
                 <View
-                  pointerEvents="box-none"
+                  accessibilityRole="button"
+                  accessibilityStates={Array []}
+                  accessible={true}
+                  isTVSelectable={true}
+                  onResponderGrant={[Function]}
+                  onResponderMove={[Function]}
+                  onResponderRelease={[Function]}
+                  onResponderTerminate={[Function]}
+                  onResponderTerminationRequest={[Function]}
+                  onStartShouldSetResponder={[Function]}
                   style={
                     Object {
-                      "alignItems": "center",
-                      "backgroundColor": "transparent",
-                      "bottom": 0,
-                      "flexDirection": "row",
-                      "justifyContent": "center",
-                      "left": 70,
                       "opacity": 1,
-                      "position": "absolute",
-                      "right": 70,
-                      "top": 0,
-                    }
-                  }
-                >
-                  <Text
-                    accessibilityTraits="header"
-                    accessible={false}
-                    allowFontScaling={true}
-                    numberOfLines={1}
-                    onLayout={[Function]}
-                    style={
-                      Object {
-                        "color": "black",
-                        "flex": 1,
-                        "fontSize": 17,
-                        "fontWeight": "bold",
-                        "height": 45,
-                        "marginHorizontal": 16,
-                        "textAlign": "center",
-                      }
-                    }
-                  >
-                    DIVERFILE
-                  </Text>
-                </View>
-                <View
-                  pointerEvents="box-none"
-                  style={
-                    Object {
-                      "alignItems": "center",
-                      "backgroundColor": "transparent",
-                      "bottom": 0,
-                      "flexDirection": "row",
-                      "left": 0,
-                      "opacity": 1,
-                      "position": "absolute",
-                      "top": 0,
                     }
                   }
                 >
                   <View
                     style={
                       Array [
-                        Object {
-                          "flexDirection": "row",
-                        },
-                        Object {
-                          "marginRight": 5,
-                        },
+                        Object {},
                       ]
                     }
                   >
-                    <View
-                      accessible={true}
-                      hitSlop={
-                        Object {
-                          "bottom": 5,
-                          "left": 5,
-                          "right": 5,
-                          "top": 5,
-                        }
-                      }
-                      isTVSelectable={true}
-                      onResponderGrant={[Function]}
-                      onResponderMove={[Function]}
-                      onResponderRelease={[Function]}
-                      onResponderTerminate={[Function]}
-                      onResponderTerminationRequest={[Function]}
-                      onStartShouldSetResponder={[Function]}
+                    <Text
                       style={
-                        Object {
-                          "alignItems": "center",
-                          "justifyContent": "center",
-                          "opacity": 1,
-                        }
+                        Array [
+                          Object {
+                            "color": "#007AFF",
+                            "fontSize": 18,
+                            "padding": 8,
+                            "textAlign": "center",
+                          },
+                          Object {
+                            "color": "#194cc0",
+                          },
+                        ]
                       }
                     >
-                      <View>
-                        <Text
-                          allowFontScaling={false}
-                          style={
-                            Array [
-                              Object {
-                                "color": "#194cc0",
-                                "fontSize": 40,
-                              },
-                              Array [
-                                Object {
-                                  "marginHorizontal": 11,
-                                },
-                                Object {
-                                  "height": 60,
-                                },
-                              ],
-                              Object {
-                                "fontFamily": "Ionicons",
-                                "fontStyle": "normal",
-                                "fontWeight": "normal",
-                              },
-                              Object {},
-                            ]
-                          }
-                        >
-                          
-                        </Text>
-                      </View>
-                    </View>
+                      Log in
+                    </Text>
                   </View>
                 </View>
+              </View>
+              <View
+                style={
+                  Object {
+                    "paddingBottom": 10,
+                  }
+                }
+              >
                 <View
-                  pointerEvents="box-none"
+                  accessibilityRole="button"
+                  accessibilityStates={Array []}
+                  accessible={true}
+                  isTVSelectable={true}
+                  onResponderGrant={[Function]}
+                  onResponderMove={[Function]}
+                  onResponderRelease={[Function]}
+                  onResponderTerminate={[Function]}
+                  onResponderTerminationRequest={[Function]}
+                  onStartShouldSetResponder={[Function]}
                   style={
                     Object {
-                      "alignItems": "center",
-                      "backgroundColor": "transparent",
-                      "bottom": 0,
-                      "flexDirection": "row",
                       "opacity": 1,
-                      "position": "absolute",
-                      "right": 0,
-                      "top": 0,
                     }
                   }
                 >
                   <View
                     style={
                       Array [
-                        Object {
-                          "flexDirection": "row",
-                        },
-                        Object {
-                          "marginRight": 5,
-                        },
+                        Object {},
                       ]
                     }
                   >
-                    <View
-                      accessible={true}
-                      hitSlop={
-                        Object {
-                          "bottom": 5,
-                          "left": 5,
-                          "right": 5,
-                          "top": 5,
-                        }
-                      }
-                      isTVSelectable={true}
-                      onResponderGrant={[Function]}
-                      onResponderMove={[Function]}
-                      onResponderRelease={[Function]}
-                      onResponderTerminate={[Function]}
-                      onResponderTerminationRequest={[Function]}
-                      onStartShouldSetResponder={[Function]}
+                    <Text
                       style={
-                        Object {
-                          "alignItems": "center",
-                          "justifyContent": "center",
-                          "opacity": 1,
-                        }
+                        Array [
+                          Object {
+                            "color": "#007AFF",
+                            "fontSize": 18,
+                            "padding": 8,
+                            "textAlign": "center",
+                          },
+                          Object {
+                            "color": "#194cc0",
+                          },
+                        ]
                       }
                     >
-                      <View>
-                        <Text
-                          allowFontScaling={false}
-                          style={
-                            Array [
-                              Object {
-                                "color": "#194cc0",
-                                "fontSize": 40,
-                              },
-                              Array [
-                                Object {
-                                  "marginHorizontal": 11,
-                                },
-                                Object {
-                                  "height": 60,
-                                },
-                              ],
-                              Object {
-                                "fontFamily": "Ionicons",
-                                "fontStyle": "normal",
-                                "fontWeight": "normal",
-                              },
-                              Object {},
-                            ]
-                          }
-                        >
-                          
-                        </Text>
-                      </View>
-                    </View>
-                    <View
-                      accessible={true}
-                      hitSlop={
-                        Object {
-                          "bottom": 5,
-                          "left": 5,
-                          "right": 5,
-                          "top": 5,
-                        }
-                      }
-                      isTVSelectable={true}
-                      onResponderGrant={[Function]}
-                      onResponderMove={[Function]}
-                      onResponderRelease={[Function]}
-                      onResponderTerminate={[Function]}
-                      onResponderTerminationRequest={[Function]}
-                      onStartShouldSetResponder={[Function]}
-                      style={
-                        Object {
-                          "alignItems": "center",
-                          "justifyContent": "center",
-                          "opacity": 1,
-                        }
-                      }
-                    >
-                      <View>
-                        <Text
-                          allowFontScaling={false}
-                          style={
-                            Array [
-                              Object {
-                                "color": "#194cc0",
-                                "fontSize": 40,
-                              },
-                              Array [
-                                Object {
-                                  "marginHorizontal": 11,
-                                },
-                                Object {
-                                  "height": 60,
-                                },
-                              ],
-                              Object {
-                                "fontFamily": "Ionicons",
-                                "fontStyle": "normal",
-                                "fontWeight": "normal",
-                              },
-                              Object {},
-                            ]
-                          }
-                        >
-                          
-                        </Text>
-                      </View>
-                    </View>
+                      Sign Up
+                    </Text>
                   </View>
                 </View>
               </View>

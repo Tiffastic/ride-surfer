@@ -130,11 +130,6 @@ export default createStackNavigator(
         headerRight: (
           <HeaderButtons HeaderButtonComponent={IoniconsHeaderButton}>
             <HeaderButton
-              title="ToDriver"
-              iconName="ios-cafe"
-              onPress={() => navigation.navigate("Driver")}
-            />
-            <HeaderButton
               title="MessagesIcon"
               iconName="ios-chatbubbles"
               onPress={() => navigation.push("MessageContacts")}
