@@ -1,9 +1,9 @@
 import React from "react";
 import { createStackNavigator } from "react-navigation";
 
-import LoginScreen from "../screens/LoginScreen";
-import SignupScreen from "../screens/SignupScreen";
-import AuthLandingScreen from "../screens/AuthLandingScreen";
+import LoginScreen from "../screensAuth/LoginScreen";
+import SignupScreen from "../screensAuth/SignupScreen";
+import AuthLandingScreen from "../screensAuth/AuthLandingScreen";
 
 export default createStackNavigator(
   {

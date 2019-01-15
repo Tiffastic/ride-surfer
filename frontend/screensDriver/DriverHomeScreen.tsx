@@ -3,7 +3,7 @@ import {
   FlatList,
   TextInput,
   TouchableHighlight,
-  Image,
+  Switch,
   ImageBackground,
   StyleSheet,
   Text,
@@ -16,13 +16,13 @@ import Colors from "../constants/Colors";
 import HeaderButtons, { HeaderButton } from "react-navigation-header-buttons";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
-import DriverPickerScreen from "./DriverPickerScreen";
-import DriverDetailsScreen from "./DriverDetailsScreen";
+import DriverPickerScreen from "../screens/DriverPickerScreen";
+import DriverDetailsScreen from "../screens/DriverDetailsScreen";
 import ProfileScreen from "../screens/ProfileScreen";
 import MessageContactsScreen from "../screens/MessageContactsScreen";
 import MessageConversationsScreen from "../screens/MessageConversationsScreen";
-import RideInProgressScreen from "./RideInProgressScreen";
-import RateDriverScreen from "./RateDriverScreen";
+import RideInProgressScreen from "../screens/RideInProgressScreen";
+import RateDriverScreen from "../screens/RateDriverScreen";
 
 const dummyAutofill = [
   {
@@ -126,13 +126,33 @@ export default createStackNavigator(
     AddressPicker: {
       screen: AddressPicker,
       navigationOptions: ({ navigation }: { navigation: any }) => ({
-        title: `Ride Surfer`,
+        title: `DIVERFILE`,
+
         headerRight: (
+          // <HeaderButtons HeaderButtonComponent={IoniconsHeaderButton}>
+          //   <HeaderButton
+          //     title="MessagesIcon"
+          //     // iconName="ios-chatbubbles"
+          //     onPress={() => navigation.push("MessageContacts")}
+          //   />
+          // </HeaderButtons>
+          //       <View>
+          // <Button
+          //        onPress={() => alert('This is a button!')}
+          //        title="Info"
+          //        color="#fff"
+          //      />
+          //       <Button
+          //        onPress={() => alert('This is a button!')}
+          //        title="Info"
+          //        color="#ff1"
+          //      />
+          //     </View>
           <HeaderButtons HeaderButtonComponent={IoniconsHeaderButton}>
             <HeaderButton
-              title="ToDriver"
+              title="MessagesIcond"
               iconName="ios-cafe"
-              onPress={() => navigation.navigate("Driver")}
+              onPress={() => navigation.navigate("Main")}
             />
             <HeaderButton
               title="MessagesIcon"
@@ -140,6 +160,11 @@ export default createStackNavigator(
               onPress={() => navigation.push("MessageContacts")}
             />
           </HeaderButtons>
+          //     <View style = {styles.container}>
+          //     <Switch
+          //     onValueChange = {this.toggleSwitch1}
+          //     value = {props.switch1Value}/>
+          //  </View>
         ),
 
         // headerLeft: (
