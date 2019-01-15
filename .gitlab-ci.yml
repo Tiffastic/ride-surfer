@@ -12,3 +12,9 @@ format:
    - cd frontend
    - npm install
    - npm run checkFormat
+
+test:
+  script:
+   - cd frontend
+   - npm install
+   - npm run testOnce

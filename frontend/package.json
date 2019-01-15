@@ -8,19 +8,39 @@
     "ios": "expo start --ios",
     "eject": "expo eject",
     "test": "node ./node_modules/jest/bin/jest.js --watchAll",
+    "testOnce": "node ./node_modules/jest/bin/jest.js",
     "checkFormat": "node node_modules/prettier/bin-prettier.js -l '**/*.tsx' '**/*.ts' '**/*.js'"
   },
   "jest": {
-    "preset": "jest-expo"
+    "preset": "jest-expo",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js"
+    ],
+    "transform": {
+      "^.+\\.(js)$": "<rootDir>/node_modules/babel-jest",
+      "\\.(ts|tsx)$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
+    },
+    "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$",
+    "testPathIgnorePatterns": [
+      "\\.snap$",
+      "<rootDir>/node_modules/"
+    ],
+    "cacheDirectory": ".jest/cache"
   },
   "dependencies": {
     "@expo/samples": "2.1.1",
     "@types/expo": "^30.0.0",
-    "@types/react": "^16.7.3",
-    "@types/react-native": "^0.57.7",
+    "@types/jest": "^23.3.12",
+    "@types/react": "^16.7.18",
+    "@types/react-native": "^0.57.27",
     "@types/react-native-vector-icons": "^4.6.4",
     "@types/react-navigation": "^2.13.2",
+    "@types/react-test-renderer": "^16.0.3",
+    "babel-jest": "^23.6.0",
     "expo": "^31.0.2",
+    "jest": "^23.6.0",
     "prettier": "^1.15.3",
     "react": "16.5.0",
     "react-native": "https://github.com/expo/react-native/archive/sdk-31.0.0.tar.gz",
@@ -28,6 +48,7 @@
     "react-native-typescript-transformer": "^1.2.10",
     "react-navigation": "^2.18.2",
     "react-navigation-header-buttons": "^2.1.1",
+    "ts-jest": "^23.10.5",
     "typescript": "^3.1.6"
   },
   "devDependencies": {

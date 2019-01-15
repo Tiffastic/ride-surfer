@@ -8,16 +8,18 @@ import {
   ScrollView
 } from "react-native";
 
-import picThuy from "../assets/images/ThuyPic.png";
-import picSmiley from "../assets/images/cutesmiley.jpg";
-import picShaggy from "../assets/images/shaggy.jpg";
-import picDaphne from "../assets/images/daphne.jpg";
-import picFred from "../assets/images/fred.jpg";
-import picVelma from "../assets/images/velma.png";
-import picScooby from "../assets/images/scooby_doo.jpg";
-import picStGermain from "../assets/images/st_germain.png";
+const picThuy = require("../assets/images/ThuyPic.png");
+const picSmiley = require("../assets/images/cutesmiley.jpg");
+const picShaggy = require("../assets/images/shaggy.jpg");
+const picDaphne = require("../assets/images/daphne.jpg");
+const picFred = require("../assets/images/fred.jpg");
+const picVelma = require("../assets/images/velma.png");
+const picScooby = require("../assets/images/scooby_doo.jpg");
+const picStGermain = require("../assets/images/st_germain.png");
 
-export default class MessageContactsScreen extends React.Component {
+export default class MessageContactsScreen extends React.Component<{
+  navigation: any;
+}> {
   static navigationOptions = {
     title: "Contacts"
   };

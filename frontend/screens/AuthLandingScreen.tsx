@@ -5,10 +5,14 @@ import { createStackNavigator } from "react-navigation";
 import Styles from "../constants/Styles";
 import Colors from "../constants/Colors";
 
-export default class AuthLandingScreen extends React.Component<{
+interface AuthLandingScreenProps {
   navigation: any;
-}> {
-  constructor(props) {
+}
+
+export default class AuthLandingScreen extends React.Component<
+  AuthLandingScreenProps
+> {
+  constructor(props: AuthLandingScreenProps) {
     super(props);
     this._bootstrapAsync();
   }

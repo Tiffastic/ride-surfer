@@ -1,9 +1,11 @@
 import React from "react";
 import { Image, StyleSheet, View } from "react-native";
 
-import picMessageBubble from "../assets/images/MessageBubble5.png";
+const picMessageBubble = require("../assets/images/MessageBubble5.png");
 
-export default class MessageConversationsScreen extends React.Component {
+export default class MessageConversationsScreen extends React.Component<{
+  navigation: any;
+}> {
   static navigationOptions = {
     title: "Conversations"
   };

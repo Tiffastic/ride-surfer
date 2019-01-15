@@ -12,7 +12,8 @@ import {
 import Styles from "../constants/Styles";
 import Colors from "../constants/Colors";
 
-import Stars from "react-native-stars";
+// use `require` instead of `import` because there are no type definitions for this package
+const Stars = require("react-native-stars");
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 export default class RateDriverScreen extends React.Component<{

@@ -3,13 +3,17 @@ import { Platform, StatusBar, StyleSheet, View } from "react-native";
 import { AppLoading, Asset, Font } from "expo";
 import AppNavigator from "./navigation/AppNavigator";
 
-export default class App extends React.Component {
+interface AppProps {
+  skipLoadingScreen?: boolean;
+}
+
+export default class App extends React.Component<AppProps> {
   state = {
     isLoadingComplete: false
   };
 
-  props: {
-    skipLoadingScreen: boolean;
+  props = {
+    skipLoadingScreen: false
   };
 
   render() {

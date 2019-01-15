@@ -1,10 +1,12 @@
 import "react-native";
 import React from "react";
-import { MonoText } from "../StyledText";
+import NavigateButton from "../NavigateButton";
 import renderer from "react-test-renderer";
 
 it("renders correctly", () => {
-  const tree = renderer.create(<MonoText>Snapshot test!</MonoText>).toJSON();
+  const tree = renderer
+    .create(<NavigateButton dest="Salt Lake City, UT" />)
+    .toJSON();
 
   expect(tree).toMatchSnapshot();
 });
