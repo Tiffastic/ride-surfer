@@ -8,7 +8,9 @@ import {
   StyleSheet,
   Text,
   Button,
-  View
+  View,
+  Alert,
+  Dimensions
 } from "react-native";
 import { createStackNavigator } from "react-navigation";
 
@@ -24,76 +26,198 @@ import MessageConversationsScreen from "../screens/MessageConversationsScreen";
 import RideInProgressScreen from "./RideInProgressScreen";
 import RateDriverScreen from "./RateDriverScreen";
 
-const dummyAutofill = [
-  {
-    key: "home",
-    name: "Home",
-    address: "2011 1100 E, Salt Lake City, UT 84106",
-    preview: require("../assets/images/h-s-preview.png")
-  },
-  {
-    key: "work",
-    name: "Work",
-    address: "295 1500 E, Salt Lake City, UT 84112",
-    preview: require("../assets/images/h-l-preview.png")
-  },
-  {
-    key: "class",
-    name: "Warnock Engineering Building",
-    address: "72 Central Campus Dr, Salt Lake City, UT 84112",
-    preview: require("../assets/images/h-w-preview.png")
-  }
-];
+import { Permissions, Location } from "expo";
+import MapView, { Marker } from "react-native-maps";
 
-class AddressPicker extends React.Component<{ navigation: any }> {
-  // static navigationOptions = {
-  //   title: 'Ride Surfer', // can be overidden from inside the stack
-  // };
-  state = {
-    text: ""
+const { width, height } = Dimensions.get("window");
+
+const ASPECT_RATIO = width / height;
+const LATITUDE = 37.78825;
+const LONGITUDE = -122.4324;
+const LATITUDE_DELTA = 0.0922;
+const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
+
+type state = {
+  isLoading: boolean;
+  startLocationInput: string;
+  startLocation: { latitude: number; longitude: number };
+  destinationLocationInput: string;
+  destinationLocation: { latitude: number; longitude: number };
+  markers: Array<{ latitude: number; longitude: number }>;
+  errorMessage: string;
+};
+
+class AddressPicker extends React.Component<{ navigation: any }, state> {
+  constructor(props: any) {
+    super(props);
+
+    this.state = {
+      isLoading: true,
+      startLocationInput: "",
+      startLocation: { latitude: LATITUDE, longitude: LONGITUDE },
+      destinationLocationInput: "",
+      destinationLocation: { latitude: LATITUDE, longitude: LONGITUDE },
+      markers: [{ latitude: LATITUDE, longitude: LONGITUDE }],
+      errorMessage: ""
+    };
+
+    this.onMapPress = this.onMapPress.bind(this);
+  }
+
+  onMapPress(e: any) {
+    let coords = {
+      latitude: e.nativeEvent.coordinate.latitude,
+      longitude: e.nativeEvent.coordinate.longitude
+    };
+    this.setState({ destinationLocation: coords });
+  }
+
+  search = async () => {
+    let { status } = await Permissions.getAsync(Permissions.LOCATION);
+    if (status !== "granted") {
+      this.setState({
+        errorMessage: "Permission to access location was denied"
+      });
+    } else {
+      if (this.state.startLocationInput !== "Current Location") {
+        Location.geocodeAsync(this.state.startLocationInput)
+          .then(response => {
+            if (response.length > 0) {
+              let coords = {
+                latitude: response[0].latitude,
+                longitude: response[0].longitude
+              };
+              this.setState({ startLocation: coords });
+            }
+          })
+          .then(() => {
+            if (this.state.destinationLocationInput !== "Current Location") {
+              Location.geocodeAsync(this.state.destinationLocationInput).then(
+                response => {
+                  if (response.length > 0) {
+                    let coords = {
+                      latitude: response[0].latitude,
+                      longitude: response[0].longitude
+                    };
+                    this.setState({ destinationLocation: coords });
+                  }
+                }
+              );
+            }
+          })
+          .then(() => {
+            this.fetchMarkerData();
+          });
+      }
+    }
   };
 
-  _onPress(item: any) {
-    this.setState({ text: "" });
-    this.props.navigation.push("DriverPicker", { address: item });
+  componentDidMount() {
+    this.fetchMarkerData();
+  }
+
+  fetchMarkerData() {
+    this.setState({
+      markers: [this.state.startLocation, this.state.destinationLocation],
+      isLoading: false
+    });
   }
 
   render() {
     return (
       <View style={styles.container}>
-        <ImageBackground
-          source={require("./../assets/images/map.jpg")}
-          style={{ width: "100%", height: "100%" }}
-        >
+        <View style={{ flexDirection: "row" }}>
+          <HeaderButtons HeaderButtonComponent={IoniconsHeaderButton}>
+            <HeaderButton
+              title="MessagesIcon"
+              iconName="ios-locate"
+              iconSize={20}
+              onPress={() =>
+                navigator.geolocation.getCurrentPosition(
+                  position => {
+                    this.setState({
+                      startLocation: position.coords,
+                      startLocationInput: "Current Location"
+                    });
+                  },
+                  error => Alert.alert(error.message),
+                  { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
+                )
+              }
+            />
+          </HeaderButtons>
+          <TextInput
+            placeholder="Starting location?"
+            style={styles.queryBox}
+            value={this.state.startLocationInput}
+            onChangeText={text => this.setState({ startLocationInput: text })}
+          />
+        </View>
+        <View style={{ flexDirection: "row" }}>
+          <HeaderButtons HeaderButtonComponent={IoniconsHeaderButton}>
+            <HeaderButton
+              title="MessagesIcon"
+              iconName="ios-locate"
+              iconSize={20}
+              onPress={() =>
+                navigator.geolocation.getCurrentPosition(
+                  position => {
+                    this.setState({
+                      destinationLocation: position.coords,
+                      destinationLocationInput: "Current Location"
+                    });
+                  },
+                  error => Alert.alert(error.message),
+                  { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
+                )
+              }
+            />
+          </HeaderButtons>
           <TextInput
             placeholder="Where to?"
             style={styles.queryBox}
-            value={this.state.text}
-            onChangeText={text => this.setState({ text })}
+            value={this.state.destinationLocationInput}
+            onChangeText={text =>
+              this.setState({ destinationLocationInput: text })
+            }
           />
-
-          {this.state.text !== "" && (
-            <FlatList
-              style={styles.searchResultsList}
-              data={dummyAutofill}
-              renderItem={({ item, separators }) => (
-                <TouchableHighlight
-                  style={styles.searchResultsItem}
-                  onPress={() => this._onPress(item)}
-                  onShowUnderlay={separators.highlight}
-                  onHideUnderlay={separators.unhighlight}
-                >
-                  <View>
-                    <Text style={styles.searchResultsName}>{item.name}</Text>
-                    <Text style={styles.searchResultsAddress}>
-                      {item.address}
-                    </Text>
-                  </View>
-                </TouchableHighlight>
-              )}
+        </View>
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <View>
+            <Button title="Search" onPress={this.search} />
+          </View>
+          <View>
+            <Button
+              title="Confirm"
+              onPress={() =>
+                this.props.navigation.push("DriverPicker", {
+                  address: this.state.destinationLocation
+                })
+              }
             />
-          )}
-        </ImageBackground>
+          </View>
+        </View>
+        <MapView
+          style={{ flex: 1 }}
+          provider="google"
+          region={{
+            latitude: this.state.destinationLocation.latitude,
+            longitude: this.state.destinationLocation.longitude,
+            latitudeDelta: LATITUDE_DELTA,
+            longitudeDelta: LONGITUDE_DELTA
+          }}
+          onPress={this.onMapPress}
+        >
+          {this.state.isLoading
+            ? null
+            : this.state.markers.map((marker, index) => {
+                const coords = {
+                  latitude: marker.latitude,
+                  longitude: marker.longitude
+                };
+                return <Marker key={index} coordinate={coords} />;
+              })}
+        </MapView>
       </View>
     );
   }
