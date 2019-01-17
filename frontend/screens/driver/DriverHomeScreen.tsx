@@ -1,12 +1,7 @@
 import * as React from "react";
 import {
-  FlatList,
   TextInput,
-  TouchableHighlight,
-  Image,
-  ImageBackground,
   StyleSheet,
-  Text,
   Button,
   View,
   Alert,
@@ -17,14 +12,6 @@ import { createStackNavigator } from "react-navigation";
 import Colors from "../../constants/Colors";
 import HeaderButtons, { HeaderButton } from "react-navigation-header-buttons";
 import Ionicons from "react-native-vector-icons/Ionicons";
-
-import DriverPickerScreen from "./DriverPickerScreen";
-import DriverDetailsScreen from "./DriverDetailsScreen";
-import ProfileScreen from "./ProfileScreen";
-import MessageContactsScreen from "./MessageContactsScreen";
-import MessageConversationsScreen from "./MessageConversationsScreen";
-import RideInProgressScreen from "./RideInProgressScreen";
-import RateDriverScreen from "./RateDriverScreen";
 
 import { Permissions, Location } from "expo";
 import MapView, { Marker } from "react-native-maps";
@@ -182,6 +169,16 @@ class AddressPicker extends React.Component<{ navigation: any }, state> {
             }
           />
         </View>
+        <View style={{ flexDirection: "row" }}>
+          <TextInput
+            placeholder="Arrive Time"
+            style={styles.queryBox}
+            value={this.state.destinationLocationInput}
+            onChangeText={text =>
+              this.setState({ destinationLocationInput: text })
+            }
+          />
+        </View>
         <View style={{ flexDirection: "row", alignItems: "center" }}>
           <View>
             <Button title="Search" onPress={this.search} />
@@ -250,13 +247,13 @@ export default createStackNavigator(
     AddressPicker: {
       screen: AddressPicker,
       navigationOptions: ({ navigation }: { navigation: any }) => ({
-        title: `Ride Surfer`,
+        title: `Driver Ride Surfer`,
         headerRight: (
           <HeaderButtons HeaderButtonComponent={IoniconsHeaderButton}>
             <HeaderButton
-              title="OneDayASwitch"
+              title="OneDayASwithAlso"
               iconName="ios-cafe"
-              onPress={() => navigation.navigate("DriverMain")}
+              onPress={() => navigation.navigate("Main")}
             />
             <HeaderButton
               title="MessagesIcon"
@@ -291,18 +288,10 @@ export default createStackNavigator(
           flex: 1
         }
       })
-    },
-    ProfileScreen: ProfileScreen,
-    DriverPicker: DriverPickerScreen,
-    DriverDetails: DriverDetailsScreen,
-    MessageContacts: MessageContactsScreen,
-    MessageConversations: MessageConversationsScreen,
-    RideInProgress: RideInProgressScreen,
-    RateDriver: RateDriverScreen
+    }
   },
   {
     //StackNavigatorConfig (Changes the bar itself and not the items inside it)
-
     initialRouteName: "AddressPicker",
     // headerMode: 'none',
     navigationOptions: {
