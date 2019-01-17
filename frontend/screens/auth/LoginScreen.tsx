@@ -10,8 +10,8 @@ import {
   AsyncStorage
 } from "react-native";
 
-import Colors from "../constants/Colors";
-import Styles from "../constants/Styles";
+import Colors from "../../constants/Colors";
+import Styles from "../../constants/Styles";
 
 export default class LoginScreen extends React.Component<{ navigation: any }> {
   static navigationOptions = {

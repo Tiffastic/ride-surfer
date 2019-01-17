@@ -9,7 +9,7 @@ import {
   View
 } from "react-native";
 
-import Colors from "../constants/Colors";
+import Colors from "../../constants/Colors";
 
 export default class DriverDetailsScreen extends React.Component<{
   navigation: any;

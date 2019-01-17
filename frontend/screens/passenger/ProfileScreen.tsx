@@ -9,7 +9,7 @@ import {
   AsyncStorage
 } from "react-native";
 
-import Colors from "../constants/Colors";
+import Colors from "../../constants/Colors";
 
 export default class ProfileScreen extends React.Component<{
   navigation: any;
@@ -55,7 +55,7 @@ export default class ProfileScreen extends React.Component<{
         <Image
           style={{ flex: 1, width: undefined, height: undefined }}
           resizeMode="center"
-          source={require("./../assets/images/default-profile.png")}
+          source={require("../../assets/images/default-profile.png")}
         />
         <View style={{ flex: 1, alignItems: "center" }}>
           <Text style={{ fontSize: 25, margin: 10 }}>{name}</Text>

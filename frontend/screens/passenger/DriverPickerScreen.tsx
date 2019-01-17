@@ -11,16 +11,16 @@ import {
 } from "react-native";
 import { ListRenderItem } from "react-native";
 
-import Styles from "../constants/Styles";
+import Styles from "../../constants/Styles";
 
 const dummyDrivers = [
   {
     key: "shaggy",
     name: "Shaggy",
     rating: 4.2,
-    home: require("./../assets/images/h-s1.png"),
-    class: require("./../assets/images/h-l1.png"),
-    work: require("./../assets/images/h-w1.png"),
+    home: require("../../assets/images/h-s1.png"),
+    class: require("../../assets/images/h-l1.png"),
+    work: require("../../assets/images/h-w1.png"),
     homeDirs: [
       {
         key: "1",
@@ -51,15 +51,15 @@ const dummyDrivers = [
       { key: "2", time: "15 mins", desc: "Drive to 70 Central Campus Drive" },
       { key: "3", time: "2 mins", desc: "Walk to 72 Central Campus Dr" }
     ],
-    profilePic: require("../assets/images/shaggy.jpg")
+    profilePic: require("../../assets/images/shaggy.jpg")
   },
   {
     key: "fred",
     name: "Fred",
     rating: 3.4,
-    home: require("./../assets/images/h-s2.png"),
-    class: require("./../assets/images/h-l2.png"),
-    work: require("./../assets/images/h-w2.png"),
+    home: require("../../assets/images/h-s2.png"),
+    class: require("../../assets/images/h-l2.png"),
+    work: require("../../assets/images/h-w2.png"),
     homeDirs: [
       {
         key: "1",
@@ -90,15 +90,15 @@ const dummyDrivers = [
       { key: "2", time: "15 mins", desc: "Drive to 70 Central Campus Drive" },
       { key: "3", time: "2 mins", desc: "Walk to 72 Central Campus Dr" }
     ],
-    profilePic: require("../assets/images/fred.jpg")
+    profilePic: require("../../assets/images/fred.jpg")
   },
   {
     key: "daphne",
     name: "Daphne",
     rating: 4.8,
-    home: require("./../assets/images/h-s3.png"),
-    class: require("./../assets/images/h-l3.png"),
-    work: require("./../assets/images/h-w3.png"),
+    home: require("../../assets/images/h-s3.png"),
+    class: require("../../assets/images/h-l3.png"),
+    work: require("../../assets/images/h-w3.png"),
     homeDirs: [
       {
         key: "1",
@@ -129,7 +129,7 @@ const dummyDrivers = [
       { key: "2", time: "15 mins", desc: "Drive to 70 Central Campus Drive" },
       { key: "3", time: "2 mins", desc: "Walk to 72 Central Campus Dr" }
     ],
-    profilePic: require("../assets/images/daphne.jpg")
+    profilePic: require("../../assets/images/daphne.jpg")
   }
 ];
 

@@ -14,15 +14,15 @@ import {
 } from "react-native";
 import { createStackNavigator } from "react-navigation";
 
-import Colors from "../constants/Colors";
+import Colors from "../../constants/Colors";
 import HeaderButtons, { HeaderButton } from "react-navigation-header-buttons";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
 import DriverPickerScreen from "./DriverPickerScreen";
 import DriverDetailsScreen from "./DriverDetailsScreen";
-import ProfileScreen from "../screens/ProfileScreen";
-import MessageContactsScreen from "../screens/MessageContactsScreen";
-import MessageConversationsScreen from "../screens/MessageConversationsScreen";
+import ProfileScreen from "./ProfileScreen";
+import MessageContactsScreen from "./MessageContactsScreen";
+import MessageConversationsScreen from "./MessageConversationsScreen";
 import RideInProgressScreen from "./RideInProgressScreen";
 import RateDriverScreen from "./RateDriverScreen";
 

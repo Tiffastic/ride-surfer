@@ -1,7 +1,7 @@
 import * as React from "react";
 import { createSwitchNavigator } from "react-navigation"; // ver 3 has and we need, createAppContainer
 import AuthStack from "./AuthStack";
-import HomeScreen from "../screens/HomeScreen";
+import HomeScreen from "../screens/passenger/HomeScreen";
 
 export default createSwitchNavigator(
   {

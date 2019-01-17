@@ -9,8 +9,8 @@ import {
   View
 } from "react-native";
 
-import Colors from "../constants/Colors";
-import Styles from "../constants/Styles";
+import Colors from "../../constants/Colors";
+import Styles from "../../constants/Styles";
 
 export default class SignupScreen extends React.Component<{ navigation: any }> {
   static navigationOptions = {

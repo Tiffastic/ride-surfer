@@ -9,8 +9,8 @@ import {
   ScrollView
 } from "react-native";
 
-import Styles from "../constants/Styles";
-import Colors from "../constants/Colors";
+import Styles from "../../constants/Styles";
+import Colors from "../../constants/Colors";
 
 // use `require` instead of `import` because there are no type definitions for this package
 const Stars = require("react-native-stars").default;

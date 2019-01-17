@@ -2,8 +2,8 @@ import React from "react";
 import { StyleSheet, View, Button, Text, AsyncStorage } from "react-native";
 import { createStackNavigator } from "react-navigation";
 
-import Styles from "../constants/Styles";
-import Colors from "../constants/Colors";
+import Styles from "../../constants/Styles";
+import Colors from "../../constants/Colors";
 
 interface AuthLandingScreenProps {
   navigation: any;

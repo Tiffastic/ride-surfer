@@ -8,14 +8,14 @@ import {
   ScrollView
 } from "react-native";
 
-const picThuy = require("../assets/images/ThuyPic.png");
-const picSmiley = require("../assets/images/cutesmiley.jpg");
-const picShaggy = require("../assets/images/shaggy.jpg");
-const picDaphne = require("../assets/images/daphne.jpg");
-const picFred = require("../assets/images/fred.jpg");
-const picVelma = require("../assets/images/velma.png");
-const picScooby = require("../assets/images/scooby_doo.jpg");
-const picStGermain = require("../assets/images/st_germain.png");
+const picThuy = require("../../assets/images/ThuyPic.png");
+const picSmiley = require("../../assets/images/cutesmiley.jpg");
+const picShaggy = require("../../assets/images/shaggy.jpg");
+const picDaphne = require("../../assets/images/daphne.jpg");
+const picFred = require("../../assets/images/fred.jpg");
+const picVelma = require("../../assets/images/velma.png");
+const picScooby = require("../../assets/images/scooby_doo.jpg");
+const picStGermain = require("../../assets/images/st_germain.png");
 
 export default class MessageContactsScreen extends React.Component<{
   navigation: any;

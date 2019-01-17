@@ -9,10 +9,10 @@ import {
   View
 } from "react-native";
 
-import NavigateButton from "../components/NavigateButton";
+import NavigateButton from "../../components/NavigateButton";
 
-import Colors from "../constants/Colors";
-import Styles from "../constants/Styles";
+import Colors from "../../constants/Colors";
+import Styles from "../../constants/Styles";
 
 export default class RideInProgressScreen extends React.Component<{
   navigation: any;
