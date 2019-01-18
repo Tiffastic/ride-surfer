@@ -12,6 +12,10 @@ import { createStackNavigator } from "react-navigation";
 import Colors from "../../constants/Colors";
 import HeaderButtons, { HeaderButton } from "react-navigation-header-buttons";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import ProfileScreen from "../passenger/ProfileScreen";
+import MessageContactsScreen from "../passenger/MessageContactsScreen";
+import MessageConversationsScreen from "../passenger/MessageConversationsScreen";
+import PassengerPickerScreen from "./PassengerPickerScreen";
 
 import { Permissions, Location } from "expo";
 import MapView, { Marker } from "react-native-maps";
@@ -187,7 +191,7 @@ class AddressPicker extends React.Component<{ navigation: any }, state> {
             <Button
               title="Confirm"
               onPress={() =>
-                this.props.navigation.push("DriverPicker", {
+                this.props.navigation.push("PassengerPicker", {
                   address: this.state.destinationLocation
                 })
               }
@@ -243,7 +247,6 @@ const IoniconsHeaderButton = (passMeFurther: any) => (
 export default createStackNavigator(
   {
     //RouteConfigs
-
     AddressPicker: {
       screen: AddressPicker,
       navigationOptions: ({ navigation }: { navigation: any }) => ({
@@ -262,16 +265,6 @@ export default createStackNavigator(
             />
           </HeaderButtons>
         ),
-
-        // headerLeft: (
-        //   <View style={{ width: 90 }}>
-        //     <Button
-        //       onPress={() => navigation.push('ProfileScreen')}
-        //       title="Profile"
-        //       color={Colors.primary}
-        //     />
-        //   </View>
-        // ),
         headerLeft: (
           <HeaderButtons HeaderButtonComponent={IoniconsHeaderButton}>
             <HeaderButton
@@ -288,8 +281,14 @@ export default createStackNavigator(
           flex: 1
         }
       })
-    }
+    },
+
+    ProfileScreen: ProfileScreen,
+    MessageContacts: MessageContactsScreen,
+    MessageConversations: MessageConversationsScreen,
+    PassengerPicker: PassengerPickerScreen
   },
+
   {
     //StackNavigatorConfig (Changes the bar itself and not the items inside it)
     initialRouteName: "AddressPicker",
