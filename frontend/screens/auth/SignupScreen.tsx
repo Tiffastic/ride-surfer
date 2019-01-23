@@ -59,13 +59,11 @@ export default class SignupScreen extends React.Component<{ navigation: any }> {
           onChangeText={data => this.setState({ email: data })}
         />
 
-        {/* TODO: this needs to hide what the user types in */}
         <TextInput
           style={Styles.textInput}
           placeholder="Password"
           secureTextEntry={true}
-          onChangeText={data => this.setState({ password: data })
-        }
+          onChangeText={data => this.setState({ password: data })}
         />
 
         <TextInput
@@ -103,7 +101,7 @@ export default class SignupScreen extends React.Component<{ navigation: any }> {
   }
 
   private _register = async () => {
-    return fetch("http://ride-surfer.herokuapp.com/users/", {
+    return fetch("https://ride-surfer.herokuapp.com/users/", {
       method: "POST",
       headers: {
         Accept: "application/json",
