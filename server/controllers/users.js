@@ -42,8 +42,7 @@ module.exports = {
   retrieveByLoginInfo(req, res) {
     return User.find({
       where: {
-        email: req.body.email,
-        password: req.body.password
+        email: req.body.email
       }
     })
       .then(user => {
