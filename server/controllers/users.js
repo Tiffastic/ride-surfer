@@ -5,7 +5,7 @@ module.exports = {
   create(req, res) {
     // TODO bcrypt here and then store
     var salt = bcrypt.genSaltSync(10);
-    var hash = bcrypt.hashSync(req.body.password, salt);
+    var hash = bcrypt.hashSync(req.body.password.toString(), salt);
     req.body.password = hash;
     // Store hash in your password DB.
     return User.create(req.body, { fields: Object.keys(req.body) })
