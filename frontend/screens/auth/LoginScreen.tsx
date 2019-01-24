@@ -69,7 +69,7 @@ export default class LoginScreen extends React.Component<{ navigation: any }> {
   }
 
   private _logIn = async () => {
-    return fetch("http://ride-surfer.herokuapp.com/users/login/", {
+    return fetch("https://ride-surfer.herokuapp.com/users/login/", {
       method: "POST",
       headers: {
         Accept: "application/json",
