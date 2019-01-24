@@ -10,18 +10,19 @@ import {
 } from "react-native";
 
 import Colors from "../../constants/Colors";
+import { number, string } from "prop-types";
 
 export default class DriverDetailsScreen extends React.Component<{
   navigation: any;
 }> {
   state = {
-    address: this.props.navigation.getParam("address", {
-      key: "",
-      name: "Not Found",
-      address: "-"
+    destination: this.props.navigation.getParam("destination", {
+      description: string,
+      latitude: number,
+      longitude: number
     }),
     driver: this.props.navigation.getParam("driver", {
-      name: "Not Found",
+      name: "Home",
       home: "",
       class: "",
       work: ""
@@ -31,14 +32,6 @@ export default class DriverDetailsScreen extends React.Component<{
   render() {
     let image = this.state.driver.home;
     let dirs = this.state.driver.homeDirs;
-    if (this.state.address.key == "work") {
-      image = this.state.driver.work;
-      dirs = this.state.driver.workDirs;
-    } else if (this.state.address.key == "class") {
-      image = this.state.driver.class;
-      dirs = this.state.driver.classDirs;
-    }
-
     return (
       <View style={styles.container}>
         <Image
@@ -52,7 +45,7 @@ export default class DriverDetailsScreen extends React.Component<{
           </Text>
 
           <Text style={{ fontSize: 15, marginLeft: 5 }}>
-            Directions to {this.state.address.name}
+            Directions to {this.state.destination.name}
           </Text>
           <FlatList
             data={dirs}
@@ -82,7 +75,7 @@ export default class DriverDetailsScreen extends React.Component<{
 
   onRequest = () => {
     this.props.navigation.navigate("RideInProgress", {
-      address: this.state.address,
+      destination: this.state.destination,
       driver: this.state.driver
     });
   };

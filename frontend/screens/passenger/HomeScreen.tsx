@@ -23,8 +23,9 @@ import DriverDetailsScreen from "./DriverDetailsScreen";
 import ProfileScreen from "./ProfileScreen";
 import MessageContactsScreen from "./MessageContactsScreen";
 import MessageConversationsScreen from "./MessageConversationsScreen";
-import RideInProgressScreen from "./RideInProgressScreen";
+import StartRideScreen from "./StartRideScreen";
 import RateDriverScreen from "./RateDriverScreen";
+import RideInProgressScreen from "./RideInProgress";
 
 import { Permissions, Location } from "expo";
 import MapView, { Marker } from "react-native-maps";
@@ -189,11 +190,17 @@ class AddressPicker extends React.Component<{ navigation: any }, state> {
           <View>
             <Button
               title="Confirm"
-              onPress={() =>
+              onPress={() => {
+                let destination = {
+                  description: this.state.destinationLocationInput,
+                  latitude: this.state.destinationLocation.latitude,
+                  longitude: this.state.destinationLocation.longitude
+                };
+                console.log(destination);
                 this.props.navigation.push("DriverPicker", {
-                  address: this.state.destinationLocation
-                })
-              }
+                  destination: destination
+                });
+              }}
             />
           </View>
         </View>
@@ -297,6 +304,7 @@ export default createStackNavigator(
     DriverDetails: DriverDetailsScreen,
     MessageContacts: MessageContactsScreen,
     MessageConversations: MessageConversationsScreen,
+    StartRide: StartRideScreen,
     RideInProgress: RideInProgressScreen,
     RateDriver: RateDriverScreen
   },

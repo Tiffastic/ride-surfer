@@ -14,14 +14,12 @@ import NavigateButton from "../../components/NavigateButton";
 import Colors from "../../constants/Colors";
 import Styles from "../../constants/Styles";
 
-export default class RideInProgressScreen extends React.Component<{
+export default class StartRideScreen extends React.Component<{
   navigation: any;
 }> {
   state = {
-    address: this.props.navigation.getParam("address", {
-      key: "",
-      name: "Not Found",
-      address: "-"
+    destination: this.props.navigation.getParam("destination", {
+      description: "Not Found"
     }),
     driver: this.props.navigation.getParam("driver", {
       name: "Not Found",
@@ -34,13 +32,6 @@ export default class RideInProgressScreen extends React.Component<{
   render() {
     let image = this.state.driver.home;
     let dirs = this.state.driver.homeDirs;
-    if (this.state.address.key == "work") {
-      image = this.state.driver.work;
-      dirs = this.state.driver.workDirs;
-    } else if (this.state.address.key == "class") {
-      image = this.state.driver.class;
-      dirs = this.state.driver.classDirs;
-    }
 
     return (
       <View style={styles.container}>
@@ -55,7 +46,7 @@ export default class RideInProgressScreen extends React.Component<{
           </Text>
 
           <Text style={{ fontSize: 15, marginLeft: 5 }}>
-            Directions to {this.state.address.name}
+            Directions to {this.state.destination.description}
           </Text>
           <FlatList
             data={dirs}
@@ -74,14 +65,13 @@ export default class RideInProgressScreen extends React.Component<{
             )}
           />
 
-          <NavigateButton dest={dirs[0].addr} />
-
           <View style={Styles.buttonView}>
             <Button
-              title="Finish"
+              title="Start"
               onPress={() =>
-                this.props.navigation.navigate("RateDriver", {
-                  driver: this.state.driver
+                this.props.navigation.navigate("RideInProgress", {
+                  driver: this.state.driver,
+                  destination: this.state.destination
                 })
               }
               color={Colors.darkAccent}

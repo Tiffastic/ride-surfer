@@ -12,6 +12,7 @@ import {
 import { ListRenderItem } from "react-native";
 
 import Styles from "../../constants/Styles";
+import { number, string } from "prop-types";
 
 const dummyDrivers = [
   {
@@ -137,21 +138,22 @@ export default class DriverPickerScreen extends React.Component<{
   navigation: any;
 }> {
   state = {
-    address: this.props.navigation.getParam("address", {
-      name: "Not Found",
-      address: "-"
+    destination: this.props.navigation.getParam("destination", {
+      description: string,
+      latitude: number,
+      lontitude: number
     })
   };
 
   private chooseDriver = (item: any) => {
     this.props.navigation.push("DriverDetails", {
-      address: this.state.address,
+      destination: this.state.destination,
       driver: item
     });
   };
 
   render() {
-    let image = this.state.address.preview;
+    let image = this.state.destination.preview;
 
     return (
       <View style={styles.container}>
