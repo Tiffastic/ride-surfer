@@ -3,7 +3,7 @@ const User = require("../models").User;
 module.exports = {
   create(req, res) {
     // TODO bcrypt here and then store
-    var bcrypt = require("bcryptjs");
+    var bcrypt = require("react-native-bcrypt");
     var salt = bcrypt.genSaltSync(10);
     var hash = bcrypt.hashSync(req.body.password, salt);
     req.body.password = hash;
@@ -40,6 +40,8 @@ module.exports = {
   },
 
   retrieveByLoginInfo(req, res) {
+    var bcrypt = require("react-native-bcrypt");
+
     return User.find({
       where: {
         email: req.body.email
