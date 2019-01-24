@@ -53,6 +53,7 @@ export default class LoginScreen extends React.Component<{ navigation: any }> {
             <TextInput
               placeholder="Password"
               style={Styles.textInput}
+              secureTextEntry={true}
               onChangeText={password => this.setState({ password })}
             />
           </View>
