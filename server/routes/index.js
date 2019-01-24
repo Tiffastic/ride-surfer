@@ -1,6 +1,7 @@
 const usersController = require("../controllers").users;
 const journeysController = require("../controllers").journeys;
 const tracesController = require("../controllers").traces;
+const RateRide = require("../models").RateRides;
 
 module.exports = app => {
   app.get("/api", (req, res) =>
@@ -28,4 +29,10 @@ module.exports = app => {
 
   app.get("traces/:id", tracesController.retrieve);
   app.post("/traces", tracesController.create);
+  const RateRide = require("../models").RateRides;
+  app.post("/rateride", (req, res, next) => {
+    RateRide.create(req.body, { fields: Object.keys(req.body) })
+      .then(rating => res.status(201).json(rating))
+      .catch(error => res.status(400).json(error));
+  });
 };

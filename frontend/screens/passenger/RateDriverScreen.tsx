@@ -12,9 +12,8 @@ import {
 import Styles from "../../constants/Styles";
 import Colors from "../../constants/Colors";
 
-// use `require` instead of `import` because there are no type definitions for this package
-const Stars = require("react-native-stars").default;
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+//import StarRating from "react-native-star-rating";
+const StarRating = require("react-native-star-rating").default;
 
 export default class RateDriverScreen extends React.Component<{
   navigation: any;
@@ -29,8 +28,43 @@ export default class RateDriverScreen extends React.Component<{
       home: "",
       class: "",
       work: ""
-    })
+    }),
+    cleanlinessStar: 5,
+    timelinessStar: 5,
+    safetyStar: 5,
+    overallStar: 5,
+    rideComments: ""
   };
+
+  onCleanlinessStarPress(rating: number) {
+    this.setState({
+      cleanlinessStar: rating
+    });
+  }
+
+  onTimelinessStarPress(rating: number) {
+    this.setState({
+      timelinessStar: rating
+    });
+  }
+
+  onSafetyStarPress(rating: number) {
+    this.setState({
+      safetyStar: rating
+    });
+  }
+
+  onOverallStarPress(rating: number) {
+    this.setState({
+      overallStar: rating
+    });
+  }
+
+  onUpdateComments(comments: string) {
+    this.setState({
+      rideComments: comments
+    });
+  }
 
   render() {
     return (
@@ -46,23 +80,47 @@ export default class RateDriverScreen extends React.Component<{
           />
         </View>
 
-        <Text style={{ fontSize: 20, paddingBottom: 10 }}>Rate Your Ride</Text>
+        <Text style={{ fontSize: 25, paddingBottom: 20 }}>Rate Your Ride</Text>
 
-        <View>
-          <Stars
-            rating={2.5}
-            count={5}
-            half={true}
-            fullStar={<Icon name={"star"} style={[styles.myStarStyle]} />}
-            emptyStar={
-              <Icon
-                name={"star-outline"}
-                style={[styles.myStarStyle, styles.myEmptyStarStyle]}
-              />
-            }
-            halfStar={<Icon name={"star"} style={[styles.myStarStyle]} />}
-          />
-        </View>
+        <Text style={{ fontSize: 15, paddingBottom: 10 }}>Cleanliness</Text>
+        <StarRating
+          disabled={false}
+          maxStars={5}
+          fullStarColor={"gold"}
+          starSize={45}
+          rating={this.state.cleanlinessStar}
+          selectedStar={(rating: number) => this.onCleanlinessStarPress(rating)}
+        />
+
+        <Text style={{ fontSize: 15, paddingBottom: 10 }}>Timeliness</Text>
+        <StarRating
+          disabled={false}
+          maxStars={5}
+          fullStarColor={"gold"}
+          starSize={45}
+          rating={this.state.timelinessStar}
+          selectedStar={(rating: number) => this.onTimelinessStarPress(rating)}
+        />
+
+        <Text style={{ fontSize: 15, paddingBottom: 10 }}>Safety</Text>
+        <StarRating
+          disabled={false}
+          maxStars={5}
+          fullStarColor={"gold"}
+          starSize={45}
+          rating={this.state.safetyStar}
+          selectedStar={(rating: number) => this.onSafetyStarPress(rating)}
+        />
+
+        <Text style={{ fontSize: 15, paddingBottom: 10 }}>Overall</Text>
+        <StarRating
+          disabled={false}
+          maxStars={5}
+          fullStarColor={"gold"}
+          starSize={45}
+          rating={this.state.overallStar}
+          selectedStar={(rating: number) => this.onOverallStarPress(rating)}
+        />
 
         <View style={{ marginTop: 25 }}>
           <TextInput
@@ -77,6 +135,7 @@ export default class RateDriverScreen extends React.Component<{
               paddingHorizontal: 10,
               backgroundColor: "white"
             }}
+            onChangeText={text => this.onUpdateComments(text)}
           />
         </View>
 
@@ -84,32 +143,40 @@ export default class RateDriverScreen extends React.Component<{
           <Button
             title="Rate"
             color={Colors.primary}
-            onPress={this._handleHelpPress}
+            onPress={this._submitRatings}
           />
         </View>
       </ScrollView>
     );
   }
 
-  _handleHelpPress = () => {
-    this.props.navigation.popToTop();
+  _submitRatings = () => {
+    return fetch("http://ride-surfer.herokuapp.com/rateride", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        personRatingId: 1,
+        personRatedId: 3,
+        rideId: 3,
+        cleanliness: this.state.cleanlinessStar,
+        timeliness: this.state.timelinessStar,
+        safety: this.state.safetyStar,
+        overall: this.state.overallStar,
+        comments: this.state.rideComments
+      })
+    })
+      .then(response => console.log(response))
+      .then(this.props.navigation.popToTop())
+      .catch(error => {
+        console.log(error);
+      });
   };
 }
 
 const styles = StyleSheet.create({
-  myStarStyle: {
-    color: "yellow",
-    backgroundColor: "transparent",
-    textShadowColor: "black",
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 2,
-    fontSize: 50
-  },
-
-  myEmptyStarStyle: {
-    color: "white"
-  },
-
   container: {
     flex: 1,
     alignItems: "center",
