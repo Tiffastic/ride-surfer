@@ -59,6 +59,7 @@ export default class SignupScreen extends React.Component<{ navigation: any }> {
           onChangeText={data => this.setState({ email: data })}
         />
 
+        {/* TODO: this needs to hide what the user types in */}
         <TextInput
           style={Styles.textInput}
           placeholder="Password"
@@ -108,14 +109,14 @@ export default class SignupScreen extends React.Component<{ navigation: any }> {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        first_name: this.state.first_name,
-        last_name: this.state.last_name,
+        firstName: this.state.first_name,
+        lastName: this.state.last_name,
         email: this.state.email,
         password: this.state.password,
-        car_plate: this.state.car_plate,
-        car_make: this.state.car_make,
-        car_model: this.state.car_model,
-        car_year: this.state.car_year
+        carPlate: this.state.car_plate,
+        carMake: this.state.car_make,
+        carModel: this.state.car_model,
+        carYear: this.state.car_year
       })
     })
       .then(response => response.json())
@@ -137,7 +138,7 @@ export default class SignupScreen extends React.Component<{ navigation: any }> {
   private _saveUserAsync = async (userDetails: any) => {
     const jsonString = JSON.stringify(userDetails);
     await AsyncStorage.setItem("userDetails", jsonString);
-    this.props.navigation.navigate("Main");
+    this.props.navigation.navigate("Main", jsonString);
   };
 }
 

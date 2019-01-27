@@ -17,6 +17,9 @@ module.exports = {
       email: {
         type: Sequelize.TEXT
       },
+      password: {
+        type: Sequelize.TEXT
+      },
       carPlate: {
         type: Sequelize.TEXT
       },
