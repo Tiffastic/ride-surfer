@@ -32,24 +32,24 @@ export default class ProfileScreen extends React.Component<{
   state = {
     user: {
       id: "",
-      first_name: "Not Found",
-      last_name: "",
+      firstName: "Not Found",
+      lastName: "",
       email: "",
-      car_year: "",
-      car_make: "",
-      car_model: "",
-      car_plate: ""
+      carYear: "",
+      carMake: "",
+      carModel: "",
+      carPlate: ""
     }
   };
 
   render() {
-    let name = this.state.user.first_name + " " + this.state.user.last_name;
+    let name = this.state.user.firstName + " " + this.state.user.lastName;
     let car =
-      this.state.user.car_year +
+      this.state.user.carYear +
       " " +
-      this.state.user.car_make +
+      this.state.user.carMake +
       " " +
-      this.state.user.car_model;
+      this.state.user.carModel;
     return (
       <View style={styles.container}>
         <Image
@@ -61,7 +61,7 @@ export default class ProfileScreen extends React.Component<{
           <Text style={{ fontSize: 25, margin: 10 }}>{name}</Text>
           <Text>{this.state.user.email}</Text>
           <Text>{car}</Text>
-          <Text>{this.state.user.car_plate}</Text>
+          <Text>{this.state.user.carPlate}</Text>
         </View>
 
         <Button
