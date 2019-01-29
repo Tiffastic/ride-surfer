@@ -50,7 +50,6 @@ type state = {
     id: number;
     userId: number;
     origin: number;
-    destination: number;
     isDriver: boolean;
   } | null;
 };
@@ -157,8 +156,7 @@ class AddressPicker extends React.Component<{ navigation: any }, state> {
             errorMessage: "Journey not found"
           });
         } else {
-          const journey = JSON.parse(responseJson);
-          this.setState({ journey });
+          this.setState({ journey: responseJson });
           this.props.navigation.push("DriverPicker", {
             destination: destination
           });
