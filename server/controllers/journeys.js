@@ -1,7 +1,18 @@
 const Journey = require("../models").Journey;
-const sequelize = require("../models").sequelize;
 
 module.exports = {
+  retrieveAll(req, res) {
+    return Journey.findAll()
+      .then(journeys => {
+        if (!journeys) {
+          return res.status(404).json({
+            message: "Journeys Not Found"
+          });
+        }
+        return res.status(200).json(journeys);
+      })
+      .catch(error => res.status(400).json(error));
+  },
   create(req, res) {
     var origin = {
       type: "Point",
@@ -14,7 +25,7 @@ module.exports = {
     };
 
     return Journey.create({
-      userID: req.body.userID,
+      userId: req.body.userId,
       origin: origin,
       destination: destination,
       arrivalAt: req.body.arrivalAt

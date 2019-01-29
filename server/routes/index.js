@@ -23,13 +23,16 @@ module.exports = app => {
     })
   );
 
-  app.get("journeys/:id", journeysController.retrieve);
+  app.get("/journeys", journeysController.retrieveAll);
+  app.get("/journeys/:id", journeysController.retrieve);
   app.post("/journeys", journeysController.create);
   app.put("/journeys/:id", journeysController.update);
 
-  app.get("traces/:id", tracesController.retrieve);
+  app.get("/traces", tracesController.retrieveAll);
+  app.get("/traces/:id", tracesController.retrieve);
   app.post("/traces", tracesController.create);
   const RateRide = require("../models").RateRides;
+
   app.post("/rateride", (req, res, next) => {
     RateRide.create(req.body, { fields: Object.keys(req.body) })
       .then(rating => res.status(201).json(rating))

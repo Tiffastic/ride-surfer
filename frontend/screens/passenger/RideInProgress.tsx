@@ -1,5 +1,12 @@
 import React, { Component, Props } from "react";
-import { StyleSheet, Button, View, Dimensions, Platform } from "react-native";
+import {
+  StyleSheet,
+  Button,
+  View,
+  Dimensions,
+  Platform,
+  AppState
+} from "react-native";
 
 import NavigateButton from "../../components/NavigateButton";
 
@@ -30,7 +37,10 @@ type state = {
   myLocation: { latitude: number; longitude: number };
   errorMessage: string;
   markers: Array<{ latitude: number; longitude: number }>;
+  appState: string;
 };
+
+let lastSaved: Date;
 
 export default class RideInProgress extends React.Component<
   {
@@ -41,7 +51,6 @@ export default class RideInProgress extends React.Component<
   constructor(props: any) {
     super(props);
 
-    console.log(this.props.navigation.getParam("destination"));
     this.state = {
       isLoading: true,
       myLocation: { latitude: 0, longitude: 0 },
@@ -58,7 +67,8 @@ export default class RideInProgress extends React.Component<
         latitude: number,
         longitude: number
       }),
-      markers: []
+      markers: [],
+      appState: AppState.currentState
     };
   }
 
@@ -81,40 +91,45 @@ export default class RideInProgress extends React.Component<
         this.state.destinationLocation
       ]
     });
+
+    lastSaved = new Date();
+  }
+
+  componentDidMount() {
+    AppState.addEventListener("change", this._handleAppStateChange);
   }
 
   componentWillUnmount() {
     TaskManager.unregisterTaskAsync(LOCATION_TASK_NAME);
   }
 
-  updateLocation(coords: any) {
-    console.log(coords);
-    // fetch("http://ride-surfer.herokuapp.com/users/trace/", {
-    //   method: "POST",
-    //   headers: {
-    //     Accept: "application/json",
-    //     "Content-Type": "application/json"
-    //   },
-    //   body: JSON.stringify({
-    //     email: this.state.email,
-    //     password: this.state.password
-    //   })
-    // })
-    //   .then(response => response.json())
+  _handleAppStateChange = async (nextAppState: any) => {
+    if (
+      this.state.appState.match(/inactive|background/) &&
+      nextAppState === "active"
+    ) {
+      TaskManager.unregisterTaskAsync(LOCATION_TASK_NAME);
+    } else if (
+      this.state.appState === "active" &&
+      nextAppState.match(/inactive|background/)
+    ) {
+      await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
+        accuracy: Location.Accuracy.BestForNavigation
+      });
+    }
 
-    //   .then(responseJson => {
-    //     if (responseJson.message == "User Not Found") {
-    //       this.setState({
-    //         error: "User not found"
-    //       });
-    //     } else {
-    //       this._saveUserAsync(responseJson).catch(console.log);
-    //     }
-    //   })
-    //   .catch(error => {
-    //     console.log(error);
-    //   });
-  }
+    this.setState({ appState: nextAppState });
+  };
+
+  updateLocation = async (location: any) => {
+    let coords = {
+      latitude: location.coords.latitude,
+      longitude: location.coords.longitude
+    };
+
+    saveLocation(1, coords);
+    this.setState({ myLocation: coords });
+  };
 
   initializeLocationAsync = async () => {
     let { status } = await Permissions.askAsync(Permissions.LOCATION);
@@ -124,23 +139,15 @@ export default class RideInProgress extends React.Component<
       });
     }
 
-    let location = await Location.getCurrentPositionAsync({});
-    let coords = {
-      latitude: location.coords.latitude,
-      longitude: location.coords.longitude
-    };
-    this.setState({ myLocation: coords });
-
-    await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
-      accuracy: Location.Accuracy.Balanced
-    });
+    await Location.watchPositionAsync(
+      { accuracy: Location.Accuracy.BestForNavigation },
+      this.updateLocation
+    );
   };
 
   getDriverLocation = async () => {};
 
   render() {
-    console.log("in progress");
-    console.log(this.state.destinationLocation);
     return (
       <View style={styles.container}>
         <MapView
@@ -182,19 +189,50 @@ export default class RideInProgress extends React.Component<
   }
 }
 
-TaskManager.defineTask(LOCATION_TASK_NAME, ({ data, error }) => {
+TaskManager.defineTask(LOCATION_TASK_NAME, body => {
+  let error = body.error;
+  let data = body.data as { locations: any };
+  let locations = data.locations;
   if (error) {
     console.log(error);
     // Error occurred - check `error.message` for more details.
     return;
   }
-  if (data) {
-    const locations = data;
-    console.log(locations);
-
-    // do something with the locations captured in the background
+  if (locations) {
+    let coords = {
+      latitude: locations[0].coords.latitude,
+      longitude: locations[0].coords.longitude
+    };
+    saveLocation(1, coords);
   }
 });
+
+function saveLocation(
+  journeyId: number,
+  coords: { latitude: number; longitude: number }
+) {
+  if (lastSaved == undefined) {
+    lastSaved = new Date();
+  }
+  let now: Date = new Date();
+  var dif = (now.getTime() - lastSaved.getTime()) / 1000;
+  if (dif > 5) {
+    fetch("http://ride-surfer.herokuapp.com/traces/", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        journeyId: 1,
+        location: [coords.latitude, coords.longitude]
+      })
+    }).catch(error => {
+      console.log(error);
+    });
+    lastSaved = new Date();
+  }
+}
 
 const styles = StyleSheet.create({
   container: {

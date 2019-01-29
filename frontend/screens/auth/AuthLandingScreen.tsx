@@ -21,7 +21,7 @@ export default class AuthLandingScreen extends React.Component<
   _bootstrapAsync = async () => {
     var userDetails = await AsyncStorage.getItem("userDetails");
     if (userDetails != null) {
-      this.props.navigation.navigate("Main");
+      this.props.navigation.navigate("Main", userDetails);
     }
   };
 

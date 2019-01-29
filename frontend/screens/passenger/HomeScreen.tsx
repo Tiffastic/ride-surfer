@@ -46,6 +46,13 @@ type state = {
   destinationLocation: { latitude: number; longitude: number };
   markers: Array<{ latitude: number; longitude: number }>;
   errorMessage: string;
+  journey: {
+    id: number;
+    userId: number;
+    origin: number;
+    destination: number;
+    isDriver: boolean;
+  } | null;
 };
 
 class AddressPicker extends React.Component<{ navigation: any }, state> {
@@ -59,7 +66,8 @@ class AddressPicker extends React.Component<{ navigation: any }, state> {
       destinationLocationInput: "",
       destinationLocation: { latitude: LATITUDE, longitude: LONGITUDE },
       markers: [{ latitude: LATITUDE, longitude: LONGITUDE }],
-      errorMessage: ""
+      errorMessage: "",
+      journey: null
     };
 
     this.onMapPress = this.onMapPress.bind(this);
@@ -124,6 +132,43 @@ class AddressPicker extends React.Component<{ navigation: any }, state> {
     });
   }
 
+  confirmRide = async () => {
+    let origin = this.state.startLocation;
+    let destination = this.state.destinationLocation;
+
+    fetch("https://ride-surfer.herokuapp.com/journeys/", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        userId: 1,
+        origin: [origin.latitude, origin.longitude],
+        destination: [destination.latitude, destination.longitude],
+        isDriver: false
+      })
+    })
+      .then(response => response.json())
+
+      .then(responseJson => {
+        if (responseJson.message == "Journey Not Found") {
+          this.setState({
+            errorMessage: "Journey not found"
+          });
+        } else {
+          const journey = JSON.parse(responseJson);
+          this.setState({ journey });
+          this.props.navigation.push("DriverPicker", {
+            destination: destination
+          });
+        }
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  };
+
   render() {
     return (
       <View style={styles.container}>
@@ -137,7 +182,10 @@ class AddressPicker extends React.Component<{ navigation: any }, state> {
                 navigator.geolocation.getCurrentPosition(
                   position => {
                     this.setState({
-                      startLocation: position.coords,
+                      startLocation: {
+                        latitude: position.coords.latitude,
+                        longitude: position.coords.longitude
+                      },
                       startLocationInput: "Current Location"
                     });
                   },
@@ -164,7 +212,10 @@ class AddressPicker extends React.Component<{ navigation: any }, state> {
                 navigator.geolocation.getCurrentPosition(
                   position => {
                     this.setState({
-                      destinationLocation: position.coords,
+                      destinationLocation: {
+                        latitude: position.coords.latitude,
+                        longitude: position.coords.longitude
+                      },
                       destinationLocationInput: "Current Location"
                     });
                   },
@@ -188,20 +239,7 @@ class AddressPicker extends React.Component<{ navigation: any }, state> {
             <Button title="Search" onPress={this.search} />
           </View>
           <View>
-            <Button
-              title="Confirm"
-              onPress={() => {
-                let destination = {
-                  description: this.state.destinationLocationInput,
-                  latitude: this.state.destinationLocation.latitude,
-                  longitude: this.state.destinationLocation.longitude
-                };
-                console.log(destination);
-                this.props.navigation.push("DriverPicker", {
-                  destination: destination
-                });
-              }}
-            />
+            <Button title="Confirm" onPress={this.confirmRide} />
           </View>
         </View>
         <MapView

@@ -1,36 +1,45 @@
 "use strict";
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable("Journeys", {
+    return queryInterface.createTable("PassengerRides", {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      userId: {
+      passengerJourneyId: {
         type: Sequelize.INTEGER,
         onDelete: "CASCADE",
         references: {
-          model: "Users",
+          model: "Journeys",
           key: "id",
-          as: "userId"
+          as: "passengerJourneyId"
         }
       },
-      origin: {
+      driverJourneyId: {
+        type: Sequelize.INTEGER,
+        onDelete: "CASCADE",
+        references: {
+          model: "Journeys",
+          key: "id",
+          as: "driverJourneyId"
+        }
+      },
+      pickupLocation: {
         type: Sequelize.GEOGRAPHY
       },
-      destination: {
+      dropoffLocation: {
         type: Sequelize.GEOGRAPHY
       },
-      arrivalAt: {
+      pickupTime: {
         type: Sequelize.DATE
       },
-      isDriver: {
-        type: Sequelize.BOOLEAN
+      dropoffTime: {
+        type: Sequelize.DATE
       },
-      path: {
-        type: Sequelize.GEOGRAPHY
+      driverAccepted: {
+        type: Sequelize.BOOLEAN
       },
       createdAt: {
         allowNull: false,
@@ -43,6 +52,6 @@ module.exports = {
     });
   },
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable("Journeys");
+    return queryInterface.dropTable("PassengerRides");
   }
 };
