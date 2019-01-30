@@ -15,7 +15,14 @@ module.exports = (sequelize, DataTypes) => {
     {}
   );
   RateRides.associate = function(models) {
-    // associations can be defined here
+    RateRides.belongsTo(models.Users, {
+      foreignKey: "personRatingId",
+      targetKey: "id"
+    });
+    RateRides.belongsTo(models.Users, {
+      foreignKey: "personRatedId",
+      targetKey: "id"
+    });
   };
   return RateRides;
 };

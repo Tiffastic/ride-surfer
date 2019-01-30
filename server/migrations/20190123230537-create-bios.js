@@ -2,36 +2,27 @@
 module.exports = {
   up: (queryInterface, Sequelize) => {
     return queryInterface
-      .createTable("RateRides", {
+      .createTable("Bios", {
         id: {
           allowNull: false,
           autoIncrement: true,
           primaryKey: true,
           type: Sequelize.INTEGER
         },
-        personRatingId: {
+        userId: {
           type: Sequelize.INTEGER
         },
-        personRatedId: {
-          type: Sequelize.INTEGER
-        },
-        rideId: {
-          type: Sequelize.INTEGER
-        },
-        cleanliness: {
-          type: Sequelize.INTEGER
-        },
-        timeliness: {
-          type: Sequelize.INTEGER
-        },
-        safety: {
-          type: Sequelize.INTEGER
-        },
-        overall: {
-          type: Sequelize.INTEGER
-        },
-        comments: {
+        description: {
           type: Sequelize.TEXT
+        },
+        imageFilePath: {
+          type: Sequelize.BLOB
+        },
+        ridesGiven: {
+          type: Sequelize.INTEGER
+        },
+        ridesTaken: {
+          type: Sequelize.INTEGER
         },
         createdAt: {
           allowNull: false,
@@ -43,19 +34,9 @@ module.exports = {
         }
       })
       .then(() => {
-        queryInterface.addConstraint("RateRides", ["personRatingId"], {
+        queryInterface.addConstraint("Bios", ["userId"], {
           type: "foreign key",
-          name: "fk_userId_personRating",
-          references: {
-            table: "Users",
-            field: "id"
-          }
-        });
-      })
-      .then(() => {
-        queryInterface.addConstraint("RateRides", ["personRatedId"], {
-          type: "foreign key",
-          name: "fk_userId_personRated",
+          name: "fk_userId",
           references: {
             table: "Users",
             field: "id"
@@ -66,6 +47,6 @@ module.exports = {
       });
   },
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable("RateRides");
+    return queryInterface.dropTable("Bios");
   }
 };
