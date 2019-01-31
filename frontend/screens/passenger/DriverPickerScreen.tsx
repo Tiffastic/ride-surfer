@@ -63,84 +63,6 @@ const dummyDrivers = [
       { key: "3", time: "2 mins", desc: "Walk to 72 Central Campus Dr" }
     ],
     profilePic: require("../../assets/images/shaggy.jpg")
-  },
-  {
-    key: "fred",
-    name: "Fred",
-    rating: 3.4,
-    home: require("../../assets/images/h-s2.png"),
-    class: require("../../assets/images/h-l2.png"),
-    work: require("../../assets/images/h-w2.png"),
-    homeDirs: [
-      {
-        key: "1",
-        time: "6 mins",
-        desc: "Walk to 2301 E Sky Pines Ct",
-        addr: "2301 E Sky Pines Ct"
-      },
-      { key: "2", time: "16 mins", desc: "Drive to 2000 1100 E" },
-      { key: "3", time: "2 mins", desc: "Walk to 2011 1100 E" }
-    ],
-    workDirs: [
-      {
-        key: "1",
-        time: "1 min",
-        desc: "Walk to 4689 Holladay Blvd E",
-        addr: "4689 Holladay Blvd E"
-      },
-      { key: "2", time: "15 mins", desc: "Drive to 290 1500 E" },
-      { key: "3", time: "2 mins", desc: "Walk to 295 1500 E" }
-    ],
-    classDirs: [
-      {
-        key: "2",
-        time: "5 mins",
-        desc: "Walk to 4501 2565 E",
-        addr: "4501 2565 E"
-      },
-      { key: "2", time: "15 mins", desc: "Drive to 70 Central Campus Drive" },
-      { key: "3", time: "2 mins", desc: "Walk to 72 Central Campus Dr" }
-    ],
-    profilePic: require("../../assets/images/fred.jpg")
-  },
-  {
-    key: "daphne",
-    name: "Daphne",
-    rating: 4.8,
-    home: require("../../assets/images/h-s3.png"),
-    class: require("../../assets/images/h-l3.png"),
-    work: require("../../assets/images/h-w3.png"),
-    homeDirs: [
-      {
-        key: "1",
-        time: "5 mins",
-        desc: "Walk to 4501 2565 E",
-        addr: "4501 2565 E"
-      },
-      { key: "2", time: "16 mins", desc: "Drive to 2000 1100 E" },
-      { key: "3", time: "2 mins", desc: "Walk to 2011 1100 E" }
-    ],
-    workDirs: [
-      {
-        key: "1",
-        time: "6 mins",
-        desc: "Walk to 2301 E Sky Pines Ct",
-        addr: "2301 E Sky Pines Ct"
-      },
-      { key: "2", time: "15 mins", desc: "Drive to 290 1500 E" },
-      { key: "3", time: "2 mins", desc: "Walk to 295 1500 E" }
-    ],
-    classDirs: [
-      {
-        key: "1",
-        time: "1 min",
-        desc: "Walk to 4689 Holladay Blvd E",
-        addr: "4689 Holladay Blvd E"
-      },
-      { key: "2", time: "15 mins", desc: "Drive to 70 Central Campus Drive" },
-      { key: "3", time: "2 mins", desc: "Walk to 72 Central Campus Dr" }
-    ],
-    profilePic: require("../../assets/images/daphne.jpg")
   }
 ];
 
@@ -166,7 +88,12 @@ export default class DriverPickerScreen extends React.Component<{
   };
 
   componentDidMount() {
+<<<<<<< HEAD
     fetchAPI("/journeys/matches")
+=======
+    // fetch("http://35.239.103.214:3389/journeys/matches")
+    fetch("https://ride-surfer.herokuapp.com/journeys/matches")
+>>>>>>> Cleanup DriverPickerScreen
       .then(resp => resp.json())
       .then(json => {
         json.forEach(res => (res.key = res.id.toString()));
