@@ -5,6 +5,8 @@ import { createStackNavigator } from "react-navigation";
 import Styles from "../../constants/Styles";
 import Colors from "../../constants/Colors";
 
+import { User, setCurrentUser } from "../../network/Session";
+
 interface AuthLandingScreenProps {
   navigation: any;
 }
@@ -21,7 +23,9 @@ export default class AuthLandingScreen extends React.Component<
   _bootstrapAsync = async () => {
     var userDetails = await AsyncStorage.getItem("userDetails");
     if (userDetails != null) {
-      this.props.navigation.navigate("Main", userDetails);
+      let user = JSON.parse(userDetails) as User;
+      setCurrentUser(user);
+      this.props.navigation.navigate("Main");
     }
   };
 
