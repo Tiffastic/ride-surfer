@@ -136,6 +136,12 @@ class AddressPicker extends React.Component<{ navigation: any }, state> {
     let origin = this.state.startLocation;
     let destination = this.state.destinationLocation;
 
+    this.props.navigation.push("DriverPicker", {
+      destination: destination
+    });
+
+    return;
+
     fetchAPI("/journeys/", {
       method: "POST",
       headers: {

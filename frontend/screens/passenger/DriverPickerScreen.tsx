@@ -7,11 +7,13 @@ import {
   TouchableHighlight,
   StyleSheet,
   ListRenderItemInfo,
+  ActivityIndicator,
   Image
 } from "react-native";
 import { ListRenderItem } from "react-native";
 
 import Styles from "../../constants/Styles";
+import { fetchAPI } from "../../network/Backend";
 import { number, string } from "prop-types";
 
 const dummyDrivers = [
@@ -138,60 +140,106 @@ export default class DriverPickerScreen extends React.Component<{
   navigation: any;
 }> {
   state = {
+    loading: true,
     destination: this.props.navigation.getParam("destination", {
       description: string,
       latitude: number,
       lontitude: number
-    })
+    }),
+    errorMessage: null,
+    drivers: []
   };
 
   private chooseDriver = (item: any) => {
     this.props.navigation.push("DriverDetails", {
       destination: this.state.destination,
-      driver: item
+      driver: dummyDrivers[0]
     });
   };
+
+  componentDidMount() {
+    fetchAPI("/journeys/matches")
+      .then(resp => resp.json())
+      .then(json => {
+        json.forEach(res => (res.key = res.id.toString()));
+        this.setState({
+          loading: false,
+          drivers: json
+        });
+      })
+      .catch(error => {
+        console.error(error);
+        this.setState({ errorMessage: error.toString() });
+      });
+  }
 
   render() {
     let image = this.state.destination.preview;
 
+    if (this.state.errorMessage) {
+      return (
+        <View>
+          <Text style={{ color: "red" }}>Something went wrong:</Text>
+          <Text style={{ color: "red" }}>{this.state.errorMessage}</Text>
+        </View>
+      );
+    }
+
+    let content = (
+      <View style={{ flex: 2 }}>
+        <Text style={Styles.paragraphText}>
+          We found {this.state.drivers.length} drivers going a similar
+          direction:
+        </Text>
+
+        <FlatList
+          style={styles.searchResultsList}
+          data={this.state.drivers}
+          renderItem={({ item, separators }: any) => (
+            <TouchableHighlight
+              style={styles.searchResultsItem}
+              onPress={() => this.chooseDriver(item)}
+              onShowUnderlay={separators.highlight}
+              onHideUnderlay={separators.unhighlight}
+            >
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <Image
+                  source={item.User.profilePic}
+                  style={{ width: 50, height: 50 }}
+                />
+                <Text style={styles.searchResultsName}>
+                  {item.User.firstName}
+                </Text>
+                <Text style={styles.searchResultsAddress}>
+                  {item.User.rating || "-"} stars
+                </Text>
+              </View>
+            </TouchableHighlight>
+          )}
+        />
+      </View>
+    );
+
     return (
       <View style={styles.container}>
-        <Image
+        {/* <Image
           style={{ flex: 2, width: undefined, height: undefined }}
           resizeMode="cover"
           source={image}
-        />
-
+        /> */}
         <View style={{ flex: 2 }}>
-          <Text style={Styles.paragraphText}>
-            We found 3 drivers going a similar direction:
+          <Text>
+            {`TODO: map showing ${JSON.stringify(this.state.destination)}`}
           </Text>
-
-          <FlatList
-            style={styles.searchResultsList}
-            data={dummyDrivers}
-            renderItem={({ item, separators }: any) => (
-              <TouchableHighlight
-                style={styles.searchResultsItem}
-                onPress={() => this.chooseDriver(item)}
-                onShowUnderlay={separators.highlight}
-                onHideUnderlay={separators.unhighlight}
-              >
-                <View style={{ flexDirection: "row", alignItems: "center" }}>
-                  <Image
-                    source={item.profilePic}
-                    style={{ width: 50, height: 50 }}
-                  />
-                  <Text style={styles.searchResultsName}>{item.name}</Text>
-                  <Text style={styles.searchResultsAddress}>
-                    {item.rating} stars
-                  </Text>
-                </View>
-              </TouchableHighlight>
-            )}
-          />
         </View>
+
+        {this.state.loading ? (
+          <View style={{ flex: 2 }}>
+            <ActivityIndicator size="large" />
+          </View>
+        ) : (
+          content
+        )}
       </View>
     );
   }
