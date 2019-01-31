@@ -12,6 +12,7 @@ import {
 
 import Colors from "../../constants/Colors";
 import Styles from "../../constants/Styles";
+import { fetchAPI } from "../../network/Backend";
 
 export default class LoginScreen extends React.Component<{ navigation: any }> {
   static navigationOptions = {
@@ -69,7 +70,7 @@ export default class LoginScreen extends React.Component<{ navigation: any }> {
   }
 
   private _logIn = async () => {
-    return fetch("https://ride-surfer.herokuapp.com/users/login/", {
+    return fetchAPI("/users/login/", {
       method: "POST",
       headers: {
         Accept: "application/json",

@@ -12,6 +12,8 @@ import {
 import Styles from "../../constants/Styles";
 import Colors from "../../constants/Colors";
 
+import { fetchAPI } from "../../network/Backend";
+
 //import StarRating from "react-native-star-rating";
 const StarRating = require("react-native-star-rating").default;
 
@@ -151,7 +153,7 @@ export default class RateDriverScreen extends React.Component<{
   }
 
   _submitRatings = () => {
-    return fetch("http://ride-surfer.herokuapp.com/rateride", {
+    return fetchAPI("/rateride", {
       method: "POST",
       headers: {
         Accept: "application/json",

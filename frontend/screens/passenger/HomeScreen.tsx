@@ -29,6 +29,7 @@ import RideInProgressScreen from "./RideInProgress";
 
 import { Permissions, Location } from "expo";
 import MapView, { Marker } from "react-native-maps";
+import { fetchAPI } from "../../network/Backend";
 
 const { width, height } = Dimensions.get("window");
 
@@ -135,7 +136,7 @@ class AddressPicker extends React.Component<{ navigation: any }, state> {
     let origin = this.state.startLocation;
     let destination = this.state.destinationLocation;
 
-    fetch("https://ride-surfer.herokuapp.com/journeys/", {
+    fetchAPI("/journeys/", {
       method: "POST",
       headers: {
         Accept: "application/json",
