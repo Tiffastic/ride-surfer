@@ -88,12 +88,7 @@ export default class DriverPickerScreen extends React.Component<{
   };
 
   componentDidMount() {
-<<<<<<< HEAD
     fetchAPI("/journeys/matches")
-=======
-    // fetch("http://35.239.103.214:3389/journeys/matches")
-    fetch("https://ride-surfer.herokuapp.com/journeys/matches")
->>>>>>> Cleanup DriverPickerScreen
       .then(resp => resp.json())
       .then(json => {
         json.forEach(res => (res.key = res.id.toString()));
