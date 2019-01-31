@@ -8,13 +8,21 @@ import {
   StyleSheet,
   ListRenderItemInfo,
   ActivityIndicator,
-  Image
+  Image,
+  Dimensions
 } from "react-native";
 import { ListRenderItem } from "react-native";
+import MapView, { Marker } from "react-native-maps";
 
 import Styles from "../../constants/Styles";
 import { fetchAPI } from "../../network/Backend";
 import { number, string } from "prop-types";
+
+const { width, height } = Dimensions.get("window");
+
+const ASPECT_RATIO = width / height;
+const LATITUDE_DELTA = 0.0922;
+const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 
 const dummyDrivers = [
   {
@@ -222,16 +230,23 @@ export default class DriverPickerScreen extends React.Component<{
 
     return (
       <View style={styles.container}>
-        {/* <Image
-          style={{ flex: 2, width: undefined, height: undefined }}
-          resizeMode="cover"
-          source={image}
-        /> */}
-        <View style={{ flex: 2 }}>
-          <Text>
-            {`TODO: map showing ${JSON.stringify(this.state.destination)}`}
-          </Text>
-        </View>
+        <MapView
+          style={{ flex: 2 }}
+          provider="google"
+          region={{
+            latitude: this.state.destination.latitude,
+            longitude: this.state.destination.longitude,
+            latitudeDelta: LATITUDE_DELTA,
+            longitudeDelta: LONGITUDE_DELTA
+          }}
+        >
+          <Marker
+            coordinate={{
+              latitude: this.state.destination.latitude,
+              longitude: this.state.destination.longitude
+            }}
+          />
+        </MapView>
 
         {this.state.loading ? (
           <View style={{ flex: 2 }}>
