@@ -1,4 +1,5 @@
 const Journey = require("../models").Journey;
+const User = require("../models").User;
 
 module.exports = {
   retrieveAll(req, res) {
@@ -13,6 +14,20 @@ module.exports = {
       })
       .catch(error => res.status(400).json(error));
   },
+
+  retrieveMatches(req, res) {
+    return Journey.findAll({ /*where: { isDriver: true },*/ include: [User] })
+      .then(journeys => {
+        if (!journeys) {
+          return res.status(404).json({
+            message: "Journeys Not Found"
+          });
+        }
+        return res.status(200).json(journeys);
+      })
+      .catch(error => res.status(400).json(error));
+  },
+
   create(req, res) {
     var origin = {
       type: "Point",

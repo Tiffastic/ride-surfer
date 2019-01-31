@@ -24,6 +24,7 @@ module.exports = app => {
   );
 
   app.get("/journeys", journeysController.retrieveAll);
+  app.get("/journeys/matches", journeysController.retrieveMatches);
   app.get("/journeys/:id", journeysController.retrieve);
   app.post("/journeys", journeysController.create);
   app.put("/journeys/:id", journeysController.update);
