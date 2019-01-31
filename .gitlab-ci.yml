@@ -5,16 +5,15 @@ image: node:latest
 
 cache:
   paths:
-  - frontend/node_modules/
+    - frontend/node_modules/
 
 format:
   script:
-   - cd frontend
-   - npm install
-   - npm run checkFormat
-
-test:
-  script:
-   - cd frontend
-   - npm install
-   - npm run testOnce
+    - cd frontend
+    - npm install
+    - npm run checkFormat
+# test:
+#   script:
+#     - cd frontend
+#     - npm install
+#     - npm run testOnce
