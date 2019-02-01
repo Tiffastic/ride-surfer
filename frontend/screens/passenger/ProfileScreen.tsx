@@ -5,11 +5,12 @@ import {
   StyleSheet,
   Text,
   Button,
-  Image,
-  AsyncStorage
+  Image
 } from "react-native";
 
 import Colors from "../../constants/Colors";
+
+import UserSession from "../../network/UserSession";
 
 export default class ProfileScreen extends React.Component<{
   navigation: any;
@@ -21,10 +22,9 @@ export default class ProfileScreen extends React.Component<{
 
   // Fetch the token from storage then navigate to our appropriate place
   _bootstrapAsync = async () => {
-    var userDetails = await AsyncStorage.getItem("userDetails");
+    var userDetails = await UserSession.get();
     if (userDetails == null) throw ":(";
-    const user = JSON.parse(userDetails);
-    this.setState({ user });
+    this.setState({ user: userDetails });
   };
   static navigationOptions = {
     title: "Profile"
@@ -74,7 +74,7 @@ export default class ProfileScreen extends React.Component<{
   }
 
   _logOut = async () => {
-    await AsyncStorage.clear();
+    await UserSession.clear();
     this.props.navigation.navigate("Auth");
   };
 }

@@ -6,13 +6,13 @@ import {
   Text,
   View,
   TextInput,
-  Button,
-  AsyncStorage
+  Button
 } from "react-native";
 
 import Colors from "../../constants/Colors";
 import Styles from "../../constants/Styles";
 import { fetchAPI } from "../../network/Backend";
+import UserSession from "../../network/UserSession";
 
 export default class LoginScreen extends React.Component<{ navigation: any }> {
   static navigationOptions = {
@@ -98,9 +98,8 @@ export default class LoginScreen extends React.Component<{ navigation: any }> {
   };
 
   private _saveUserAsync = async (userDetails: any) => {
-    const jsonString = JSON.stringify(userDetails);
-    await AsyncStorage.setItem("userDetails", jsonString);
-    this.props.navigation.navigate("Main", jsonString);
+    await UserSession.set(userDetails);
+    this.props.navigation.navigate("Main");
   };
 }
 

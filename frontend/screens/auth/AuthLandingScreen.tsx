@@ -1,11 +1,11 @@
 import React from "react";
-import { StyleSheet, View, Button, Text, AsyncStorage } from "react-native";
+import { StyleSheet, View, Button, Text } from "react-native";
 import { createStackNavigator } from "react-navigation";
 
 import Styles from "../../constants/Styles";
 import Colors from "../../constants/Colors";
 
-import { User, setCurrentUser } from "../../network/Session";
+import UserSession from "../../network/UserSession";
 
 interface AuthLandingScreenProps {
   navigation: any;
@@ -21,10 +21,8 @@ export default class AuthLandingScreen extends React.Component<
 
   // Fetch the token from storage then navigate to our appropriate place
   _bootstrapAsync = async () => {
-    var userDetails = await AsyncStorage.getItem("userDetails");
+    let userDetails = await UserSession.get();
     if (userDetails != null) {
-      let user = JSON.parse(userDetails) as User;
-      setCurrentUser(user);
       this.props.navigation.navigate("Main");
     }
   };

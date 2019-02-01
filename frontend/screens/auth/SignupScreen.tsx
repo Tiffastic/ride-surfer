@@ -5,12 +5,13 @@ import {
   ScrollView,
   StyleSheet,
   Button,
-  AsyncStorage,
   View
 } from "react-native";
 
 import Colors from "../../constants/Colors";
 import Styles from "../../constants/Styles";
+
+import UserSession from "../../network/UserSession";
 
 export default class SignupScreen extends React.Component<{ navigation: any }> {
   static navigationOptions = {
@@ -136,9 +137,8 @@ export default class SignupScreen extends React.Component<{ navigation: any }> {
   };
 
   private _saveUserAsync = async (userDetails: any) => {
-    const jsonString = JSON.stringify(userDetails);
-    await AsyncStorage.setItem("userDetails", jsonString);
-    this.props.navigation.navigate("Main", jsonString);
+    await UserSession.set(userDetails);
+    this.props.navigation.navigate("Main");
   };
 }
 
