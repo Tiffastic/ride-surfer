@@ -5,7 +5,9 @@ import {
   ScrollView,
   StyleSheet,
   Button,
-  View
+  AsyncStorage,
+  View,
+  KeyboardAvoidingView
 } from "react-native";
 
 import Colors from "../../constants/Colors";
@@ -37,68 +39,74 @@ export default class SignupScreen extends React.Component<{ navigation: any }> {
       <View />
     );
     return (
-      <ScrollView style={[Styles.wrapper, Styles.container]}>
-        <Text style={Styles.titleText}>Ride Surfer</Text>
+      <KeyboardAvoidingView
+        style={Styles.container}
+        behavior="padding"
+        keyboardVerticalOffset={22}
+        enabled
+      >
+        <ScrollView style={[Styles.wrapper, Styles.container]}>
+          <Text style={Styles.titleText}>Ride Surfer</Text>
 
-        <Text style={Styles.paragraphText}>Create an Account</Text>
+          <Text style={Styles.paragraphText}>Create an Account</Text>
 
-        <TextInput
-          style={Styles.textInput}
-          placeholder="First Name"
-          onChangeText={data => this.setState({ first_name: data })}
-        />
+          <TextInput
+            style={Styles.textInput}
+            placeholder="First Name"
+            onChangeText={data => this.setState({ first_name: data })}
+          />
 
-        <TextInput
-          style={Styles.textInput}
-          placeholder="Last Name"
-          onChangeText={data => this.setState({ last_name: data })}
-        />
+          <TextInput
+            style={Styles.textInput}
+            placeholder="Last Name"
+            onChangeText={data => this.setState({ last_name: data })}
+          />
 
-        <TextInput
-          style={Styles.textInput}
-          placeholder="Email"
-          onChangeText={data => this.setState({ email: data })}
-        />
+          <TextInput
+            style={Styles.textInput}
+            placeholder="Email"
+            onChangeText={data => this.setState({ email: data })}
+          />
 
-        {/* TODO: this needs to hide what the user types in */}
-        <TextInput
-          style={Styles.textInput}
-          placeholder="Password"
-          secureTextEntry={true}
-          onChangeText={data => this.setState({ password: data })}
-        />
+          <TextInput
+            style={Styles.textInput}
+            placeholder="Password"
+            secureTextEntry={true}
+            onChangeText={data => this.setState({ password: data })}
+          />
 
-        <TextInput
-          style={Styles.textInput}
-          placeholder="Licence Plate"
-          onChangeText={data => this.setState({ car_plate: data })}
-        />
+          <TextInput
+            style={Styles.textInput}
+            placeholder="Licence Plate"
+            onChangeText={data => this.setState({ car_plate: data })}
+          />
 
-        <TextInput
-          style={Styles.textInput}
-          placeholder="Car Make"
-          onChangeText={data => this.setState({ car_make: data })}
-        />
+          <TextInput
+            style={Styles.textInput}
+            placeholder="Car Make"
+            onChangeText={data => this.setState({ car_make: data })}
+          />
 
-        <TextInput
-          style={Styles.textInput}
-          placeholder="Car Model"
-          onChangeText={data => this.setState({ car_model: data })}
-        />
+          <TextInput
+            style={Styles.textInput}
+            placeholder="Car Model"
+            onChangeText={data => this.setState({ car_model: data })}
+          />
 
-        <TextInput
-          style={Styles.textInput}
-          placeholder="Car Year"
-          onChangeText={data => this.setState({ car_year: data })}
-        />
+          <TextInput
+            style={Styles.textInput}
+            placeholder="Car Year"
+            onChangeText={data => this.setState({ car_year: data })}
+          />
 
-        <Button
-          color={Colors.primary}
-          title="Sign Up"
-          onPress={this._register}
-        />
-        {showErr}
-      </ScrollView>
+          <Button
+            color={Colors.primary}
+            title="Sign Up"
+            onPress={this._register}
+          />
+          {showErr}
+        </ScrollView>
+      </KeyboardAvoidingView>
     );
   }
 
@@ -135,7 +143,7 @@ export default class SignupScreen extends React.Component<{ navigation: any }> {
         console.log(error);
       });
   };
-
+  //Also if you want this to work, be sure each json field is correct, I.e. carYear should be a number..
   private _saveUserAsync = async (userDetails: any) => {
     await UserSession.set(userDetails);
     this.props.navigation.navigate("Main");
