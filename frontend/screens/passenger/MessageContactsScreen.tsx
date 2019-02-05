@@ -151,12 +151,15 @@ export default class MessageContactsScreen extends React.Component<{
     return (
       <View style={styles.container}>
         <ScrollView>
-          <View style={{ alignItems: "center" }}>
-            <Text style={styles.name}>Driving</Text>
-          </View>
+          {this.state.drivingRides.length > 0 && (
+            <View style={{ alignItems: "center" }}>
+              <Text style={styles.name}>Driving</Text>
+            </View>
+          )}
           <FlatList
             style={styles.searchResultsList}
             data={this.state.drivingRides}
+            keyExtractor={(item: any, index: any) => item.id}
             renderItem={({ item, separators }: any) => (
               <TouchableHighlight
                 style={styles.messageButton}
@@ -199,9 +202,11 @@ export default class MessageContactsScreen extends React.Component<{
               </TouchableHighlight>
             )}
           />
-          <View style={{ alignItems: "center" }}>
-            <Text style={styles.name}>Riding</Text>
-          </View>
+          {this.state.passengerRides.length > 0 && (
+            <View style={{ alignItems: "center" }}>
+              <Text style={styles.name}>Riding</Text>
+            </View>
+          )}
           <FlatList
             style={styles.searchResultsList}
             data={this.state.passengerRides}

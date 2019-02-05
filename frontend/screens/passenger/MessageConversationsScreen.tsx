@@ -32,10 +32,7 @@ export default class MessageConversationsScreen extends React.Component<{
 
   state = {
     destination: this.props.navigation.getParam("destination"),
-    ridePartner: this.props.navigation.getParam(
-      "ridePartner",
-      "Driver Unknown"
-    ),
+    ridePartner: this.props.navigation.getParam("ridePartner"),
     rideDetails: this.props.navigation.getParam("rideDetails")
   };
 
@@ -62,6 +59,7 @@ export default class MessageConversationsScreen extends React.Component<{
         <FlatList
           data={dummyDirections}
           showsVerticalScrollIndicator={false}
+          keyExtractor={(item: any, index: any) => item.key}
           renderItem={({ item, separators }) => (
             <TouchableHighlight
               style={styles.searchResultsItem}
