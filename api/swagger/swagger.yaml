@@ -1,0 +1,63 @@
+swagger: "2.0"
+info:
+  version: "1.0.0"
+  title: Ride Surfer API
+host: localhost:5000
+basePath: /
+schemes:
+  - http
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+  /api:
+    # Get one or more playlists
+    get:
+      responses:
+        # Response code
+        200:
+          description: Successful response
+  /rateride:
+    post:
+      summary: Creates a rating for a ride.
+      consumes:
+        - application/json
+      parameters:
+        - in: body
+          name: rateride
+          description: The ride to rate.
+          schema:
+            type: object
+            required:
+              - personRatingId
+              - personRatedId
+              - rideId
+              - cleanliness
+              - timeliness
+              - safety
+              - overall
+              - comments
+            properties:
+              personRatingId:
+                type: integer
+              personRatedId:
+                type: integer
+              rideId:
+                type: integer
+              cleanliness:
+                type: integer
+              timeliness:
+                type: integer
+              safety:
+                type: integer
+              overall:
+                type: integer
+              comments:
+                type: string
+      responses:
+        201:
+          description: Created
+        400:
+          description: Error
+       

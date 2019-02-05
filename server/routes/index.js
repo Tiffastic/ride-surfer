@@ -5,6 +5,16 @@ const passengerRideController = require("../controllers").passengerRides;
 const RateRide = require("../models").RateRides;
 
 module.exports = app => {
+  //Using CORS, without this, Swagger  does not work with local host
+  app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header(
+      "Access-Control-Allow-Headers",
+      "Origin, X-Requested-With, Content-Type, Accept"
+    );
+    next();
+  });
+
   app.get("/api", (req, res) =>
     res.status(200).send({
       message: "Welcome to the Ride Surfer API!"
@@ -47,10 +57,13 @@ module.exports = app => {
   app.put("/passengerRides/:id", passengerRideController.update);
   app.delete("/passengerRides/:id", passengerRideController.destroy);
 
-  const RateRide = require("../models").RateRides;
   app.post("/rateride", (req, res, next) => {
     RateRide.create(req.body, { fields: Object.keys(req.body) })
       .then(rating => res.status(201).json(rating))
       .catch(error => res.status(400).json(error));
+  });
+
+  app.get("/swagger", (req, res, next) => {
+    res.send(JSON.stringify({ programmer: "Thuy" }));
   });
 };
