@@ -15,7 +15,11 @@ module.exports = (sequelize, DataTypes) => {
       carPlate: DataTypes.TEXT,
       carMake: DataTypes.TEXT,
       carModel: DataTypes.TEXT,
-      carYear: DataTypes.INTEGER
+      carYear: DataTypes.INTEGER,
+      pushToken: {
+        type: DataTypes.TEXT,
+        unique: true
+      }
     },
     {}
   );

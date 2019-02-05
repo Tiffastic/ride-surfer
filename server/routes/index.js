@@ -3,6 +3,7 @@ const journeysController = require("../controllers").journeys;
 const tracesController = require("../controllers").traces;
 const passengerRideController = require("../controllers").passengerRides;
 const RateRide = require("../models").RateRides;
+const pushNotificationController = require("../controllers").pushNotifications;
 
 module.exports = app => {
   //Using CORS, without this, Swagger  does not work with local host
@@ -57,13 +58,14 @@ module.exports = app => {
   app.put("/passengerRides/:id", passengerRideController.update);
   app.delete("/passengerRides/:id", passengerRideController.destroy);
 
-  app.post("/rateride", (req, res, next) => {
+  app.post("/rateride", (req, res) => {
     RateRide.create(req.body, { fields: Object.keys(req.body) })
       .then(rating => res.status(201).json(rating))
       .catch(error => res.status(400).json(error));
   });
 
-  app.get("/swagger", (req, res, next) => {
-    res.send(JSON.stringify({ programmer: "Thuy" }));
-  });
+  app.get(
+    "/ridePushNotificationRequest",
+    pushNotificationController.notifyDriver
+  );
 };

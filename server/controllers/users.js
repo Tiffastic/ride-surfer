@@ -78,7 +78,7 @@ module.exports = {
   },
 
   update(req, res) {
-    return User.find({
+    return User.findOne({
       where: {
         id: req.params.id
       }

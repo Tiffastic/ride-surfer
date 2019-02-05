@@ -32,6 +32,10 @@ module.exports = {
       carYear: {
         type: Sequelize.INTEGER
       },
+      pushToken: {
+        type: Sequelize.TEXT,
+        unique: true
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

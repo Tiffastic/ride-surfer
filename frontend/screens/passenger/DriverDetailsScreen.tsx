@@ -13,6 +13,7 @@ import Colors from "../../constants/Colors";
 import { number, string } from "prop-types";
 import { fetchAPI } from "../../network/Backend";
 import UserSession from "../../network/UserSession";
+import { State } from "react-native-gesture-handler";
 
 export default class DriverDetailsScreen extends React.Component<{
   navigation: any;
@@ -69,6 +70,11 @@ export default class DriverDetailsScreen extends React.Component<{
   }
 
   onRequest = async () => {
+    fetchAPI(
+      "/ridePushNotificationRequest?driverId=" +
+        this.state.driverJourney.User.id
+    );
+
     let userDetails = await UserSession.get();
     if (userDetails == null) return;
 
