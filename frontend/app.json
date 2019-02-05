@@ -5,7 +5,10 @@
     "slug": "RideSurfer",
     "privacy": "public",
     "sdkVersion": "32.0.0",
-    "platforms": ["ios", "android"],
+    "platforms": [
+      "ios",
+      "android"
+    ],
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -17,19 +20,26 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "bundleIdentifier": "com.ridesurfer.ridesurfer",
       "config": {
         "googleMapsApiKey": "AIzaSyAGHpBa7ocWAjbPyj26OVq-ISxqWM1Pfo0"
       },
       "infoPlist": {
-        "UIBackgroundModes": ["location", "fetch"]
+        "UIBackgroundModes": [
+          "location",
+          "fetch"
+        ]
       }
     },
     "android": {
       "config": {
-        "googleMaps": { "apiKey": "AIzaSyBM-Ug5F1Kw1VJ4EqRCidTOugzSwTMNGCw" }
+        "googleMaps": {
+          "apiKey": "AIzaSyBM-Ug5F1Kw1VJ4EqRCidTOugzSwTMNGCw"
+        }
       }
     }
   }

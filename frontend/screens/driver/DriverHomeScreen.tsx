@@ -5,6 +5,7 @@ import { createStackNavigator } from "react-navigation";
 import HeaderButtons, { HeaderButton } from "react-navigation-header-buttons";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
+import UserSession from "../../network/UserSession";
 import { fetchAPI } from "../../network/Backend";
 
 import Colors from "../../constants/Colors";
@@ -19,11 +20,14 @@ class DriverHomeScreen extends React.Component<{ navigation: any }> {
     isLoading: false
   };
 
-  private onConfirm = (
+  private onConfirm = async (
     origin: { latitude: number; longitude: number },
     destination: { latitude: number; longitude: number }
   ) => {
     this.setState({ isLoading: true });
+
+    let userDetails = await UserSession.get();
+    if (userDetails == null) return;
 
     fetchAPI("/journeys/", {
       method: "POST",
@@ -32,7 +36,7 @@ class DriverHomeScreen extends React.Component<{ navigation: any }> {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        userId: 1,
+        userId: userDetails.id,
         origin: [origin.latitude, origin.longitude],
         destination: [destination.latitude, destination.longitude],
         isDriver: true
