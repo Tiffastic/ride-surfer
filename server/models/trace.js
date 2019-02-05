@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true
       },
       journeyId: DataTypes.INTEGER,
-      location: DataTypes.GEOGRAPHY("POINT"),
+      location: DataTypes.GEOMETRY("POINT"),
       timestamp: DataTypes.DATE
     },
     {}
@@ -17,6 +17,7 @@ module.exports = (sequelize, DataTypes) => {
   Trace.associate = function(models) {
     Trace.belongsTo(models.Journey, {
       foreignKey: "journeyId",
+      targetKey: "id",
       onDelete: "CASCADE"
     });
   };

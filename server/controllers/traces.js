@@ -17,7 +17,8 @@ module.exports = {
   create(req, res) {
     var loc = {
       type: "Point",
-      coordinates: req.body.location
+      coordinates: req.body.location,
+      crs: { type: "name", properties: { name: "EPSG:4326" } }
     };
     return Trace.create({
       journeyId: req.body.journeyId,

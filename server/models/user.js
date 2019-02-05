@@ -21,6 +21,7 @@ module.exports = (sequelize, DataTypes) => {
   );
   User.associate = function(models) {
     User.hasMany(models.Journey, {
+      sourceKey: "id",
       foreignKey: "userId",
       as: "journeys"
     });

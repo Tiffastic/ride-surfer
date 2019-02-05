@@ -18,10 +18,10 @@ module.exports = {
         }
       },
       origin: {
-        type: Sequelize.GEOGRAPHY
+        type: Sequelize.GEOMETRY
       },
       destination: {
-        type: Sequelize.GEOGRAPHY
+        type: Sequelize.GEOMETRY
       },
       arrivalAt: {
         type: Sequelize.DATE
@@ -30,7 +30,7 @@ module.exports = {
         type: Sequelize.BOOLEAN
       },
       path: {
-        type: Sequelize.GEOGRAPHY
+        type: Sequelize.GEOMETRY
       },
       createdAt: {
         allowNull: false,

@@ -9,20 +9,32 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true
       },
       userId: DataTypes.INTEGER,
-      origin: DataTypes.GEOGRAPHY("POINT"),
-      destination: DataTypes.GEOGRAPHY("POINT"),
+      origin: DataTypes.GEOMETRY("POINT"),
+      destination: DataTypes.GEOMETRY("POINT"),
       arrivalAt: DataTypes.DATE,
       isDriver: DataTypes.BOOLEAN,
-      path: DataTypes.GEOGRAPHY("LINE")
+      path: DataTypes.GEOMETRY("LINE")
     },
     {}
   );
   Journey.associate = function(models) {
     Journey.hasMany(models.Trace, {
+      sourceKey: "id",
       foreignKey: "journeyId",
-      as: "traces"
+      as: { singular: "trace", plural: "traces" }
+    });
+    Journey.hasMany(models.PassengerRide, {
+      sourceKey: "id",
+      foreignKey: "passengerJourneyId",
+      as: { singular: "passengerRide", plural: "passengerRides" }
+    });
+    Journey.hasMany(models.PassengerRide, {
+      sourceKey: "id",
+      foreignKey: "driverJourneyId",
+      as: { singular: "driverRide", plural: "driverRides" }
     });
     Journey.belongsTo(models.User, {
+      targetKey: "id",
       foreignKey: "userId",
       onDelete: "CASCADE"
     });

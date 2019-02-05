@@ -18,7 +18,7 @@ module.exports = {
         }
       },
       location: {
-        type: Sequelize.GEOGRAPHY
+        type: Sequelize.GEOMETRY
       },
       timestamp: {
         type: Sequelize.DATE

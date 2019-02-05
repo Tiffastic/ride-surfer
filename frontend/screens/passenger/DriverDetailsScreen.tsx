@@ -11,22 +11,17 @@ import {
 
 import Colors from "../../constants/Colors";
 import { number, string } from "prop-types";
+import { fetchAPI } from "../../network/Backend";
+import UserSession from "../../network/UserSession";
 
 export default class DriverDetailsScreen extends React.Component<{
   navigation: any;
 }> {
   state = {
-    destination: this.props.navigation.getParam("destination", {
-      description: string,
-      latitude: number,
-      longitude: number
-    }),
-    driver: this.props.navigation.getParam("driver", {
-      name: "Home",
-      home: "",
-      class: "",
-      work: ""
-    })
+    origin: this.props.navigation.getParam("origin"),
+    destination: this.props.navigation.getParam("destination"),
+    driver: this.props.navigation.getParam("driver"),
+    driverJourney: this.props.navigation.getParam("driverJourney")
   };
 
   render() {
@@ -73,11 +68,64 @@ export default class DriverDetailsScreen extends React.Component<{
     );
   }
 
-  onRequest = () => {
-    this.props.navigation.navigate("RideInProgress", {
-      destination: this.state.destination,
-      driver: this.state.driver
-    });
+  onRequest = async () => {
+    let userDetails = await UserSession.get();
+    if (userDetails == null) return;
+
+    fetchAPI("/journeys/", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        userId: userDetails.id,
+        origin: [this.state.origin.latitude, this.state.origin.longitude],
+        destination: [
+          this.state.destination.latitude,
+          this.state.destination.longitude
+        ],
+        isDriver: false
+      })
+    })
+      .then(journeyResponse => journeyResponse.json())
+
+      .then(journeyResponseJson => {
+        if (journeyResponseJson.message == "Journey Not Found") {
+          this.setState({
+            errorMessage: "Journey not found"
+          });
+        } else {
+          fetchAPI("/passengerRides/", {
+            method: "POST",
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              passengerJourneyId: journeyResponseJson.id,
+              driverJourneyId: this.state.driverJourney.id
+            })
+          })
+            .then(response => response.json())
+
+            .then(responseJson => {
+              if (responseJson.message == "Ride Not Found") {
+                this.setState({
+                  errorMessage: "Error Sending Request"
+                });
+              } else {
+                this.props.navigation.popToTop();
+              }
+            })
+            .catch(error => {
+              console.log(error);
+            });
+        }
+      })
+      .catch(error => {
+        console.log(error);
+      });
   };
 }
 

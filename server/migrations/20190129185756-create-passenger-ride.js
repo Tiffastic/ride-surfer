@@ -27,10 +27,10 @@ module.exports = {
         }
       },
       pickupLocation: {
-        type: Sequelize.GEOGRAPHY
+        type: Sequelize.GEOMETRY
       },
       dropoffLocation: {
-        type: Sequelize.GEOGRAPHY
+        type: Sequelize.GEOMETRY
       },
       pickupTime: {
         type: Sequelize.DATE

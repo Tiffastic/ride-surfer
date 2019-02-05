@@ -8,10 +8,8 @@ module.exports = (sequelize, DataTypes) => {
         autoIncrement: true,
         primaryKey: true
       },
-      passengerJourneyId: DataTypes.INTEGER,
-      driverJourneyId: DataTypes.INTEGER,
-      pickupLocation: DataTypes.GEOGRAPHY("POINT"),
-      dropoffLocation: DataTypes.GEOGRAPHY("POINT"),
+      pickupLocation: DataTypes.GEOMETRY("POINT"),
+      dropoffLocation: DataTypes.GEOMETRY("POINT"),
       pickupTime: DataTypes.DATE,
       dropoffTime: DataTypes.DATE,
       driverAccepted: DataTypes.BOOLEAN
@@ -20,11 +18,15 @@ module.exports = (sequelize, DataTypes) => {
   );
   PassengerRide.associate = function(models) {
     PassengerRide.belongsTo(models.Journey, {
-      foreignKey: "passengerJouneyId",
+      as: "passengerJourney",
+      foreignKey: "passengerJourneyId",
+      targetKey: "id",
       onDelete: "CASCADE"
     });
     PassengerRide.belongsTo(models.Journey, {
-      foreignKey: "driverJouneyId",
+      as: "driverJourney",
+      foreignKey: "driverJourneyId",
+      targetKey: "id",
       onDelete: "CASCADE"
     });
   };

@@ -12,6 +12,7 @@ import {
 
 import Colors from "../../constants/Colors";
 import Styles from "../../constants/Styles";
+import { fetchAPI } from "../../network/Backend";
 
 import UserSession from "../../network/UserSession";
 
@@ -111,7 +112,7 @@ export default class SignupScreen extends React.Component<{ navigation: any }> {
   }
 
   private _register = async () => {
-    return fetch("https://ride-surfer.herokuapp.com/users/", {
+    return fetchAPI("/users/", {
       method: "POST",
       headers: {
         Accept: "application/json",

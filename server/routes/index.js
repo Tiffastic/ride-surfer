@@ -1,6 +1,7 @@
 const usersController = require("../controllers").users;
 const journeysController = require("../controllers").journeys;
 const tracesController = require("../controllers").traces;
+const passengerRideController = require("../controllers").passengerRides;
 const RateRide = require("../models").RateRides;
 
 module.exports = app => {
@@ -32,8 +33,21 @@ module.exports = app => {
   app.get("/traces", tracesController.retrieveAll);
   app.get("/traces/:id", tracesController.retrieve);
   app.post("/traces", tracesController.create);
-  const RateRide = require("../models").RateRides;
 
+  app.get("/passengerRides", passengerRideController.retrieveAll);
+  app.get(
+    "/passengerRides/drive/:id",
+    passengerRideController.retrieveDrivingRides
+  );
+  app.get(
+    "/passengerRides/passenger/:id",
+    passengerRideController.retrievePassengerRides
+  );
+  app.post("/passengerRides", passengerRideController.create);
+  app.put("/passengerRides/:id", passengerRideController.update);
+  app.delete("/passengerRides/:id", passengerRideController.destroy);
+
+  const RateRide = require("../models").RateRides;
   app.post("/rateride", (req, res, next) => {
     RateRide.create(req.body, { fields: Object.keys(req.body) })
       .then(rating => res.status(201).json(rating))

@@ -71,19 +71,18 @@ export default class DriverPickerScreen extends React.Component<{
 }> {
   state = {
     loading: true,
-    destination: this.props.navigation.getParam("destination", {
-      description: string,
-      latitude: number,
-      lontitude: number
-    }),
+    origin: this.props.navigation.getParam("origin"),
+    destination: this.props.navigation.getParam("destination"),
     errorMessage: null,
     drivers: []
   };
 
   private chooseDriver = (item: any) => {
     this.props.navigation.push("DriverDetails", {
+      origin: this.state.origin,
       destination: this.state.destination,
-      driver: dummyDrivers[0]
+      driver: dummyDrivers[0],
+      driverJourney: item
     });
   };
 

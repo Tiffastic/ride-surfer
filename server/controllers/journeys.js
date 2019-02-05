@@ -31,19 +31,22 @@ module.exports = {
   create(req, res) {
     var origin = {
       type: "Point",
-      coordinates: req.body.origin
+      coordinates: req.body.origin,
+      crs: { type: "name", properties: { name: "EPSG:4326" } }
     };
 
     var destination = {
       type: "Point",
-      coordinates: req.body.destination
+      coordinates: req.body.destination,
+      crs: { type: "name", properties: { name: "EPSG:4326" } }
     };
 
     return Journey.create({
       userId: req.body.userId,
       origin: origin,
       destination: destination,
-      arrivalAt: req.body.arrivalAt
+      arrivalAt: req.body.arrivalAt,
+      isDriver: req.body.isDriver
     })
       .then(journey => res.status(201).json(journey))
       .catch(error => res.status(400).json(error));
