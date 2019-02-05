@@ -18,6 +18,8 @@ import Colors from "../../constants/Colors";
 import HeaderButtons, { HeaderButton } from "react-navigation-header-buttons";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
+import AddressPicker from "../../components/AddressPicker";
+
 import DriverPickerScreen from "./DriverPickerScreen";
 import DriverDetailsScreen from "./DriverDetailsScreen";
 import ProfileScreen from "./ProfileScreen";
@@ -26,252 +28,6 @@ import MessageConversationsScreen from "./MessageConversationsScreen";
 import StartRideScreen from "./StartRideScreen";
 import RateDriverScreen from "./RateDriverScreen";
 import RideInProgressScreen from "./RideInProgress";
-
-import { Permissions, Location } from "expo";
-import MapView, { Marker } from "react-native-maps";
-import { fetchAPI } from "../../network/Backend";
-
-const { width, height } = Dimensions.get("window");
-
-const ASPECT_RATIO = width / height;
-const LATITUDE = 37.78825;
-const LONGITUDE = -122.4324;
-const LATITUDE_DELTA = 0.0922;
-const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
-
-type state = {
-  isLoading: boolean;
-  startLocationInput: string;
-  startLocation: { latitude: number; longitude: number };
-  destinationLocationInput: string;
-  destinationLocation: { latitude: number; longitude: number };
-  markers: Array<{ latitude: number; longitude: number }>;
-  errorMessage: string;
-  journey: {
-    id: number;
-    userId: number;
-    origin: number;
-    isDriver: boolean;
-  } | null;
-};
-
-class AddressPicker extends React.Component<{ navigation: any }, state> {
-  constructor(props: any) {
-    super(props);
-
-    this.state = {
-      isLoading: true,
-      startLocationInput: "",
-      startLocation: { latitude: LATITUDE, longitude: LONGITUDE },
-      destinationLocationInput: "",
-      destinationLocation: { latitude: LATITUDE, longitude: LONGITUDE },
-      markers: [{ latitude: LATITUDE, longitude: LONGITUDE }],
-      errorMessage: "",
-      journey: null
-    };
-
-    this.onMapPress = this.onMapPress.bind(this);
-  }
-
-  onMapPress(e: any) {
-    let coords = {
-      latitude: e.nativeEvent.coordinate.latitude,
-      longitude: e.nativeEvent.coordinate.longitude
-    };
-    this.setState({ destinationLocation: coords });
-  }
-
-  search = async () => {
-    let { status } = await Permissions.getAsync(Permissions.LOCATION);
-    if (status !== "granted") {
-      this.setState({
-        errorMessage: "Permission to access location was denied"
-      });
-    } else {
-      if (this.state.startLocationInput !== "Current Location") {
-        Location.geocodeAsync(this.state.startLocationInput)
-          .then(response => {
-            if (response.length > 0) {
-              let coords = {
-                latitude: response[0].latitude,
-                longitude: response[0].longitude
-              };
-              this.setState({ startLocation: coords });
-            }
-          })
-          .then(() => {
-            if (this.state.destinationLocationInput !== "Current Location") {
-              Location.geocodeAsync(this.state.destinationLocationInput).then(
-                response => {
-                  if (response.length > 0) {
-                    let coords = {
-                      latitude: response[0].latitude,
-                      longitude: response[0].longitude
-                    };
-                    this.setState({ destinationLocation: coords });
-                  }
-                }
-              );
-            }
-          })
-          .then(() => {
-            this.fetchMarkerData();
-          });
-      }
-    }
-  };
-
-  componentDidMount() {
-    this.fetchMarkerData();
-  }
-
-  fetchMarkerData() {
-    this.setState({
-      markers: [this.state.startLocation, this.state.destinationLocation],
-      isLoading: false
-    });
-  }
-
-  confirmRide = async () => {
-    let origin = this.state.startLocation;
-    let destination = this.state.destinationLocation;
-
-    this.props.navigation.push("DriverPicker", {
-      destination: destination
-    });
-
-    return;
-
-    fetchAPI("/journeys/", {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        userId: 1,
-        origin: [origin.latitude, origin.longitude],
-        destination: [destination.latitude, destination.longitude],
-        isDriver: false
-      })
-    })
-      .then(response => response.json())
-
-      .then(responseJson => {
-        if (responseJson.message == "Journey Not Found") {
-          this.setState({
-            errorMessage: "Journey not found"
-          });
-        } else {
-          this.setState({ journey: responseJson });
-          this.props.navigation.push("DriverPicker", {
-            destination: destination
-          });
-        }
-      })
-      .catch(error => {
-        console.log(error);
-      });
-  };
-
-  render() {
-    return (
-      <View style={styles.container}>
-        <View style={{ flexDirection: "row" }}>
-          <HeaderButtons HeaderButtonComponent={IoniconsHeaderButton}>
-            <HeaderButton
-              title="MessagesIcon"
-              iconName="ios-locate"
-              iconSize={20}
-              onPress={() =>
-                navigator.geolocation.getCurrentPosition(
-                  position => {
-                    this.setState({
-                      startLocation: {
-                        latitude: position.coords.latitude,
-                        longitude: position.coords.longitude
-                      },
-                      startLocationInput: "Current Location"
-                    });
-                  },
-                  error => Alert.alert(error.message),
-                  { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
-                )
-              }
-            />
-          </HeaderButtons>
-          <TextInput
-            placeholder="Starting location?"
-            style={styles.queryBox}
-            value={this.state.startLocationInput}
-            onChangeText={text => this.setState({ startLocationInput: text })}
-          />
-        </View>
-        <View style={{ flexDirection: "row" }}>
-          <HeaderButtons HeaderButtonComponent={IoniconsHeaderButton}>
-            <HeaderButton
-              title="MessagesIcon"
-              iconName="ios-locate"
-              iconSize={20}
-              onPress={() =>
-                navigator.geolocation.getCurrentPosition(
-                  position => {
-                    this.setState({
-                      destinationLocation: {
-                        latitude: position.coords.latitude,
-                        longitude: position.coords.longitude
-                      },
-                      destinationLocationInput: "Current Location"
-                    });
-                  },
-                  error => Alert.alert(error.message),
-                  { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
-                )
-              }
-            />
-          </HeaderButtons>
-          <TextInput
-            placeholder="Where to?"
-            style={styles.queryBox}
-            value={this.state.destinationLocationInput}
-            onChangeText={text =>
-              this.setState({ destinationLocationInput: text })
-            }
-          />
-        </View>
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <View>
-            <Button title="Search" onPress={this.search} />
-          </View>
-          <View>
-            <Button title="Confirm" onPress={this.confirmRide} />
-          </View>
-        </View>
-        <MapView
-          style={{ flex: 1 }}
-          provider="google"
-          region={{
-            latitude: this.state.destinationLocation.latitude,
-            longitude: this.state.destinationLocation.longitude,
-            latitudeDelta: LATITUDE_DELTA,
-            longitudeDelta: LONGITUDE_DELTA
-          }}
-          onPress={this.onMapPress}
-        >
-          {this.state.isLoading
-            ? null
-            : this.state.markers.map((marker, index) => {
-                const coords = {
-                  latitude: marker.latitude,
-                  longitude: marker.longitude
-                };
-                return <Marker key={index} coordinate={coords} />;
-              })}
-        </MapView>
-      </View>
-    );
-  }
-} // end of address picker class
 
 const IoniconsHeaderButton = (passMeFurther: any) => (
   // the `passMeFurther` variable here contains props from <Item .../> as well as <HeaderButtons ... />
@@ -293,12 +49,27 @@ const IoniconsHeaderButton = (passMeFurther: any) => (
   />
 );
 
+class HomeScreen extends React.Component<{ navigation: any }> {
+  render() {
+    return (
+      <AddressPicker
+        onConfirm={(origin, destination) => {
+          this.props.navigation.push("DriverPicker", {
+            origin: origin,
+            destination: destination
+          });
+        }}
+      />
+    );
+  }
+}
+
 export default createStackNavigator(
   {
     //RouteConfigs
 
-    AddressPicker: {
-      screen: AddressPicker,
+    HomeScreen: {
+      screen: HomeScreen,
       navigationOptions: ({ navigation }: { navigation: any }) => ({
         title: `Ride Surfer`,
         headerRight: (
@@ -354,7 +125,7 @@ export default createStackNavigator(
   {
     //StackNavigatorConfig (Changes the bar itself and not the items inside it)
 
-    initialRouteName: "AddressPicker",
+    initialRouteName: "HomeScreen",
     // headerMode: 'none',
     navigationOptions: {
       //in react nav ver 3, this is called defaultNavigationOptions
@@ -370,36 +141,3 @@ export default createStackNavigator(
     }
   }
 );
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "transparent"
-  },
-  queryBox: {
-    borderColor: "#c3c3c3",
-    backgroundColor: "white",
-    borderWidth: 1,
-    marginTop: 10,
-    marginBottom: 10,
-    marginLeft: 15,
-    marginRight: 15,
-    fontSize: 36
-  },
-  searchResultsList: {
-    marginTop: 10,
-    marginBottom: 10,
-    backgroundColor: "white"
-  },
-  searchResultsItem: {
-    borderColor: "#c3c3c3",
-    borderBottomWidth: 1
-  },
-  searchResultsName: {
-    fontSize: 20
-  },
-  searchResultsAddress: {
-    fontSize: 20,
-    color: "grey"
-  }
-});
