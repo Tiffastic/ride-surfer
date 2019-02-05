@@ -6,8 +6,17 @@ import {
   StyleSheet,
   Text,
   Button,
+  Dimensions,
   View
 } from "react-native";
+
+import MapView, { Polyline, Marker } from "react-native-maps";
+
+const { width, height } = Dimensions.get("window");
+
+const ASPECT_RATIO = width / height;
+const LATITUDE_DELTA = 0.0922;
+const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 
 import Colors from "../../constants/Colors";
 import { number, string } from "prop-types";
@@ -21,30 +30,57 @@ export default class DriverDetailsScreen extends React.Component<{
   state = {
     origin: this.props.navigation.getParam("origin"),
     destination: this.props.navigation.getParam("destination"),
-    driver: this.props.navigation.getParam("driver"),
+    match: this.props.navigation.getParam("match"),
     driverJourney: this.props.navigation.getParam("driverJourney")
   };
 
   render() {
-    let image = this.state.driver.home;
-    let dirs = this.state.driver.homeDirs;
+    // let image = this.state.driver.home;
+    // let dirs = this.state.driver.homeDirs;
     return (
       <View style={styles.container}>
-        <Image
-          style={{ flex: 1.25, width: undefined, height: undefined }}
-          resizeMode="stretch"
-          source={image}
-        />
+        <MapView
+          style={{ flex: 1.25 }}
+          provider="google"
+          region={{
+            latitude: this.state.destination.latitude,
+            longitude: this.state.destination.longitude,
+            latitudeDelta: LATITUDE_DELTA,
+            longitudeDelta: LONGITUDE_DELTA
+          }}
+        >
+          <Polyline
+            coordinates={this.state.driverJourney.path.coordinates.map(
+              (c: number[]) => ({ latitude: c[1], longitude: c[0] })
+            )}
+            strokeWidth={2}
+          />
+          <Marker pinColor={"green"} coordinate={this.state.origin} />
+          <Marker coordinate={this.state.destination} />
+          <Marker
+            coordinate={{
+              latitude: this.state.match.ridePlan.pickup.longitude,
+              longitude: this.state.match.ridePlan.pickup.latitude
+            }}
+          />
+          <Marker
+            coordinate={{
+              latitude: this.state.match.ridePlan.dropoff.longitude,
+              longitude: this.state.match.ridePlan.pickup.latitude
+            }}
+          />
+        </MapView>
+
         <View style={{ flex: 1 }}>
           <Text style={{ fontSize: 25, margin: 5 }}>
-            {this.state.driver.name}
+            {this.state.driverJourney.User.name}
           </Text>
 
           <Text style={{ fontSize: 15, marginLeft: 5 }}>
             Directions to {this.state.destination.name}
           </Text>
-          <FlatList
-            data={dirs}
+          {/* <FlatList
+            data={[]}
             showsVerticalScrollIndicator={false}
             renderItem={({ item, separators }) => (
               <TouchableHighlight
@@ -58,7 +94,7 @@ export default class DriverDetailsScreen extends React.Component<{
                 </View>
               </TouchableHighlight>
             )}
-          />
+          /> */}
           <Button
             title="Request"
             onPress={this.onRequest}

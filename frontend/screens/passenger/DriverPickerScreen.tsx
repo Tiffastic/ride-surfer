@@ -81,23 +81,27 @@ export default class DriverPickerScreen extends React.Component<{
     this.props.navigation.push("DriverDetails", {
       origin: this.state.origin,
       destination: this.state.destination,
-      driver: dummyDrivers[0],
-      driverJourney: item
+      match: item,
+      driverJourney: item.journey
     });
   };
 
   componentDidMount() {
     fetchAPI("/journeys/matches")
-      .then(resp => resp.json())
-      .then(json => {
-        json.forEach(res => (res.key = res.id.toString()));
+      .then(async resp => {
+        let json = await resp.json();
+        if (!resp.ok) {
+          throw json;
+        }
+        console.log(JSON.stringify(json));
+        json.matches.forEach(res => (res.key = res.journey.id.toString()));
         this.setState({
           loading: false,
-          drivers: json
+          drivers: json.matches
         });
       })
       .catch(error => {
-        console.error(error);
+        console.log(error);
         this.setState({ errorMessage: error.toString() });
       });
   }
@@ -132,15 +136,15 @@ export default class DriverPickerScreen extends React.Component<{
               onHideUnderlay={separators.unhighlight}
             >
               <View style={{ flexDirection: "row", alignItems: "center" }}>
-                <Image
-                  source={item.User.profilePic}
+                {/* <Image
+                  source={item.journey.User.profilePic}
                   style={{ width: 50, height: 50 }}
-                />
+                /> */}
                 <Text style={styles.searchResultsName}>
-                  {item.User.firstName}
+                  {item.journey.User.firstName}
                 </Text>
                 <Text style={styles.searchResultsAddress}>
-                  {item.User.rating || "-"} stars
+                  {item.journey.User.rating || "-"} stars
                 </Text>
               </View>
             </TouchableHighlight>
@@ -161,6 +165,13 @@ export default class DriverPickerScreen extends React.Component<{
             longitudeDelta: LONGITUDE_DELTA
           }}
         >
+          <Marker
+            pinColor={"green"}
+            coordinate={{
+              latitude: this.state.origin.latitude,
+              longitude: this.state.origin.longitude
+            }}
+          />
           <Marker
             coordinate={{
               latitude: this.state.destination.latitude,
