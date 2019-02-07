@@ -15,7 +15,7 @@ module.exports = {
         description: {
           type: Sequelize.TEXT
         },
-        imageFilePath: {
+        image: {
           type: Sequelize.BLOB
         },
         ridesGiven: {
