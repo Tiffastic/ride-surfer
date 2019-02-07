@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       userId: DataTypes.INTEGER,
       description: DataTypes.TEXT,
-      imageFilePath: DataTypes.BLOB,
+      image: DataTypes.BLOB,
       ridesGiven: DataTypes.INTEGER,
       ridesTaken: DataTypes.INTEGER
     },
