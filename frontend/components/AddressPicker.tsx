@@ -19,6 +19,7 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 
 import { Permissions, Location } from "expo";
 import MapView, { Marker } from "react-native-maps";
+import { geocodeAsync } from "expo-location";
 
 const { width, height } = Dimensions.get("window");
 
@@ -58,6 +59,16 @@ export default class AddressPicker extends React.Component<Props, state> {
     };
   }
 
+  componentDidMount() {
+    this.fetchCurrentLocation(position => {
+      this.setState({
+        startLocation: position.coords,
+        startLocationInput: "Current Location"
+      });
+      this.fetchMarkerData();
+    });
+  }
+
   onMapPress = (e: any) => {
     let coords = {
       latitude: e.nativeEvent.coordinate.latitude,
@@ -67,7 +78,13 @@ export default class AddressPicker extends React.Component<Props, state> {
       if (response.length > 0) {
         let address = response[0].name;
         if (response[0].street !== null) {
-          address += " " + response[0].street;
+          address +=
+            " " +
+            response[0].city +
+            " " +
+            response[0].region +
+            " " +
+            response[0].postalCode;
         }
         this.setState({
           destinationLocation: coords,
@@ -84,48 +101,41 @@ export default class AddressPicker extends React.Component<Props, state> {
         errorMessage: "Permission to access location was denied"
       });
     } else {
-      if (this.state.startLocationInput !== "Current Location") {
-        Location.geocodeAsync(this.state.startLocationInput)
-          .then(response => {
-            if (response.length > 0) {
-              let coords = {
-                latitude: response[0].latitude,
-                longitude: response[0].longitude
-              };
-              this.setState({ startLocation: coords });
-            }
-          })
-          .then(() => {
-            if (this.state.destinationLocationInput !== "Current Location") {
-              Location.geocodeAsync(this.state.destinationLocationInput).then(
-                response => {
-                  if (response.length > 0) {
-                    let coords = {
-                      latitude: response[0].latitude,
-                      longitude: response[0].longitude
-                    };
-                    this.setState({ destinationLocation: coords });
-                  }
-                }
-              );
-            }
-          })
-          .then(() => {
-            this.fetchMarkerData();
-          });
-      }
+      await this.geocodeStartLocation();
+      await this.geocodeDestinationLocation();
+      this.fetchMarkerData();
     }
   };
 
-  componentDidMount() {
-    this.fetchCurrentLocation(position => {
-      this.setState({
-        startLocation: position.coords,
-        startLocationInput: "Current Location"
+  private geocodeStartLocation = async () => {
+    if (this.state.startLocationInput !== "Current Location") {
+      Location.geocodeAsync(this.state.startLocationInput).then(response => {
+        if (response.length > 0) {
+          let coords = {
+            latitude: response[0].latitude,
+            longitude: response[0].longitude
+          };
+          this.setState({ startLocation: coords });
+        }
       });
-      this.fetchMarkerData();
-    });
-  }
+    }
+  };
+
+  private geocodeDestinationLocation = async () => {
+    if (this.state.destinationLocationInput !== "Current Location") {
+      Location.geocodeAsync(this.state.destinationLocationInput).then(
+        response => {
+          if (response.length > 0) {
+            let coords = {
+              latitude: response[0].latitude,
+              longitude: response[0].longitude
+            };
+            this.setState({ destinationLocation: coords });
+          }
+        }
+      );
+    }
+  };
 
   fetchMarkerData() {
     this.setState({
