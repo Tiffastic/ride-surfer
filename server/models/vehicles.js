@@ -18,7 +18,7 @@ module.exports = (sequelize, DataTypes) => {
     {}
   );
   Vehicles.associate = function(models) {
-    Vehicles.belongsTo(models.Users, {
+    Vehicles.belongsTo(models.User, {
       foreignKey: "userId",
       targetKey: "id"
     });

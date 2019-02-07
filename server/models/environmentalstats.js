@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
     {}
   );
   EnvironmentalStats.associate = function(models) {
-    EnvironmentalStats.belongsTo(models.Users, {
+    EnvironmentalStats.belongsTo(models.User, {
       foreignKey: "userId",
       targetKey: "id"
     });

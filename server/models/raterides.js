@@ -15,11 +15,11 @@ module.exports = (sequelize, DataTypes) => {
     {}
   );
   RateRides.associate = function(models) {
-    RateRides.belongsTo(models.Users, {
+    RateRides.belongsTo(models.User, {
       foreignKey: "personRatingId",
       targetKey: "id"
     });
-    RateRides.belongsTo(models.Users, {
+    RateRides.belongsTo(models.User, {
       foreignKey: "personRatedId",
       targetKey: "id"
     });

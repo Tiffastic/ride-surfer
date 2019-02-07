@@ -17,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
     {}
   );
   Bios.associate = function(models) {
-    Bios.belongsTo(models.Users, { foreignKey: "userId", targetKey: "id" });
+    Bios.belongsTo(models.User, { foreignKey: "userId", targetKey: "id" });
   };
   return Bios;
 };
