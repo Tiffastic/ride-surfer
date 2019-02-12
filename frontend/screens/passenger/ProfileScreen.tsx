@@ -32,7 +32,7 @@ export default class ProfileScreen extends React.Component<{
   };
   state = {
     user: {
-      id: 1,
+      id: "",
       firstName: "Not Found",
       lastName: "",
       email: "",
