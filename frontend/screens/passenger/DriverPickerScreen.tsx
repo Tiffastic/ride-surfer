@@ -184,7 +184,6 @@ export default class DriverPickerScreen extends React.Component<{
                   {item.journey.User.firstName}
                 </Text>
                 <Text style={styles.searchResultsAddress}>
-                  {console.log("inside of view")}
                   {
                     this.state.overallRatings[item.journey.User.id.toString()]
                   }{" "}
