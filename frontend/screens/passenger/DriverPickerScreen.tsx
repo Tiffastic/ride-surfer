@@ -17,8 +17,6 @@ import Styles from "../../constants/Styles";
 import { fetchAPI } from "../../network/Backend";
 import { number, string } from "prop-types";
 
-import UserSession from "../../network/UserSession";
-
 const { width, height } = Dimensions.get("window");
 
 const ASPECT_RATIO = width / height;
@@ -89,8 +87,6 @@ export default class DriverPickerScreen extends React.Component<{
   };
 
   componentDidMount() {
-    console.log("COMPONENT DID MOUNT");
-
     fetchAPI("/journeys/matches")
       .then(async resp => {
         let json = await resp.json();
