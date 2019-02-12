@@ -48,7 +48,6 @@ export default class ProfileScreen extends React.Component<{
   };
 
   getAvgOverallRating() {
-    console.log("this.state.user.id = " + this.state.user.id);
     fetchAPI("/usersOverallRating/" + this.state.user.id)
       .then(response => response.json())
       .then(response => {
