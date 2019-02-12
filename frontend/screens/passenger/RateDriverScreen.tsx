@@ -70,7 +70,7 @@ export default class RateDriverScreen extends React.Component<{
 
   render() {
     return (
-      <ScrollView contentContainerStyle={[Styles.container, styles.container]}>
+      <View style={[Styles.container, styles.container]}>
         <Text style={{ fontSize: 20, marginBottom: 20 }}>
           Thanks for riding with {this.state.driver.name}!
         </Text>
@@ -84,71 +84,83 @@ export default class RateDriverScreen extends React.Component<{
 
         <Text style={{ fontSize: 25, paddingBottom: 20 }}>Rate Your Ride</Text>
 
-        <Text style={{ fontSize: 15, paddingBottom: 10 }}>Cleanliness</Text>
-        <StarRating
-          disabled={false}
-          maxStars={5}
-          fullStarColor={"gold"}
-          starSize={45}
-          rating={this.state.cleanlinessStar}
-          selectedStar={(rating: number) => this.onCleanlinessStarPress(rating)}
-        />
+        <ScrollView>
+          <Text style={{ fontSize: 15, paddingBottom: 10 }}>Cleanliness</Text>
+          <StarRating
+            disabled={false}
+            maxStars={5}
+            fullStarColor={"gold"}
+            starSize={45}
+            rating={this.state.cleanlinessStar}
+            selectedStar={(rating: number) =>
+              this.onCleanlinessStarPress(rating)
+            }
+          />
 
-        <Text style={{ fontSize: 15, paddingBottom: 10 }}>Timeliness</Text>
-        <StarRating
-          disabled={false}
-          maxStars={5}
-          fullStarColor={"gold"}
-          starSize={45}
-          rating={this.state.timelinessStar}
-          selectedStar={(rating: number) => this.onTimelinessStarPress(rating)}
-        />
+          <Text style={{ fontSize: 15, paddingBottom: 10 }}>Timeliness</Text>
+          <StarRating
+            disabled={false}
+            maxStars={5}
+            fullStarColor={"gold"}
+            starSize={45}
+            rating={this.state.timelinessStar}
+            selectedStar={(rating: number) =>
+              this.onTimelinessStarPress(rating)
+            }
+          />
 
-        <Text style={{ fontSize: 15, paddingBottom: 10 }}>Safety</Text>
-        <StarRating
-          disabled={false}
-          maxStars={5}
-          fullStarColor={"gold"}
-          starSize={45}
-          rating={this.state.safetyStar}
-          selectedStar={(rating: number) => this.onSafetyStarPress(rating)}
-        />
+          <Text style={{ fontSize: 15, paddingBottom: 10 }}>Safety</Text>
+          <StarRating
+            disabled={false}
+            maxStars={5}
+            fullStarColor={"gold"}
+            starSize={45}
+            rating={this.state.safetyStar}
+            selectedStar={(rating: number) => this.onSafetyStarPress(rating)}
+          />
 
-        <Text style={{ fontSize: 15, paddingBottom: 10 }}>Overall</Text>
-        <StarRating
-          disabled={false}
-          maxStars={5}
-          fullStarColor={"gold"}
-          starSize={45}
-          rating={this.state.overallStar}
-          selectedStar={(rating: number) => this.onOverallStarPress(rating)}
-        />
+          <Text style={{ fontSize: 15, paddingBottom: 10 }}>Overall</Text>
+          <StarRating
+            disabled={false}
+            maxStars={5}
+            fullStarColor={"gold"}
+            starSize={45}
+            rating={this.state.overallStar}
+            selectedStar={(rating: number) => this.onOverallStarPress(rating)}
+          />
 
-        <View style={{ marginTop: 25 }}>
-          <TextInput
-            placeholder="Comments..."
-            multiline={true}
-            numberOfLines={5}
+          <View style={{ marginTop: 25 }}>
+            <TextInput
+              placeholder="Comments..."
+              multiline={true}
+              numberOfLines={5}
+              style={{
+                height: 80,
+                width: 300,
+                borderColor: "gray",
+                borderWidth: 2,
+                paddingHorizontal: 10,
+                backgroundColor: "white"
+              }}
+              onChangeText={text => this.onUpdateComments(text)}
+            />
+          </View>
+
+          <View
             style={{
-              height: 80,
-              width: 300,
-              borderColor: "gray",
-              borderWidth: 2,
-              paddingHorizontal: 10,
-              backgroundColor: "white"
+              margin: 30,
+              width: "80%",
+              alignContent: "center"
             }}
-            onChangeText={text => this.onUpdateComments(text)}
-          />
-        </View>
-
-        <View style={{ marginTop: 20, width: "80%" }}>
-          <Button
-            title="Rate"
-            color={Colors.primary}
-            onPress={this._submitRatings}
-          />
-        </View>
-      </ScrollView>
+          >
+            <Button
+              title="Rate"
+              color={Colors.primary}
+              onPress={this._submitRatings}
+            />
+          </View>
+        </ScrollView>
+      </View>
     );
   }
 

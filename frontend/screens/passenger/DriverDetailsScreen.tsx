@@ -106,6 +106,7 @@ export default class DriverDetailsScreen extends React.Component<{
   }
 
   onRequest = async () => {
+    //Send a push notification to driver that passenger wants a ride
     fetchAPI(
       "/ridePushNotificationRequest?driverId=" +
         this.state.driverJourney.User.id

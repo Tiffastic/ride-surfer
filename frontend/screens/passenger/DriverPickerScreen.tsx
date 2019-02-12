@@ -13,10 +13,11 @@ import {
 } from "react-native";
 import { ListRenderItem } from "react-native";
 import MapView, { Marker } from "react-native-maps";
-
 import Styles from "../../constants/Styles";
 import { fetchAPI } from "../../network/Backend";
 import { number, string } from "prop-types";
+
+import UserSession from "../../network/UserSession";
 
 const { width, height } = Dimensions.get("window");
 
@@ -69,12 +70,13 @@ const dummyDrivers = [
 export default class DriverPickerScreen extends React.Component<{
   navigation: any;
 }> {
-  state = {
+  state: any = {
     loading: true,
     origin: this.props.navigation.getParam("origin"),
     destination: this.props.navigation.getParam("destination"),
     errorMessage: null,
-    drivers: []
+    drivers: [],
+    overallRatings: {}
   };
 
   private chooseDriver = (item: any) => {
@@ -87,6 +89,8 @@ export default class DriverPickerScreen extends React.Component<{
   };
 
   componentDidMount() {
+    console.log("COMPONENT DID MOUNT");
+
     fetchAPI("/journeys/matches")
       .then(async resp => {
         let json = await resp.json();
@@ -95,15 +99,57 @@ export default class DriverPickerScreen extends React.Component<{
         }
         console.log(JSON.stringify(json));
         json.matches.forEach(res => (res.key = res.journey.id.toString()));
+
+        this.state.drivers = json.matches;
+        // console.log(this.state.drivers);
+        this.getDriverAvgOverallRatings();
+
+        /*
         this.setState({
           loading: false,
           drivers: json.matches
         });
+        */
       })
+
       .catch(error => {
         console.log(error);
         this.setState({ errorMessage: error.toString() });
       });
+  }
+
+  getDriverAvgOverallRatings() {
+    var self: any = this;
+
+    var numOfDrivers = 0;
+    this.state.drivers.forEach(
+      (driver: any) =>
+        function() {
+          var driverId = driver.journey.User.id;
+
+          //  if (this.state.refreshFlatList < this.state.drivers.length) {
+          //   this.state.refreshFlatList++;
+          fetch("/usersOverallRating/" + driverId)
+            .then(resp => resp.json())
+            .then(resp => {
+              self.state.overallRatings[resp.personRatedId.toString()] =
+                resp.avgOverall;
+
+              // CANNOT SET STATE UNTILL THE OVERALL-RATINGS ARRAY IS FILLED, ELSE THE FLATLIST WON'T SHOW THE RATINGS UNLESS WE MANUALLY CLICK ON THE LIST ITEM
+              numOfDrivers++;
+              if (numOfDrivers == self.state.drivers.length) {
+                // console.log(this.state.overallRatings);
+                self.setState({
+                  loading: false
+                });
+              }
+            })
+            .catch(error => {
+              console.log("ERROR  = " + error);
+            });
+          //}
+        }.bind(this)() // MUST BIND THE FUNCTION OR ELSE THIS.STATE.<OBJECT> IS UNDEFINED
+    );
   }
 
   render() {
@@ -128,6 +174,7 @@ export default class DriverPickerScreen extends React.Component<{
         <FlatList
           style={styles.searchResultsList}
           data={this.state.drivers}
+          extraData={this.state}
           renderItem={({ item, separators }: any) => (
             <TouchableHighlight
               style={styles.searchResultsItem}
@@ -144,7 +191,11 @@ export default class DriverPickerScreen extends React.Component<{
                   {item.journey.User.firstName}
                 </Text>
                 <Text style={styles.searchResultsAddress}>
-                  {item.journey.User.rating || "-"} stars
+                  {console.log("inside of view")}
+                  {
+                    this.state.overallRatings[item.journey.User.id.toString()]
+                  }{" "}
+                  stars
                 </Text>
               </View>
             </TouchableHighlight>
@@ -208,7 +259,8 @@ const styles = StyleSheet.create({
   },
   searchResultsList: {
     marginTop: 10,
-    marginBottom: 10
+    marginBottom: 10,
+    flex: 1
   },
   searchResultsItem: {
     borderColor: "#c3c3c3",

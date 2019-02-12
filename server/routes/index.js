@@ -4,6 +4,7 @@ const tracesController = require("../controllers").traces;
 const passengerRideController = require("../controllers").passengerRides;
 const RateRide = require("../models").RateRides;
 const pushNotificationController = require("../controllers").pushNotifications;
+const calculateRatingsController = require("../controllers").calculateRatings;
 
 module.exports = app => {
   //Using CORS, without this, Swagger  does not work with local host
@@ -67,5 +68,23 @@ module.exports = app => {
   app.get(
     "/ridePushNotificationRequest",
     pushNotificationController.notifyDriver
+  );
+
+  app.get(
+    "/usersOverallRating/:id",
+    calculateRatingsController.calculateAvgOverallRating
+  );
+
+  app.get(
+    "/usersSafetyRating/:id",
+    calculateRatingsController.calculateAvgSafetyRating
+  );
+  app.get(
+    "/usersTimelinessRating/:id",
+    calculateRatingsController.calculateAvgTimelinessRating
+  );
+  app.get(
+    "/usersCleanlinessRating/:id",
+    calculateRatingsController.calculateAvgCleanlinessRating
   );
 };

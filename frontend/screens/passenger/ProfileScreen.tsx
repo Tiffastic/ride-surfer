@@ -31,7 +31,7 @@ export default class ProfileScreen extends React.Component<{
   };
   state = {
     user: {
-      id: "",
+      id: 1,
       firstName: "Not Found",
       lastName: "",
       email: "",
@@ -39,8 +39,66 @@ export default class ProfileScreen extends React.Component<{
       carMake: "",
       carModel: "",
       carPlate: ""
-    }
+    },
+    avgOverallRating: 0,
+    avgSafetyRating: 0,
+    avgTimelinessRating: 0,
+    avgCleanlinessRating: 0
   };
+
+  getAvgOverallRating() {
+    console.log("this.state.user.id = " + this.state.user.id);
+    fetch("/usersOverallRating/" + this.state.user.id)
+      .then(response => response.json())
+      .then(response => {
+        this.setState({ avgOverallRating: response.avgOverall });
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  }
+
+  getAvgSafetyRating() {
+    fetch("/usersSafetyRating/" + this.state.user.id)
+      .then(response => response.json())
+      .then(response => this.setState({ avgSafetyRating: response.avgSafety }))
+      .catch(error => {
+        console.log(error);
+      });
+  }
+
+  getAvgTimelinessRating() {
+    fetch("/usersTimelinessRating/" + this.state.user.id)
+      .then(response => response.json())
+      .then(response =>
+        this.setState({ avgTimelinessRating: response.avgTimeliness })
+      )
+      .catch(error => {
+        console.log(error);
+      });
+  }
+
+  getAvgCleanlinessRating() {
+    fetch("/usersCleanlinessRating/" + this.state.user.id)
+      .then(response => response.json())
+      .then(response => {
+        this.setState({ avgCleanlinessRating: response.avgCleanliness });
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  }
+
+  getNumber() {
+    return 1;
+  }
+
+  componentWillMount() {
+    this.getAvgOverallRating();
+    this.getAvgSafetyRating();
+    this.getAvgTimelinessRating();
+    this.getAvgCleanlinessRating();
+  }
 
   render() {
     let name = this.state.user.firstName + " " + this.state.user.lastName;
@@ -62,6 +120,13 @@ export default class ProfileScreen extends React.Component<{
           <Text>{this.state.user.email}</Text>
           <Text>{car}</Text>
           <Text>{this.state.user.carPlate}</Text>
+        </View>
+
+        <View style={{ flex: 1, alignItems: "center" }}>
+          <Text>Overall: {this.state.avgOverallRating}</Text>
+          <Text>Safety: {this.state.avgSafetyRating}</Text>
+          <Text>Timeliness: {this.state.avgTimelinessRating}</Text>
+          <Text>Cleanliness: {this.state.avgCleanlinessRating}</Text>
         </View>
 
         <Button
