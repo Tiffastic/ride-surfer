@@ -16,9 +16,6 @@ module.exports = {
       });
 
       var avgOverall = overallSum / count;
-      console.log("ENDPOINT. avgOverall = " + avgOverall);
-      console.log("ENDPOINT. overallSum = " + overallSum);
-      console.log("ENDPOINT. count =  " + count);
       return res
         .status(200)
         .json({ personRatedId: req.params.id, avgOverall: avgOverall });
