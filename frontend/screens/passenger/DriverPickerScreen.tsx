@@ -127,8 +127,6 @@ export default class DriverPickerScreen extends React.Component<{
         function() {
           var driverId = driver.journey.User.id;
 
-          //  if (this.state.refreshFlatList < this.state.drivers.length) {
-          //   this.state.refreshFlatList++;
           fetch("/usersOverallRating/" + driverId)
             .then(resp => resp.json())
             .then(resp => {
@@ -147,7 +145,6 @@ export default class DriverPickerScreen extends React.Component<{
             .catch(error => {
               console.log("ERROR  = " + error);
             });
-          //}
         }.bind(this)() // MUST BIND THE FUNCTION OR ELSE THIS.STATE.<OBJECT> IS UNDEFINED
     );
   }
