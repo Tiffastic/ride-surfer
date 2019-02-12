@@ -11,6 +11,7 @@ import {
 import Colors from "../../constants/Colors";
 
 import UserSession from "../../network/UserSession";
+import { fetchAPI } from "../../network/Backend";
 
 export default class ProfileScreen extends React.Component<{
   navigation: any;
@@ -48,7 +49,7 @@ export default class ProfileScreen extends React.Component<{
 
   getAvgOverallRating() {
     console.log("this.state.user.id = " + this.state.user.id);
-    fetch("/usersOverallRating/" + this.state.user.id)
+    fetchAPI("/usersOverallRating/" + this.state.user.id)
       .then(response => response.json())
       .then(response => {
         this.setState({ avgOverallRating: response.avgOverall });
@@ -59,7 +60,7 @@ export default class ProfileScreen extends React.Component<{
   }
 
   getAvgSafetyRating() {
-    fetch("/usersSafetyRating/" + this.state.user.id)
+    fetchAPI("/usersSafetyRating/" + this.state.user.id)
       .then(response => response.json())
       .then(response => this.setState({ avgSafetyRating: response.avgSafety }))
       .catch(error => {
@@ -68,7 +69,7 @@ export default class ProfileScreen extends React.Component<{
   }
 
   getAvgTimelinessRating() {
-    fetch("/usersTimelinessRating/" + this.state.user.id)
+    fetchAPI("/usersTimelinessRating/" + this.state.user.id)
       .then(response => response.json())
       .then(response =>
         this.setState({ avgTimelinessRating: response.avgTimeliness })
@@ -79,7 +80,7 @@ export default class ProfileScreen extends React.Component<{
   }
 
   getAvgCleanlinessRating() {
-    fetch("/usersCleanlinessRating/" + this.state.user.id)
+    fetchAPI("/usersCleanlinessRating/" + this.state.user.id)
       .then(response => response.json())
       .then(response => {
         this.setState({ avgCleanlinessRating: response.avgCleanliness });

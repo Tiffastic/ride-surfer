@@ -123,7 +123,7 @@ export default class DriverPickerScreen extends React.Component<{
         function() {
           var driverId = driver.journey.User.id;
 
-          fetch("/usersOverallRating/" + driverId)
+          fetchAPI("/usersOverallRating/" + driverId)
             .then(resp => resp.json())
             .then(resp => {
               self.state.overallRatings[resp.personRatedId.toString()] =
@@ -131,7 +131,7 @@ export default class DriverPickerScreen extends React.Component<{
 
               // CANNOT SET STATE UNTILL THE OVERALL-RATINGS ARRAY IS FILLED, ELSE THE FLATLIST WON'T SHOW THE RATINGS UNLESS WE MANUALLY CLICK ON THE LIST ITEM
               numOfDrivers++;
-              if (numOfDrivers == self.state.drivers.length) {
+              if (numOfDrivers === self.state.drivers.length) {
                 // console.log(this.state.overallRatings);
                 self.setState({
                   loading: false
