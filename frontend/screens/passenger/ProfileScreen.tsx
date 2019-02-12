@@ -89,10 +89,6 @@ export default class ProfileScreen extends React.Component<{
       });
   }
 
-  getNumber() {
-    return 1;
-  }
-
   componentWillMount() {
     this.getAvgOverallRating();
     this.getAvgSafetyRating();
