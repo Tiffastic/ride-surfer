@@ -12,10 +12,6 @@ module.exports = (sequelize, DataTypes) => {
       lastName: DataTypes.TEXT,
       email: DataTypes.TEXT,
       password: DataTypes.TEXT,
-      carPlate: DataTypes.TEXT,
-      carMake: DataTypes.TEXT,
-      carModel: DataTypes.TEXT,
-      carYear: DataTypes.INTEGER,
       pushToken: {
         type: DataTypes.TEXT,
         unique: true
@@ -28,6 +24,11 @@ module.exports = (sequelize, DataTypes) => {
       sourceKey: "id",
       foreignKey: "userId",
       as: "journeys"
+    });
+    User.hasMany(models.Vehicle, {
+      sourceKey: "id",
+      foreignKey: "userId",
+      as: "vehicles"
     });
   };
   return User;

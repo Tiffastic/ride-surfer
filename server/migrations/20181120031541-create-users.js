@@ -20,18 +20,6 @@ module.exports = {
       password: {
         type: Sequelize.TEXT
       },
-      carPlate: {
-        type: Sequelize.TEXT
-      },
-      carMake: {
-        type: Sequelize.TEXT
-      },
-      carModel: {
-        type: Sequelize.TEXT
-      },
-      carYear: {
-        type: Sequelize.INTEGER
-      },
       pushToken: {
         type: Sequelize.TEXT,
         unique: true

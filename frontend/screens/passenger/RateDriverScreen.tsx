@@ -13,8 +13,8 @@ import Styles from "../../constants/Styles";
 import Colors from "../../constants/Colors";
 
 import { fetchAPI } from "../../network/Backend";
+import UserSession from "../../network/UserSession";
 
-//import StarRating from "react-native-star-rating";
 const StarRating = require("react-native-star-rating").default;
 
 export default class RateDriverScreen extends React.Component<{
@@ -25,12 +25,8 @@ export default class RateDriverScreen extends React.Component<{
   };
 
   state = {
-    driver: this.props.navigation.getParam("driver", {
-      name: "Not Found",
-      home: "",
-      class: "",
-      work: ""
-    }),
+    ridePartner: this.props.navigation.getParam("ridePartner"),
+    rideDetails: this.props.navigation.getParam("rideDetails"),
     cleanlinessStar: 5,
     timelinessStar: 5,
     safetyStar: 5,
@@ -72,12 +68,12 @@ export default class RateDriverScreen extends React.Component<{
     return (
       <View style={[Styles.container, styles.container]}>
         <Text style={{ fontSize: 20, marginBottom: 20 }}>
-          Thanks for riding with {this.state.driver.name}!
+          Thanks for riding with {this.state.ridePartner.name}!
         </Text>
 
         <View style={{ marginBottom: 20 }}>
           <Image
-            source={this.state.driver.profilePic}
+            source={this.state.ridePartner.profilePic}
             style={{ width: 200, height: 200, borderRadius: 100 }}
           />
         </View>
@@ -164,7 +160,10 @@ export default class RateDriverScreen extends React.Component<{
     );
   }
 
-  _submitRatings = () => {
+  _submitRatings = async () => {
+    let userDetails = await UserSession.get();
+    if (userDetails == null) return;
+
     return fetchAPI("/rateride", {
       method: "POST",
       headers: {
@@ -172,9 +171,9 @@ export default class RateDriverScreen extends React.Component<{
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        personRatingId: 1,
-        personRatedId: 3,
-        rideId: 3,
+        personRatingId: userDetails.id,
+        personRatedId: this.state.ridePartner.id,
+        rideId: this.state.rideDetails.id,
         cleanliness: this.state.cleanlinessStar,
         timeliness: this.state.timelinessStar,
         safety: this.state.safetyStar,

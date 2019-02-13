@@ -119,7 +119,6 @@ export default createStackNavigator(
     DriverDetails: DriverDetailsScreen,
     MessageContacts: MessageContactsScreen,
     MessageConversations: MessageConversationsScreen,
-    StartRide: StartRideScreen,
     RideInProgress: RideInProgressScreen,
     RateDriver: RateDriverScreen,
     PushNotificationsRegister: PushNotificationsRegisterScreen

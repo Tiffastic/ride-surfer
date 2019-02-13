@@ -1,4 +1,5 @@
 const User = require("../models").User;
+const Vehicle = require("../models").Vehicle;
 const bcrypt = require("react-native-bcrypt");
 
 module.exports = {
@@ -27,7 +28,12 @@ module.exports = {
   },
 
   retrieve(req, res) {
-    return User.findByPk(req.params.id)
+    return User.findOne({
+      where: {
+        id: req.params.id
+      },
+      include: [{ model: Vehicle, as: "vehicles" }]
+    })
       .then(user => {
         if (!user) {
           return res.status(404).json({
@@ -40,10 +46,11 @@ module.exports = {
   },
 
   retrieveByLoginInfo(req, res) {
-    return User.find({
+    return User.findOne({
       where: {
         email: req.body.email
-      }
+      },
+      include: [{ model: Vehicle, as: "vehicles" }]
     })
       .then(user => {
         if (!user) {

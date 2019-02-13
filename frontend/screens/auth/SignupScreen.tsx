@@ -122,22 +122,46 @@ export default class SignupScreen extends React.Component<{ navigation: any }> {
         firstName: this.state.first_name,
         lastName: this.state.last_name,
         email: this.state.email,
-        password: this.state.password,
-        carPlate: this.state.car_plate,
-        carMake: this.state.car_make,
-        carModel: this.state.car_model,
-        carYear: this.state.car_year
+        password: this.state.password
       })
     })
       .then(response => response.json())
 
-      .then(responseJson => {
-        if (responseJson.status == 400) {
+      .then(userJson => {
+        if (userJson.status == 400) {
           this.setState({
-            error: responseJson.error
+            error: userJson.error
           });
         } else {
-          this._saveUserAsync(responseJson).catch(console.log);
+          fetchAPI("/vehicles/", {
+            method: "POST",
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              userId: userJson.id,
+              plate: this.state.car_plate,
+              make: this.state.car_make,
+              model: this.state.car_model,
+              year: this.state.car_year
+            })
+          })
+            .then(response => response.json())
+
+            .then(vehicleJson => {
+              if (vehicleJson.status == 400) {
+                this.setState({
+                  error: vehicleJson.error
+                });
+              } else {
+                userJson.vehicles = [vehicleJson];
+                this._saveUserAsync(userJson).catch(console.log);
+              }
+            })
+            .catch(error => {
+              console.log(error);
+            });
         }
       })
       .catch(error => {

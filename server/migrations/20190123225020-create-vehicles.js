@@ -18,6 +18,12 @@ module.exports = {
         model: {
           type: Sequelize.TEXT
         },
+        year: {
+          type: Sequelize.INTEGER
+        },
+        plate: {
+          type: Sequelize.TEXT
+        },
         vin: {
           type: Sequelize.TEXT,
           unique: true

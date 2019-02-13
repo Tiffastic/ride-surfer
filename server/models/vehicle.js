@@ -1,7 +1,7 @@
 "use strict";
 module.exports = (sequelize, DataTypes) => {
-  const Vehicles = sequelize.define(
-    "Vehicles",
+  const Vehicle = sequelize.define(
+    "Vehicle",
     {
       id: {
         type: DataTypes.INTEGER,
@@ -11,17 +11,19 @@ module.exports = (sequelize, DataTypes) => {
       userId: DataTypes.INTEGER,
       make: DataTypes.TEXT,
       model: DataTypes.TEXT,
+      year: DataTypes.INTEGER,
+      plate: DataTypes.TEXT,
       vin: { type: DataTypes.TEXT, unique: true },
       policyNumber: DataTypes.TEXT,
       policyProvider: DataTypes.INTEGER
     },
     {}
   );
-  Vehicles.associate = function(models) {
-    Vehicles.belongsTo(models.User, {
+  Vehicle.associate = function(models) {
+    Vehicle.belongsTo(models.User, {
       foreignKey: "userId",
       targetKey: "id"
     });
   };
-  return Vehicles;
+  return Vehicle;
 };

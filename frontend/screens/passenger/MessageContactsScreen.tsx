@@ -88,6 +88,7 @@ export default class MessageContactsScreen extends React.Component<{
   };
 
   messageSelected = (item: any, type: string) => {
+    let ridePartnerJourney: any;
     let ridePartner: any;
     let coords: any;
 
@@ -98,6 +99,7 @@ export default class MessageContactsScreen extends React.Component<{
         longitude: destination.coordinates[1]
       };
       ridePartner = item.driverJourney.User;
+      ridePartnerJourney = item.driverJourney;
     } else if (type == "driver") {
       let destination = item.driverJourney.destination;
       coords = {
@@ -105,6 +107,7 @@ export default class MessageContactsScreen extends React.Component<{
         longitude: destination.coordinates[1]
       };
       ridePartner = item.passengerJourney.User;
+      ridePartnerJourney = item.passengerJourney;
     }
 
     Location.reverseGeocodeAsync(coords).then(addresses => {
@@ -112,8 +115,9 @@ export default class MessageContactsScreen extends React.Component<{
       this.props.navigation.push("MessageConversations", {
         destination: details,
         ridePartner: ridePartner,
-        rideDetails: item,
-        type: type
+        ridePartnerJourney: ridePartnerJourney,
+        type: type,
+        rideDetails: item
       });
     });
   };

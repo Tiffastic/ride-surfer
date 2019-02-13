@@ -32,6 +32,9 @@ module.exports = {
       path: {
         type: Sequelize.GEOMETRY
       },
+      currentLocation: {
+        type: Sequelize.GEOMETRY
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

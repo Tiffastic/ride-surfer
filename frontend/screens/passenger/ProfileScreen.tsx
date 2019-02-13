@@ -1,12 +1,5 @@
 import React from "react";
-import {
-  ScrollView,
-  View,
-  StyleSheet,
-  Text,
-  Button,
-  Image
-} from "react-native";
+import { View, FlatList, StyleSheet, Text, Button, Image } from "react-native";
 
 import Colors from "../../constants/Colors";
 
@@ -26,6 +19,8 @@ export default class ProfileScreen extends React.Component<{
     var userDetails = await UserSession.get();
     if (userDetails == null) throw ":(";
     this.setState({ user: userDetails });
+
+    this.getRatings();
   };
   static navigationOptions = {
     title: "Profile"
@@ -36,10 +31,7 @@ export default class ProfileScreen extends React.Component<{
       firstName: "Not Found",
       lastName: "",
       email: "",
-      carYear: "",
-      carMake: "",
-      carModel: "",
-      carPlate: ""
+      vehicles: []
     },
     avgOverallRating: 0,
     avgSafetyRating: 0,
@@ -51,6 +43,7 @@ export default class ProfileScreen extends React.Component<{
     fetchAPI("/usersOverallRating/" + this.state.user.id)
       .then(response => response.json())
       .then(response => {
+        console.log(response.avgOverall);
         this.setState({ avgOverallRating: response.avgOverall });
       })
       .catch(error => {
@@ -89,7 +82,7 @@ export default class ProfileScreen extends React.Component<{
       });
   }
 
-  componentWillMount() {
+  getRatings() {
     this.getAvgOverallRating();
     this.getAvgSafetyRating();
     this.getAvgTimelinessRating();
@@ -98,12 +91,6 @@ export default class ProfileScreen extends React.Component<{
 
   render() {
     let name = this.state.user.firstName + " " + this.state.user.lastName;
-    let car =
-      this.state.user.carYear +
-      " " +
-      this.state.user.carMake +
-      " " +
-      this.state.user.carModel;
     return (
       <View style={styles.container}>
         <Image
@@ -114,8 +101,16 @@ export default class ProfileScreen extends React.Component<{
         <View style={{ flex: 1, alignItems: "center" }}>
           <Text style={{ fontSize: 25, margin: 10 }}>{name}</Text>
           <Text>{this.state.user.email}</Text>
-          <Text>{car}</Text>
-          <Text>{this.state.user.carPlate}</Text>
+          <FlatList
+            data={this.state.user.vehicles}
+            keyExtractor={(item: any, index: any) => item.id}
+            renderItem={({ item, separators }: any) => (
+              <View>
+                <Text>{item.year + " " + item.make + " " + item.model}</Text>
+                <Text>{item.plate}</Text>
+              </View>
+            )}
+          />
         </View>
 
         <View style={{ flex: 1, alignItems: "center" }}>

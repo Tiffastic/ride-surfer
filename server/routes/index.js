@@ -1,4 +1,5 @@
 const usersController = require("../controllers").users;
+const vehiclesController = require("../controllers").vehicles;
 const journeysController = require("../controllers").journeys;
 const tracesController = require("../controllers").traces;
 const passengerRideController = require("../controllers").passengerRides;
@@ -36,10 +37,17 @@ module.exports = app => {
     })
   );
 
+  app.get("/vehicles/", vehiclesController.retrieveAll);
+  app.get("/vehicles/:id", vehiclesController.retrieve);
+  app.post("/vehicles", vehiclesController.create);
+  app.put("/vehicles/:id", vehiclesController.update);
+  app.delete("/vehicles/:id", vehiclesController.destroy);
+
   app.get("/journeys", journeysController.retrieveAll);
   app.get("/journeys/matches", journeysController.retrieveMatches);
   app.get("/journeys/:id", journeysController.retrieve);
   app.post("/journeys", journeysController.create);
+  app.put("/journeys/updateLocation", journeysController.updateAll);
   app.put("/journeys/:id", journeysController.update);
 
   app.get("/traces", tracesController.retrieveAll);

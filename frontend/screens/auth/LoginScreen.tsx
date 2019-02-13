@@ -88,6 +88,12 @@ export default class LoginScreen extends React.Component<{ navigation: any }> {
           this.setState({
             error: "User not found"
           });
+        } else if (
+          responseJson.message == "Password or Username is incorrect"
+        ) {
+          this.setState({
+            error: "Password or Username is incorrect"
+          });
         } else {
           this._saveUserAsync(responseJson).catch(console.log);
         }

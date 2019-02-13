@@ -218,5 +218,18 @@ module.exports = {
           .catch(error => res.status(400).json(error));
       })
       .catch(error => res.status(400).json(error));
+  },
+  updateAll(req, res) {
+    var location = {
+      type: "Point",
+      coordinates: req.body.currentLocation,
+      crs: { type: "name", properties: { name: "EPSG:4326" } }
+    };
+    return Journey.update(
+      { currentLocation: location },
+      { where: { userId: req.body.userId } }
+    )
+      .then(updatedJourney => res.status(200).json(updatedJourney))
+      .catch(error => res.status(400).json(error));
   }
 };

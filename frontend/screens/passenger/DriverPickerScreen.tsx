@@ -99,7 +99,7 @@ export default class DriverPickerScreen extends React.Component<{
         this.state.drivers = json.matches;
         this.getDriverAvgOverallRatings();
 
-        //read comments inside of getDriverAvgoverallRatigns for explaination. 
+        //read comments inside of getDriverAvgoverallRatigns for explaination.
         //long story short, how do we make getDriver... async, so we can .then
         //right here instead of inside the getDriver... method.
         /*
@@ -185,9 +185,7 @@ export default class DriverPickerScreen extends React.Component<{
                   {item.journey.User.firstName}
                 </Text>
                 <Text style={styles.searchResultsAddress}>
-                  {
-                    this.state.overallRatings[item.journey.User.id.toString()]
-                  }{" "}
+                  {this.state.overallRatings[item.journey.User.id.toString()]}{" "}
                   stars
                 </Text>
               </View>

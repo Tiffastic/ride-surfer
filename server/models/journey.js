@@ -13,7 +13,8 @@ module.exports = (sequelize, DataTypes) => {
       destination: DataTypes.GEOMETRY("POINT"),
       arrivalAt: DataTypes.DATE,
       isDriver: DataTypes.BOOLEAN,
-      path: DataTypes.GEOMETRY("LINE")
+      path: DataTypes.GEOMETRY("LINE"),
+      currentLocation: DataTypes.GEOMETRY("POINT")
     },
     {}
   );

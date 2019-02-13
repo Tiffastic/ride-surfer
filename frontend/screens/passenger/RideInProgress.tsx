@@ -9,6 +9,8 @@ import {
 } from "react-native";
 
 import NavigateButton from "../../components/NavigateButton";
+import { fetchAPI } from "../../network/Backend";
+import UserSession from "../../network/UserSession";
 
 import Colors from "../../constants/Colors";
 import Styles from "../../constants/Styles";
@@ -25,52 +27,22 @@ const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 
 const LOCATION_TASK_NAME = "background-location-task";
 
-type state = {
-  isLoading: boolean;
-  driver: { name: string; home: string; class: string; work: string };
-  destinationLocation: {
-    description: string;
-    latitude: number;
-    longitude: number;
-  };
-  driverLocation: { latitude: number; longitude: number };
-  myLocation: { latitude: number; longitude: number };
-  errorMessage: string;
-  markers: Array<{ latitude: number; longitude: number }>;
-  appState: string;
-};
-
 let lastSaved: Date;
 
-export default class RideInProgress extends React.Component<
-  {
-    navigation: any;
-  },
-  state
-> {
-  constructor(props: any) {
-    super(props);
-
-    this.state = {
-      isLoading: true,
-      myLocation: { latitude: 0, longitude: 0 },
-      driverLocation: { latitude: 0, longitude: 0 },
-      errorMessage: "",
-      driver: this.props.navigation.getParam("driver", {
-        name: "Not Found",
-        home: "",
-        class: "",
-        work: ""
-      }),
-      destinationLocation: this.props.navigation.getParam("destination", {
-        description: "Not Found",
-        latitude: number,
-        longitude: number
-      }),
-      markers: [],
-      appState: AppState.currentState
-    };
-  }
+export default class RideInProgress extends React.Component<{
+  navigation: any;
+}> {
+  state = {
+    isLoading: true,
+    myLocation: { latitude: 0, longitude: 0 },
+    ridePartnerLocation: { latitude: 0, longitude: 0 },
+    errorMessage: "",
+    ridePartner: this.props.navigation.getParam("ridePartner"),
+    ridePartnerJourney: this.props.navigation.getParam("ridePartnerJourney"),
+    destination: this.props.navigation.getParam("destination"),
+    rideDetails: this.props.navigation.getParam("rideDetails"),
+    appState: AppState.currentState
+  };
 
   componentWillMount() {
     if (Platform.OS === "android" && !Constants.isDevice) {
@@ -80,17 +52,8 @@ export default class RideInProgress extends React.Component<
       });
     } else {
       this.initializeLocationAsync();
-
-      this.getDriverLocation();
+      this.getRidePartnerLocation();
     }
-
-    this.setState({
-      markers: [
-        this.state.driverLocation,
-        this.state.myLocation,
-        this.state.destinationLocation
-      ]
-    });
 
     lastSaved = new Date();
   }
@@ -127,7 +90,7 @@ export default class RideInProgress extends React.Component<
       longitude: location.coords.longitude
     };
 
-    saveLocation(1, coords);
+    saveLocation(coords);
     this.setState({ myLocation: coords });
   };
 
@@ -145,7 +108,28 @@ export default class RideInProgress extends React.Component<
     );
   };
 
-  getDriverLocation = async () => {};
+  getRidePartnerLocation = async () => {
+    fetchAPI("/journeys/" + this.state.ridePartnerJourney.id, {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      }
+    })
+      .then(response => response.json())
+      .then(responseJson => {
+        if (responseJson.message == "Journey Not Found") {
+          this.setState({
+            errorMessage: "Journey not found"
+          });
+        } else {
+          this.setState({ ridePartnerJourney: responseJson });
+        }
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  };
 
   render() {
     return (
@@ -154,23 +138,25 @@ export default class RideInProgress extends React.Component<
           style={{ flex: 1 }}
           provider="google"
           region={{
-            latitude: this.state.destinationLocation.latitude,
-            longitude: this.state.destinationLocation.longitude,
+            latitude: this.state.destination.coordinates.latitude,
+            longitude: this.state.destination.coordinates.longitude,
             latitudeDelta: LATITUDE_DELTA,
             longitudeDelta: LONGITUDE_DELTA
           }}
-        >
-          {this.state.isLoading
-            ? null
-            : this.state.markers.map((marker, index) => {
-                const coords = {
-                  latitude: marker.latitude,
-                  longitude: marker.longitude
-                };
-                return <Marker key={index} coordinate={coords} />;
-              })}
-        </MapView>
-        <NavigateButton dest={this.state.destinationLocation.description} />
+        />
+        <Marker
+          pinColor={"Green"}
+          coordinate={{
+            latitude: this.state.ridePartnerLocation.latitude,
+            longitude: this.state.ridePartnerLocation.longitude
+          }}
+        />
+        <Marker pinColor={"Green"} coordinate={this.state.myLocation} />
+        <Marker
+          pinColor={"Green"}
+          coordinate={this.state.destination.coordinates}
+        />
+        <NavigateButton dest={this.state.destination.description} />
 
         <View style={Styles.buttonView}>
           <Button
@@ -178,7 +164,8 @@ export default class RideInProgress extends React.Component<
             onPress={() => {
               TaskManager.unregisterTaskAsync(LOCATION_TASK_NAME);
               this.props.navigation.navigate("RateDriver", {
-                driver: this.state.driver
+                ridePartner: this.state.ridePartner,
+                rideDetails: this.state.rideDetails
               });
             }}
             color={Colors.darkAccent}
@@ -203,35 +190,63 @@ TaskManager.defineTask(LOCATION_TASK_NAME, body => {
       latitude: locations[0].coords.latitude,
       longitude: locations[0].coords.longitude
     };
-    saveLocation(1, coords);
+    saveLocation(coords);
   }
 });
 
-function saveLocation(
-  journeyId: number,
-  coords: { latitude: number; longitude: number }
-) {
+function saveLocation(coords: { latitude: number; longitude: number }) {
   if (lastSaved == undefined) {
     lastSaved = new Date();
   }
   let now: Date = new Date();
   var dif = (now.getTime() - lastSaved.getTime()) / 1000;
-  if (dif > 5) {
-    fetch("http://ride-surfer.herokuapp.com/traces/", {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        journeyId: 1,
-        location: [coords.latitude, coords.longitude]
-      })
-    }).catch(error => {
-      console.log(error);
-    });
+  if (dif > 10) {
+    updateUserLocation(coords);
+    // addTrace(coords); // out of control right now
+
     lastSaved = new Date();
   }
+}
+
+function addTrace(
+  userId: number,
+  coords: { latitude: number; longitude: number }
+) {
+  //   fetchAPI("/traces/", {
+  //     method: "POST",
+  //     headers: {
+  //       Accept: "application/json",
+  //       "Content-Type": "application/json"
+  //     },
+  //     body: JSON.stringify({
+  //       journeyId: 1,
+  //       location: [coords.latitude, coords.longitude]
+  //     })
+  //   }).catch(error => {
+  //     console.log(error);
+  //   });
+}
+
+async function updateUserLocation(coords: {
+  latitude: number;
+  longitude: number;
+}) {
+  let userDetails = await UserSession.get();
+  if (userDetails == null) return;
+
+  fetchAPI("/journeys/updateLocation/", {
+    method: "PUT",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      userId: userDetails.id,
+      currentLocation: [coords.latitude, coords.longitude]
+    })
+  }).catch(error => {
+    console.log(error);
+  });
 }
 
 const styles = StyleSheet.create({
