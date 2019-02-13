@@ -97,9 +97,11 @@ export default class DriverPickerScreen extends React.Component<{
         json.matches.forEach(res => (res.key = res.journey.id.toString()));
 
         this.state.drivers = json.matches;
-        // console.log(this.state.drivers);
         this.getDriverAvgOverallRatings();
 
+        //read comments inside of getDriverAvgoverallRatigns for explaination. 
+        //long story short, how do we make getDriver... async, so we can .then
+        //right here instead of inside the getDriver... method.
         /*
         this.setState({
           loading: false,
@@ -132,7 +134,6 @@ export default class DriverPickerScreen extends React.Component<{
               // CANNOT SET STATE UNTILL THE OVERALL-RATINGS ARRAY IS FILLED, ELSE THE FLATLIST WON'T SHOW THE RATINGS UNLESS WE MANUALLY CLICK ON THE LIST ITEM
               numOfDrivers++;
               if (numOfDrivers === self.state.drivers.length) {
-                // console.log(this.state.overallRatings);
                 self.setState({
                   loading: false
                 });
