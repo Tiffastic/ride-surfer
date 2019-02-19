@@ -121,6 +121,11 @@ export default class ProfileScreen extends React.Component<{
         </View>
 
         <Button
+          title="Update Profile"
+          onPress={() => this.props.navigation.navigate("UpdateProfile")}
+        />
+
+        <Button
           title="Register For Push Notification"
           onPress={() =>
             this.props.navigation.navigate("PushNotificationsRegister")

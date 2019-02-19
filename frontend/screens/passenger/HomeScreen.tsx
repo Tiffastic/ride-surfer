@@ -25,10 +25,10 @@ import DriverDetailsScreen from "./DriverDetailsScreen";
 import ProfileScreen from "./ProfileScreen";
 import MessageContactsScreen from "./MessageContactsScreen";
 import MessageConversationsScreen from "./MessageConversationsScreen";
-import StartRideScreen from "./StartRideScreen";
 import RateDriverScreen from "./RateDriverScreen";
 import RideInProgressScreen from "./RideInProgress";
 import PushNotificationsRegisterScreen from "../auth/PushNotificationsRegisterScreen";
+import UpdateProfileScreen from "./UpdateProfileScreen";
 
 const IoniconsHeaderButton = (passMeFurther: any) => (
   // the `passMeFurther` variable here contains props from <Item .../> as well as <HeaderButtons ... />
@@ -121,7 +121,8 @@ export default createStackNavigator(
     MessageConversations: MessageConversationsScreen,
     RideInProgress: RideInProgressScreen,
     RateDriver: RateDriverScreen,
-    PushNotificationsRegister: PushNotificationsRegisterScreen
+    PushNotificationsRegister: PushNotificationsRegisterScreen,
+    UpdateProfile: UpdateProfileScreen
   },
   {
     //StackNavigatorConfig (Changes the bar itself and not the items inside it)
