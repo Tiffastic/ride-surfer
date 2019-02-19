@@ -26,8 +26,9 @@ export default class ProfileScreen extends React.Component<{
     if (userDetails == null) throw ":(";
     this.setState({ user: userDetails });
 
-    this.getRatings();
     this.getUserPhoto();
+    this.getRatings();
+    
   };
   static navigationOptions = {
     title: "Profile"
