@@ -6,7 +6,8 @@ import {
   Text,
   View,
   TextInput,
-  Button
+  Button,
+  Platform
 } from "react-native";
 
 import Colors from "../../constants/Colors";
@@ -14,7 +15,14 @@ import Styles from "../../constants/Styles";
 import { fetchAPI } from "../../network/Backend";
 import UserSession from "../../network/UserSession";
 
+if (Platform.OS === "android") {
+  var headerMode: any = null;
+}
+
 export default class LoginScreen extends React.Component<{ navigation: any }> {
+  static navigationOptions = {
+    header: headerMode
+  };
   state = {
     email: "",
     password: "",

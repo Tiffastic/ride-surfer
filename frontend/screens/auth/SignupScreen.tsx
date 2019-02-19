@@ -5,7 +5,7 @@ import {
   ScrollView,
   StyleSheet,
   Button,
-  AsyncStorage,
+  Platform,
   View,
   KeyboardAvoidingView
 } from "react-native";
@@ -16,7 +16,14 @@ import { fetchAPI } from "../../network/Backend";
 
 import UserSession from "../../network/UserSession";
 
+if (Platform.OS === "android") {
+  var headerMode: any = null;
+}
+
 export default class SignupScreen extends React.Component<{ navigation: any }> {
+  static navigationOptions = {
+    header: headerMode
+  };
   state = {
     first_name: "",
     last_name: "",
