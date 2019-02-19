@@ -34,7 +34,8 @@ export default class MessageConversationsScreen extends React.Component<{
     destination: this.props.navigation.getParam("destination"),
     ridePartner: this.props.navigation.getParam("ridePartner"),
     rideDetails: this.props.navigation.getParam("rideDetails"),
-    ridePartnerJourney: this.props.navigation.getParam("ridePartnerJourney")
+    ridePartnerJourney: this.props.navigation.getParam("ridePartnerJourney"),
+    type: this.props.navigation.getParam("type")
   };
 
   startRide = () => {
@@ -42,7 +43,8 @@ export default class MessageConversationsScreen extends React.Component<{
       destination: this.state.destination,
       ridePartner: this.state.ridePartner,
       rideDetails: this.state.rideDetails,
-      ridePartnerJourney: this.state.ridePartnerJourney
+      ridePartnerJourney: this.state.ridePartnerJourney,
+      type: this.state.type
     });
   };
 
