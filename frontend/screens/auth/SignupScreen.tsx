@@ -17,10 +17,6 @@ import { fetchAPI } from "../../network/Backend";
 import UserSession from "../../network/UserSession";
 
 export default class SignupScreen extends React.Component<{ navigation: any }> {
-  static navigationOptions = {
-    header: null
-  };
-
   state = {
     first_name: "",
     last_name: "",

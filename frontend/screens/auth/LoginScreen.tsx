@@ -15,10 +15,6 @@ import { fetchAPI } from "../../network/Backend";
 import UserSession from "../../network/UserSession";
 
 export default class LoginScreen extends React.Component<{ navigation: any }> {
-  static navigationOptions = {
-    header: null
-  };
-
   state = {
     email: "",
     password: "",

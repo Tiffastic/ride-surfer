@@ -36,7 +36,6 @@ export default class RideInProgress extends React.Component<{
   navigation: any;
 }> {
   state = {
-    isLoading: true,
     myLocation: { latitude: 0, longitude: 0 },
     ridePartnerLocation: { latitude: 0, longitude: 0 },
     errorMessage: "",
