@@ -28,7 +28,6 @@ export default class ProfileScreen extends React.Component<{
 
     this.getUserPhoto();
     this.getRatings();
-    
   };
   static navigationOptions = {
     title: "Profile"
@@ -120,7 +119,7 @@ export default class ProfileScreen extends React.Component<{
     if (cameraRollPerm === "granted") {
       let result = await ImagePicker.launchImageLibraryAsync({
         allowsEditing: true,
-        aspect: [4, 3],
+        aspect: [2, 2],
         mediaTypes: "Images",
         base64: true // there is a base64 property in ImagePicker, so I don't know why this is underlined red.  But it works.
       });
