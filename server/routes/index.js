@@ -6,6 +6,7 @@ const passengerRideController = require("../controllers").passengerRides;
 const RateRide = require("../models").RateRides;
 const pushNotificationController = require("../controllers").pushNotifications;
 const calculateRatingsController = require("../controllers").calculateRatings;
+const biosController = require("../controllers").bios;
 
 module.exports = app => {
   //Using CORS, without this, Swagger  does not work with local host
@@ -95,4 +96,8 @@ module.exports = app => {
     "/usersCleanlinessRating/:id",
     calculateRatingsController.calculateAvgCleanlinessRating
   );
+
+  app.put("/updateBios/:userId", biosController.update);
+  app.get("/getUserImage/:userId", biosController.getImage);
+  app.post("/createBio", biosController.createBio);
 };

@@ -198,6 +198,20 @@ export default class SignupScreen extends React.Component<{ navigation: any }> {
             .catch(error => {
               console.log(error);
             });
+
+          // create the user's bio
+          fetchAPI("/createBio", {
+            method: "POST",
+            headers: {
+              Accept: "appplicaton/json",
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              userId: userJson.id,
+              ridesGiven: 0,
+              ridesTaken: 0
+            })
+          }).catch(error => console.log(error));
         }
       })
       .catch(error => {

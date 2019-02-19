@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       userId: DataTypes.INTEGER,
       description: DataTypes.TEXT,
-      image: DataTypes.BLOB,
+      image: DataTypes.TEXT,
       ridesGiven: DataTypes.INTEGER,
       ridesTaken: DataTypes.INTEGER
     },
