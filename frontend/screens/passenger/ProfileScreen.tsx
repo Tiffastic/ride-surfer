@@ -52,7 +52,7 @@ export default class ProfileScreen extends React.Component<{
     fetchAPI("/usersOverallRating/" + this.state.user.id)
       .then(response => response.json())
       .then(response => {
-      //  console.log(response.avgOverall);
+        //  console.log(response.avgOverall);
         this.setState({ avgOverallRating: response.avgOverall });
       })
       .catch(error => {
@@ -99,7 +99,7 @@ export default class ProfileScreen extends React.Component<{
   }
 
   getUserPhoto() {
-  //  console.log("get user photo " + this.state.user.id);
+    //  console.log("get user photo " + this.state.user.id);
 
     fetchAPI("/getUserImage/" + this.state.user.id)
       .then(response => response.json())
@@ -112,7 +112,7 @@ export default class ProfileScreen extends React.Component<{
   }
 
   uploadUserPhoto = async () => {
-   // console.log("upload user photo");
+    // console.log("upload user photo");
     // get permission from user to access their mobile photos
     const { status: cameraRollPerm } = await Permissions.askAsync(
       Permissions.CAMERA_ROLL
@@ -136,7 +136,7 @@ export default class ProfileScreen extends React.Component<{
           userPhoto: imageData //result.uri
         });
 
-       // console.log("uri = ", result.uri);
+        // console.log("uri = ", result.uri);
 
         // send photo to server
 

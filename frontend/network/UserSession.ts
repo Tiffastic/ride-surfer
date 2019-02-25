@@ -11,10 +11,7 @@ export interface User {
   firstName: string;
   lastName: string;
   email: string;
-  carPlate: string;
-  carMake: string;
-  carModel: string;
-  carYear: number;
+  vehicles: [{}];
 }
 
 export default {

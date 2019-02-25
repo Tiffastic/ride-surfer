@@ -98,7 +98,7 @@ export default class UpdateProfileScreen extends React.Component<{
         });
       })
       .then(() => {
-        // c1ear user object cache
+        // set user object cache
 
         if (this.state.vehicles.length == 0) {
           UserSession.set({
@@ -106,11 +106,7 @@ export default class UpdateProfileScreen extends React.Component<{
             firstName: this.state.first_name,
             lastName: this.state.last_name,
             email: this.state.email,
-
-            carPlate: "",
-            carMake: "",
-            carModel: "",
-            carYear: 0
+            vehicles: [{}]
           });
         } else {
           UserSession.set({
@@ -118,15 +114,19 @@ export default class UpdateProfileScreen extends React.Component<{
             firstName: this.state.first_name,
             lastName: this.state.last_name,
             email: this.state.email,
-            carPlate: this.state.vehicles[0].plate,
-            carMake: this.state.vehicles[0].make,
-            carModel: this.state.vehicles[0].model,
-            carYear: this.state.vehicles[0].year
+            vehicles: [
+              {
+                carPlate: this.state.vehicles[0].plate,
+                carMake: this.state.vehicles[0].make,
+                carModel: this.state.vehicles[0].model,
+                carYear: this.state.vehicles[0].year
+              }
+            ]
           });
         }
       })
       .then(() => {
-        this.props.navigation.navigate("HomeScreen");
+        this.props.navigation.navigate("ProfileScreen");
       }); // profile screen does not update unless you log out.
   }
 
