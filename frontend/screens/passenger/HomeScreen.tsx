@@ -1,17 +1,5 @@
 import * as React from "react";
-import {
-  FlatList,
-  TextInput,
-  TouchableHighlight,
-  Image,
-  ImageBackground,
-  StyleSheet,
-  Text,
-  Button,
-  View,
-  Alert,
-  Dimensions
-} from "react-native";
+import { Switch, Text, View } from "react-native";
 import { createStackNavigator } from "react-navigation";
 
 import Colors from "../../constants/Colors";
@@ -25,7 +13,6 @@ import DriverDetailsScreen from "./DriverDetailsScreen";
 import ProfileScreen from "./ProfileScreen";
 import MessageContactsScreen from "./MessageContactsScreen";
 import MessageConversationsScreen from "./MessageConversationsScreen";
-import StartRideScreen from "./StartRideScreen";
 import RateDriverScreen from "./RateDriverScreen";
 import RideInProgressScreen from "./RideInProgress";
 import PushNotificationsRegisterScreen from "../auth/PushNotificationsRegisterScreen";
@@ -64,6 +51,7 @@ class HomeScreen extends React.Component<{ navigation: any }> {
     );
   }
 }
+let trackColors = { true: Colors.primary, false: Colors.lightShades };
 
 export default createStackNavigator(
   {
@@ -72,14 +60,25 @@ export default createStackNavigator(
     HomeScreen: {
       screen: HomeScreen,
       navigationOptions: ({ navigation }: { navigation: any }) => ({
-        title: `Ride Surfer`,
+        headerTitle: (
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "center",
+              alignItems: "center"
+            }}
+          >
+            <Switch
+              trackColor={trackColors}
+              onValueChange={(value: any) => navigation.navigate("DriverMain")}
+            />
+            <Text style={{ marginLeft: 10, marginRight: 10, fontSize: 16 }}>
+              Passenger
+            </Text>
+          </View>
+        ),
         headerRight: (
           <HeaderButtons HeaderButtonComponent={IoniconsHeaderButton}>
-            <HeaderButton
-              title="OneDayASwitch"
-              iconName="ios-cafe"
-              onPress={() => navigation.navigate("DriverMain")}
-            />
             <HeaderButton
               title="MessagesIcon"
               iconName="ios-chatbubbles"

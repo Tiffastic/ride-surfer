@@ -1,5 +1,5 @@
 import * as React from "react";
-import { View, Alert, ActivityIndicator } from "react-native";
+import { View, Text, Switch, Alert, ActivityIndicator } from "react-native";
 import { createStackNavigator } from "react-navigation";
 
 import HeaderButtons, { HeaderButton } from "react-navigation-header-buttons";
@@ -88,6 +88,7 @@ const IoniconsHeaderButton = (passMeFurther: any) => (
     }}
   />
 );
+let trackColors = { true: Colors.primary, false: Colors.lightShades };
 
 export default createStackNavigator(
   {
@@ -95,14 +96,26 @@ export default createStackNavigator(
     DriverHomeScreen: {
       screen: DriverHomeScreen,
       navigationOptions: ({ navigation }: { navigation: any }) => ({
-        title: `Driver Ride Surfer`,
+        headerTitle: (
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "center",
+              alignItems: "center"
+            }}
+          >
+            <Switch
+              value={true}
+              trackColor={trackColors}
+              onValueChange={(value: any) => navigation.navigate("Main")}
+            />
+            <Text style={{ marginLeft: 10, marginRight: 10, fontSize: 16 }}>
+              Driver
+            </Text>
+          </View>
+        ),
         headerRight: (
           <HeaderButtons HeaderButtonComponent={IoniconsHeaderButton}>
-            <HeaderButton
-              title="OneDayASwithAlso"
-              iconName="ios-cafe"
-              onPress={() => navigation.navigate("Main")}
-            />
             <HeaderButton
               title="MessagesIcon"
               iconName="ios-chatbubbles"
