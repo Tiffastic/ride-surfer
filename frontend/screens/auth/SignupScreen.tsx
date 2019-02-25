@@ -29,11 +29,13 @@ export default class SignupScreen extends React.Component<{ navigation: any }> {
     last_name: "",
     email: "",
     password: "",
-    car_make: "",
-    car_model: "",
-    car_year: "",
-    car_plate: "",
-    error: ""
+    car_make: null,
+    car_model: null,
+    car_year: null,
+    car_plate: null,
+    error: "",
+    user_status: 0,
+    vehicle_status: 0
   };
 
   render() {
@@ -115,7 +117,7 @@ export default class SignupScreen extends React.Component<{ navigation: any }> {
   }
 
   private _register = async () => {
-    return fetchAPI("/users/", {
+    return fetchAPI("/users", {
       method: "POST",
       headers: {
         Accept: "application/json",
@@ -128,38 +130,69 @@ export default class SignupScreen extends React.Component<{ navigation: any }> {
         password: this.state.password
       })
     })
-      .then(response => response.json())
+      .then(response => {
+        //this is how to actual check status. you cannot after response.json()
+        console.log("Server stat response: " + response.status);
 
-      .then(userJson => {
-        if (userJson.status == 400) {
-          this.setState({
-            error: userJson.error
-          });
+        this.setState({
+          user_status: response.status
+        });
+        return response.json();
+      })
+      .then(responseJson => {
+        if (this.state.user_status === 400 || this.state.user_status === 500) {
+          try {
+            this.setState({
+              error: responseJson.errors[0].message
+            });
+          } catch (err) {
+            this.setState({
+              error: "Something went very wrong"
+            });
+          }
+          return;
         } else {
-          fetchAPI("/vehicles/", {
+          fetchAPI("/vehicles", {
             method: "POST",
             headers: {
               Accept: "application/json",
               "Content-Type": "application/json"
             },
             body: JSON.stringify({
-              userId: userJson.id,
+              userId: responseJson.id,
               plate: this.state.car_plate,
               make: this.state.car_make,
               model: this.state.car_model,
               year: this.state.car_year
             })
           })
-            .then(response => response.json())
+            .then(response => {
+              //this is how to actual check status. you cannot after response.json()
+              console.log("Server stat response: " + response.status);
+
+              this.setState({
+                vehicle_status: response.status
+              });
+              return response.json();
+            })
 
             .then(vehicleJson => {
-              if (vehicleJson.status == 400) {
-                this.setState({
-                  error: vehicleJson.error
-                });
+              if (
+                this.state.vehicle_status === 400 ||
+                this.state.vehicle_status === 500
+              ) {
+                try {
+                  this.setState({
+                    error: vehicleJson.errors[0].message
+                  });
+                } catch (err) {
+                  this.setState({
+                    error: "Something went very wrong cars"
+                  });
+                }
               } else {
-                userJson.vehicles = [vehicleJson];
-                this._saveUserAsync(userJson).catch(console.log);
+                responseJson.vehicles = [vehicleJson];
+                this._saveUserAsync(responseJson).catch(console.log);
               }
             })
             .catch(error => {

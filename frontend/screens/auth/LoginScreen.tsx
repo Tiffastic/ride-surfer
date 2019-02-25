@@ -26,7 +26,8 @@ export default class LoginScreen extends React.Component<{ navigation: any }> {
   state = {
     email: "",
     password: "",
-    error: ""
+    error: "",
+    status: 0
   };
 
   render() {
@@ -85,20 +86,20 @@ export default class LoginScreen extends React.Component<{ navigation: any }> {
         password: this.state.password
       })
     })
-      .then(response => response.json())
-
+      .then(response => {
+        //this is how to actual check status. you cannot after response.json()
+        this.setState({
+          status: response.status
+        });
+        return response.json();
+      })
       .then(responseJson => {
-        if (responseJson.message == "User Not Found") {
+        if (this.state.status === 404) {
           this.setState({
-            error: "User not found"
-          });
-        } else if (
-          responseJson.message == "Password or Username is incorrect"
-        ) {
-          this.setState({
-            error: "Password or Username is incorrect"
+            error: responseJson.message
           });
         } else {
+          //this func also will take you to the home screen
           this._saveUserAsync(responseJson).catch(console.log);
         }
       })

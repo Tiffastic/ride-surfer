@@ -9,15 +9,20 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       firstName: {
+        allowNull: false,
         type: Sequelize.TEXT
       },
       lastName: {
+        allowNull: false,
         type: Sequelize.TEXT
       },
       email: {
+        allowNull: false,
+        unique: true,
         type: Sequelize.TEXT
       },
       password: {
+        allowNull: false,
         type: Sequelize.TEXT
       },
       pushToken: {
