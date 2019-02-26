@@ -12,6 +12,7 @@ export interface User {
   lastName: string;
   email: string;
   vehicles: [{}];
+  hasUpdated: boolean;
 }
 
 export default {

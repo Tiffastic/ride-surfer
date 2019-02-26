@@ -8,6 +8,7 @@ import { fetchAPI } from "../../network/Backend";
 import Styles from "../../constants/Styles";
 
 import { ImagePicker, Permissions, Constants } from "expo";
+import { ForceTouchGestureHandler } from "react-native-gesture-handler";
 
 // import for upload image
 //const ImagePicker = require("react-native-image-picker").default;
@@ -26,6 +27,7 @@ export default class ProfileScreen extends React.Component<{
     if (userDetails == null) throw ":(";
     this.setState({ user: userDetails });
 
+    userDetails.hasUpdated = false;
     this.getUserPhoto();
     this.getRatings();
   };
@@ -38,7 +40,8 @@ export default class ProfileScreen extends React.Component<{
       firstName: "Not Found",
       lastName: "",
       email: "",
-      vehicles: [{}]
+      vehicles: [{}],
+      hasUpdated: false
     },
     avgOverallRating: 0,
     avgSafetyRating: 0,
@@ -154,6 +157,36 @@ export default class ProfileScreen extends React.Component<{
     } // end of in permission granted if statement
   };
 
+  hasUserUpdatedProfile = async () => {
+    //  console.log("INSIDE OF HASUSERUPDATEDPROFIE");
+    var userDetails = await UserSession.get();
+    if (userDetails === null) return false;
+
+    /*
+    this.state.user.firstName = userDetails.firstName;
+    this.state.user.lastName = userDetails.lastName;
+    this.state.user.email = userDetails.email;
+    this.state.user.vehicles = userDetails.vehicles;
+*/
+
+    // console.log("inside hasUpdated = " + userDetails.hasUpdated);
+    if (userDetails.hasUpdated === true) {
+      userDetails.hasUpdated = false;
+      UserSession.set(userDetails);
+      //   console.log("hasUpdated afterwards = " + userDetails.hasUpdated);
+      return true;
+    } else {
+      return false;
+    }
+  };
+
+  shouldComponentUpdate() {
+    if (this.hasUserUpdatedProfile()) {
+      return true;
+    } else {
+      return false;
+    }
+  }
   render() {
     let name = this.state.user.firstName + " " + this.state.user.lastName;
     return (

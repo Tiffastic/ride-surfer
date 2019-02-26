@@ -106,7 +106,8 @@ export default class UpdateProfileScreen extends React.Component<{
             firstName: this.state.first_name,
             lastName: this.state.last_name,
             email: this.state.email,
-            vehicles: [{}]
+            vehicles: [{}],
+            hasUpdated: true
           });
         } else {
           UserSession.set({
@@ -121,12 +122,13 @@ export default class UpdateProfileScreen extends React.Component<{
                 carModel: this.state.vehicles[0].model,
                 carYear: this.state.vehicles[0].year
               }
-            ]
+            ],
+            hasUpdated: true
           });
         }
       })
       .then(() => {
-        this.props.navigation.navigate("ProfileScreen");
+        this.props.navigation.push("ProfileScreen");
       }); // profile screen does not update unless you log out.
   }
 
