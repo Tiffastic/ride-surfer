@@ -39,9 +39,7 @@ export default class ProfileScreen extends React.Component<{
     avgOverallRating: 0,
     avgSafetyRating: 0,
     avgTimelinessRating: 0,
-    avgCleanlinessRating: 0,
-
-    userPhoto: null
+    avgCleanlinessRating: 0
   };
 
   getAvgOverallRating() {
@@ -101,11 +99,7 @@ export default class ProfileScreen extends React.Component<{
         <Image
           style={{ flex: 1, width: undefined, height: undefined }}
           resizeMode="center"
-          source={
-            this.state.userPhoto !== null
-              ? { uri: this.state.userPhoto }
-              : require("../../assets/images/default-profile.png")
-          }
+          source={require("../../assets/images/default-profile.png")}
         />
         <View style={{ flex: 1, alignItems: "center" }}>
           <Text style={{ fontSize: 25, margin: 10 }}>{name}</Text>
