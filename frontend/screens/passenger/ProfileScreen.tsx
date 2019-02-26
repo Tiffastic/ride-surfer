@@ -38,7 +38,7 @@ export default class ProfileScreen extends React.Component<{
       firstName: "Not Found",
       lastName: "",
       email: "",
-      vehicles: []
+      vehicles: [{}]
     },
     avgOverallRating: 0,
     avgSafetyRating: 0,
@@ -175,8 +175,10 @@ export default class ProfileScreen extends React.Component<{
             keyExtractor={(item: any, index: any) => item.id}
             renderItem={({ item, separators }: any) => (
               <View>
-                <Text>{item.year + " " + item.make + " " + item.model}</Text>
-                <Text>{item.plate}</Text>
+                <Text>
+                  {item.carYear + " " + item.carMake + " " + item.carModel}
+                </Text>
+                <Text>{item.carPlate}</Text>
               </View>
             )}
           />
@@ -195,6 +197,11 @@ export default class ProfileScreen extends React.Component<{
           <Text>Timeliness: {this.state.avgTimelinessRating}</Text>
           <Text>Cleanliness: {this.state.avgCleanlinessRating}</Text>
         </View>
+
+        <Button
+          title="Update Profile"
+          onPress={() => this.props.navigation.navigate("UpdateProfile")}
+        />
 
         <Button
           title="Register For Push Notification"

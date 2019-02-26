@@ -39,7 +39,7 @@ export default class UpdateProfileScreen extends React.Component<{
     car_plate: "",
     error: "",
     userId: 0,
-    vehicles: []
+    vehicles: [] // an array of vehicles queried from the User model
   };
 
   _bootstrapAsync = async () => {
@@ -54,7 +54,7 @@ export default class UpdateProfileScreen extends React.Component<{
         this.state.first_name = response.firstName;
         this.state.last_name = response.lastName;
         this.state.email = response.email;
-        this.state.vehicles = response.vehicles;
+        this.state.vehicles = response.vehicles; // coming from the User model
 
         this.setState({ ...this.state });
       })
@@ -80,7 +80,7 @@ export default class UpdateProfileScreen extends React.Component<{
       })
     })
       .then(() => {
-        // update vehicles
+        // update each vehicle
         this.state.vehicles.forEach(async (car: any) => {
           await fetchAPI("/vehicles/" + car.id, {
             method: "PUT",
