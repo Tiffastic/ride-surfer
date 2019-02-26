@@ -1,104 +1,98 @@
 const Journey = require("../models").Journey;
 const User = require("../models").User;
-
-const dummyPath = {
-  routes: [
-    {
-      geometry: {
-        coordinates: [
-          [-111.859577, 40.765862],
-          [-111.859572, 40.754145],
-          [-111.862449, 40.754142],
-          [-111.862428, 40.751976],
-          [-111.859512, 40.751856],
-          [-111.859652, 40.727386],
-          [-111.861146, 40.727382],
-          [-111.861142, 40.726568]
-        ],
-        type: "LineString"
-      },
-      legs: [
-        {
-          summary: "",
-          weight: 740.5,
-          duration: 565.8,
-          steps: [],
-          distance: 4974.4
-        }
-      ],
-      weight_name: "routability",
-      weight: 740.5,
-      duration: 565.8,
-      distance: 4974.4
-    }
-  ],
-  waypoints: [
-    {
-      distance: 6.247295196113254,
-      name: "1100 East",
-      location: [-111.859577, 40.765862]
-    },
-    {
-      distance: 10.983201456921575,
-      name: "McClelland Street",
-      location: [-111.861142, 40.726568]
-    }
-  ],
-  code: "Ok",
-  uuid: "cjrl52jcz2a1s3rpkijsqn66b"
-};
-
-const dummyStart = {
-  latitude: 40.737173,
-  longitude: -111.8590678
-};
-
-const dummyEnd = {
-  latitude: 40.7498161,
-  longitude: -111.8653425
-};
-
-// https://stackoverflow.com/a/3122532
-function getClosestToLine(point, a, b) {
-  let ap = [point.longitude - a.longitude, point.latitude - a.latitude];
-  let ab = [b.longitude - a.longitude, b.latitude - a.latitude];
-
-  let atb2 = Math.pow(ab[0], 2) + Math.pow(ab[1], 2);
-
-  let atpDotAtb = ap[0] * ab[0] + ap[1] * ab[1];
-
-  let dist = atpDotAtb / atb2;
-
-  return {
-    latitude: a.longitude + ab[0] * dist,
-    longitude: a.latitude + ab[1] * dist,
-    distance: dist
-  };
-}
-
-function getClosestToPolyline(point, path) {
-  let closest = {
-    latitude: 0,
-    longitude: 0,
-    distance: Infinity
-  };
-  for (let i = 0; i < path.length - 1; i++) {
-    let a = path[i];
-    let b = path[i + 1];
-    let intersect = getClosestToLine(point, a, b);
-    if (intersect.distance < closest.distance) {
-      closest = intersect;
-    }
-  }
-
-  return closest;
-}
+const https = require("https");
+const turf = require("@turf/turf");
 
 function generateRidePlan(start, end, path) {
+  start = turf.point([start.longitude, start.latitude]);
+  end = turf.point([end.longitude, end.latitude]);
+
+  path = turf.lineString(path.coordinates);
+
+  let pickup = turf.nearestPointOnLine(path, start);
+  let dropoff = turf.nearestPointOnLine(path, end);
+
+  let walkDist = Math.abs(pickup.properties.dist + dropoff.properties.dist);
+  let driveDist = Math.abs(
+    dropoff.properties.location - pickup.properties.location
+  );
+
   return {
-    pickup: getClosestToPolyline(start, path),
-    dropoff: getClosestToPolyline(end, path)
+    pickup: {
+      latitude: pickup.geometry.coordinates[1],
+      longitude: pickup.geometry.coordinates[0],
+      distance: pickup.properties.dist
+    },
+    dropoff: {
+      latitude: dropoff.geometry.coordinates[1],
+      longitude: dropoff.geometry.coordinates[0],
+      distance: dropoff.properties.dist
+    },
+    walkingDistance: walkDist,
+    drivingDistance: driveDist,
+
+    // time taken to complete, assuming 2mph (3.2kph) walking speed and 20mph (32kph) driving speed
+    weight: walkDist / 3.2 + driveDist / 32
   };
+}
+
+function parseCoordsString(str) {
+  str = decodeURIComponent(str);
+  let coords = str.split(";");
+  if (coords.length !== 2) {
+    return null;
+  }
+  let origin = coords[0].split(",");
+  let dest = coords[1].split(",");
+  if (origin.length !== 2 || dest.length !== 2) {
+    return null;
+  }
+  origin = origin.map(n => +n);
+  dest = dest.map(n => +n);
+  if (origin.filter(isNaN).length > 0 || dest.filter(isNaN).length > 0) {
+    return null;
+  }
+  return {
+    origin: {
+      latitude: origin[1],
+      longitude: origin[0]
+    },
+    destination: {
+      latitude: dest[1],
+      longitude: dest[0]
+    }
+  };
+}
+
+const apiToken =
+  "pk.eyJ1IjoiZXRoYW5yYW4iLCJhIjoiY2pya3V6MGwyMDF1NzQzbXRnMHl3cGN5aiJ9.Y-iyykoUZuKEG7OyfRZDQw";
+
+async function fetchJourneyPath(start, end) {
+  const coords = `${start.longitude},${start.latitude};${end.longitude},${
+    end.latitude
+  }`;
+  const apiURI = `https://api.mapbox.com/directions/v5/mapbox/driving/${encodeURIComponent(
+    coords
+  )}.json?access_token=${apiToken}&geometries=geojson`;
+
+  return new Promise((resolve, reject) => {
+    https.get(apiURI, res => {
+      res.setEncoding("utf8");
+      let body = "";
+      res.on("data", data => {
+        body += data;
+      });
+      res.on("end", () => {
+        console.log(body);
+        body = JSON.parse(body);
+        if (res.statusCode === 200) {
+          resolve(body);
+        } else {
+          reject(body);
+        }
+      });
+    });
+  });
 }
 
 module.exports = {
@@ -116,6 +110,10 @@ module.exports = {
   },
 
   retrieveMatches(req, res) {
+    let coords = parseCoordsString(req.query["coords"]);
+    if (coords === null) {
+      return res.status(401).json({ message: "Couldn't parse coords string" });
+    }
     return Journey.findAll({ where: { isDriver: true }, include: [User] })
       .then(journeys => {
         if (!journeys) {
@@ -123,21 +121,28 @@ module.exports = {
             message: "Journeys Not Found"
           });
         }
-        console.log(JSON.stringify(journeys));
-        matches = journeys.map(j => ({
-          ridePlan: generateRidePlan(
-            dummyStart,
-            dummyEnd,
-            j.path.coordinates.map(a => ({
-              latitude: a[1],
-              longitude: a[0]
-            }))
-          ),
-          journey: j
-        }));
+        matches = journeys
+          .map(j => ({
+            ridePlan: generateRidePlan(
+              coords.origin,
+              coords.destination,
+              j.path
+            ),
+            journey: j
+          }))
+          .sort((a, b) => {
+            // sort by weight, ascending
+            if (a.weight < b) {
+              return -1;
+            }
+            if (a.weight > b) {
+              return 1;
+            }
+            return 0;
+          });
         return res.status(200).json({
-          origin: dummyStart,
-          destination: dummyEnd,
+          origin: coords.origin,
+          destination: coords.destination,
           matches: matches
         });
       })
@@ -147,7 +152,7 @@ module.exports = {
       });
   },
 
-  create(req, res) {
+  async create(req, res) {
     var origin = {
       type: "Point",
       coordinates: req.body.origin,
@@ -167,14 +172,26 @@ module.exports = {
 
     let path = null;
     if (isDriver) {
-      let resp = dummyPath;
-      if (resp.routes.length > 1) {
-        console.warn("got multiple routes");
+      try {
+        let resp = await fetchJourneyPath(
+          { latitude: origin.coordinates[0], longitude: origin.coordinates[1] },
+          {
+            latitude: destination.coordinates[0],
+            longitude: destination.coordinates[1]
+          }
+        );
+        if (resp.routes.length > 1) {
+          console.warn("got multiple routes");
+        }
+        path = resp.routes[0].geometry;
+      } catch (e) {
+        console.error("Couldn't fetch from routing API: " + e);
+        res.status(500).json({ message: "Internal Server Error" });
+        return;
       }
-      path = resp.routes[0].geometry;
     }
 
-    return Journey.create({
+    return await Journey.create({
       userId: req.body.userId,
       origin: origin,
       destination: destination,

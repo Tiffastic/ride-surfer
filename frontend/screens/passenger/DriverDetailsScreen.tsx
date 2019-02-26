@@ -11,6 +11,7 @@ import {
 } from "react-native";
 
 import MapView, { Polyline, Marker } from "react-native-maps";
+import { reverseGeocodeAsync } from "expo-location";
 
 const { width, height } = Dimensions.get("window");
 
@@ -31,12 +32,61 @@ export default class DriverDetailsScreen extends React.Component<{
     origin: this.props.navigation.getParam("origin"),
     destination: this.props.navigation.getParam("destination"),
     match: this.props.navigation.getParam("match"),
-    driverJourney: this.props.navigation.getParam("driverJourney")
+    driverJourney: this.props.navigation.getParam("driverJourney"),
+    destinationHumanAddress: null as null | string,
+    pickupHumanAddress: null as null | string,
+    dropoffHumanAddress: null as null | string
   };
+
+  componentWillMount() {
+    let ridePlan = this.state.match.ridePlan;
+    let formatAddress = (response: any) => {
+      let address = response.name;
+      if (response.street !== null) {
+        address += " " + response.street;
+      }
+      return address;
+    };
+    let geocodeAddress = (coords: any, stateKey: string) => {
+      reverseGeocodeAsync(coords).then(response => {
+        if (response.length > 0) {
+          let newState: any = {};
+          newState[stateKey] = formatAddress(response[0]);
+          this.setState(newState);
+        }
+      });
+    };
+    geocodeAddress(this.state.destination, "destinationHumanAddress");
+    geocodeAddress(ridePlan.pickup, "pickupHumanAddress");
+    geocodeAddress(ridePlan.dropoff, "dropoffHumanAddress");
+  }
+
+  private generateDirsFromRidePlan(ridePlan: any) {
+    let round = (number: number) => Math.round(number * 10) / 10;
+    let dirs = [
+      {
+        time: round(ridePlan.pickup.distance) + " km",
+        desc: "Walk to " + (this.state.pickupHumanAddress || "pickup")
+      },
+      {
+        time: round(ridePlan.drivingDistance) + " km",
+        desc: "Ride to " + (this.state.dropoffHumanAddress || "dropoff")
+      },
+      {
+        time: round(ridePlan.dropoff.distance) + " km",
+        desc: "Walk to " + (this.state.destinationHumanAddress || "destination")
+      }
+    ];
+    dirs.forEach((d: any, i) => (d.key = i));
+    return dirs;
+  }
 
   render() {
     // let image = this.state.driver.home;
-    // let dirs = this.state.driver.homeDirs;
+    let ridePlan = this.state.match.ridePlan;
+
+    let dirs = this.generateDirsFromRidePlan(ridePlan);
+
     return (
       <View style={styles.container}>
         <MapView
@@ -58,29 +108,32 @@ export default class DriverDetailsScreen extends React.Component<{
           <Marker pinColor={"green"} coordinate={this.state.origin} />
           <Marker coordinate={this.state.destination} />
           <Marker
+            pinColor={"blue"}
             coordinate={{
-              latitude: this.state.match.ridePlan.pickup.longitude,
-              longitude: this.state.match.ridePlan.pickup.latitude
+              latitude: this.state.match.ridePlan.pickup.latitude,
+              longitude: this.state.match.ridePlan.pickup.longitude
             }}
           />
           <Marker
+            pinColor={"pink"}
             coordinate={{
-              latitude: this.state.match.ridePlan.dropoff.longitude,
-              longitude: this.state.match.ridePlan.pickup.latitude
+              latitude: this.state.match.ridePlan.dropoff.latitude,
+              longitude: this.state.match.ridePlan.dropoff.longitude
             }}
           />
         </MapView>
 
         <View style={{ flex: 1 }}>
           <Text style={{ fontSize: 25, margin: 5 }}>
-            {this.state.driverJourney.User.name}
+            {this.state.driverJourney.User.firstName}
           </Text>
 
           <Text style={{ fontSize: 15, marginLeft: 5 }}>
-            Directions to {this.state.destination.name}
+            Directions to {this.state.destinationHumanAddress}
           </Text>
-          {/* <FlatList
-            data={[]}
+
+          <FlatList
+            data={dirs}
             showsVerticalScrollIndicator={false}
             renderItem={({ item, separators }) => (
               <TouchableHighlight
@@ -94,7 +147,8 @@ export default class DriverDetailsScreen extends React.Component<{
                 </View>
               </TouchableHighlight>
             )}
-          /> */}
+          />
+
           <Button
             title="Request"
             onPress={this.onRequest}
