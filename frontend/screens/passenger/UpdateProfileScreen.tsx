@@ -61,9 +61,6 @@ export default class UpdateProfileScreen extends React.Component<{
       .catch(error => console.log(error));
   };
 
-  refreshFunction() {
-    this.forceUpdate();
-  }
   updateMyProfile() {
     // update user
 

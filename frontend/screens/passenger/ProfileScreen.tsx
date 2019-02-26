@@ -6,9 +6,6 @@ import Colors from "../../constants/Colors";
 import UserSession from "../../network/UserSession";
 import { fetchAPI } from "../../network/Backend";
 
-// import for upload image
-//const ImagePicker = require("react-native-image-picker").default;
-
 export default class ProfileScreen extends React.Component<{
   navigation: any;
 }> {
@@ -46,7 +43,6 @@ export default class ProfileScreen extends React.Component<{
     fetchAPI("/usersOverallRating/" + this.state.user.id)
       .then(response => response.json())
       .then(response => {
-        //  console.log(response.avgOverall);
         this.setState({ avgOverallRating: response.avgOverall });
       })
       .catch(error => {
@@ -160,10 +156,5 @@ const styles = StyleSheet.create({
   },
   tableRow: {
     flexDirection: "row"
-  },
-  uploadButton: {
-    width: 256,
-    height: 50,
-    backgroundColor: "blue"
   }
 });
