@@ -5,10 +5,6 @@ import Colors from "../../constants/Colors";
 
 import UserSession from "../../network/UserSession";
 import { fetchAPI } from "../../network/Backend";
-import Styles from "../../constants/Styles";
-
-import { ImagePicker, Permissions, Constants } from "expo";
-import { ForceTouchGestureHandler } from "react-native-gesture-handler";
 
 // import for upload image
 //const ImagePicker = require("react-native-image-picker").default;
@@ -27,7 +23,6 @@ export default class ProfileScreen extends React.Component<{
     if (userDetails == null) throw ":(";
     this.setState({ user: userDetails });
 
-    this.getUserPhoto();
     this.getRatings();
   };
   static navigationOptions = {
@@ -99,62 +94,6 @@ export default class ProfileScreen extends React.Component<{
     this.getAvgCleanlinessRating();
   }
 
-  getUserPhoto() {
-    //  console.log("get user photo " + this.state.user.id);
-
-    fetchAPI("/getUserImage/" + this.state.user.id)
-      .then(response => response.json())
-      .then(response => {
-        this.setState({ userPhoto: response.userImage });
-      })
-      .catch(error => {
-        console.log(error);
-      });
-  }
-
-  uploadUserPhoto = async () => {
-    // console.log("upload user photo");
-    // get permission from user to access their mobile photos
-    const { status: cameraRollPerm } = await Permissions.askAsync(
-      Permissions.CAMERA_ROLL
-    );
-
-    // if user gives permission, then pull up the user's photo gallery and store that photo's uri in the state
-    if (cameraRollPerm === "granted") {
-      let result = await ImagePicker.launchImageLibraryAsync({
-        allowsEditing: true,
-        aspect: [2, 2],
-        mediaTypes: "Images",
-        base64: true // there is a base64 property in ImagePicker, so I don't know why this is underlined red.  But it works.
-      });
-
-      //console.log(result);
-
-      if (!result.cancelled) {
-        // this.setState({ userPhoto: result.uri });
-        var imageData = "data:image/jpeg;base64," + result.base64;
-        this.setState({
-          userPhoto: imageData //result.uri
-        });
-
-        // console.log("uri = ", result.uri);
-
-        // send photo to server
-
-        //console.log("data = ", result.base64.length);
-
-        fetchAPI("/updateBios/" + this.state.user.id, {
-          method: "PUT",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ image: imageData })
-        });
-      }
-    } // end of in permission granted if statement
-  };
-
   render() {
     let name = this.state.user.firstName + " " + this.state.user.lastName;
     return (
@@ -182,13 +121,6 @@ export default class ProfileScreen extends React.Component<{
                 <Text>{item.carPlate}</Text>
               </View>
             )}
-          />
-        </View>
-
-        <View style={{ margin: 0, borderRadius: 10 }}>
-          <Button
-            title="Upload Photo"
-            onPress={this.uploadUserPhoto.bind(this)}
           />
         </View>
 
