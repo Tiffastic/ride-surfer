@@ -15,6 +15,7 @@ import Colors from "../../constants/Colors";
 import { fetchAPI } from "../../network/Backend";
 import { number } from "prop-types";
 import UserSession from "../../network/UserSession";
+import { setFlagsFromString } from "v8";
 
 const defaultPic = require("../../assets/images/default-profile.png");
 
@@ -29,15 +30,19 @@ export default class MessageContactsScreen extends React.Component<{
     this.fetchRides();
   }
 
-  state = {
+  state: any = {
     isLoading: true,
     drivingRides: [],
-    passengerRides: []
+    passengerRides: [],
+    drivingRidesPhotos: {},
+    passengerRidesPhotos: {}
   };
 
   fetchRides = async () => {
     await this.fetchDrivingRides();
     await this.fetchPassengerRides();
+    await this.getDrivingRidesPhotos();
+    await this.getPassengerRidesPhotos();
     this.setState({ isLoading: false });
   };
 
@@ -45,6 +50,7 @@ export default class MessageContactsScreen extends React.Component<{
     let userDetails = await UserSession.get();
     if (userDetails == null) return;
 
+    console.log("fetchDrivingRides");
     fetchAPI("/passengerRides/drive/" + userDetails.id, {
       method: "GET",
       headers: {
@@ -71,6 +77,7 @@ export default class MessageContactsScreen extends React.Component<{
     let userDetails = await UserSession.get();
     if (userDetails == null) return;
 
+    console.log("fetchPassengerRides");
     fetchAPI("/passengerRides/passenger/" + userDetails.id, {
       method: "GET",
       headers: {
@@ -157,6 +164,32 @@ export default class MessageContactsScreen extends React.Component<{
       });
   };
 
+  getPassengerRidesPhotos = async () => {
+    console.log("GET Passenger RIDES PHOTOS");
+    let userDetails = await UserSession.get();
+    if (userDetails == null) return;
+
+    fetchAPI("/passengerRidesPhotos/" + userDetails.id)
+      .then(response => response.json())
+      .then(responseJson => {
+        this.setState({ passengerRidesPhotos: responseJson });
+      })
+      .catch(error => console.log("ERROR = ", error));
+  };
+
+  getDrivingRidesPhotos = async () => {
+    console.log("GET DRIVING RIDES PHOTOS");
+    let userDetails = await UserSession.get();
+    if (userDetails == null) return;
+
+    fetchAPI("/drivingRidesPhotos/" + userDetails.id)
+      .then(response => response.json())
+      .then(responseJson => {
+        this.setState({ drivingRidesPhotos: responseJson });
+      })
+      .catch(error => console.log("ERROR = ", error));
+  };
+
   render() {
     if (this.state.isLoading) {
       return <ActivityIndicator />;
@@ -172,6 +205,7 @@ export default class MessageContactsScreen extends React.Component<{
           <FlatList
             style={styles.searchResultsList}
             data={this.state.drivingRides}
+            extraData={this.state}
             keyExtractor={(item: any, index: any) => item.id}
             renderItem={({ item, separators }: any) => (
               <TouchableHighlight
@@ -181,7 +215,11 @@ export default class MessageContactsScreen extends React.Component<{
               >
                 <View style={styles.row}>
                   <Image
-                    source={defaultPic}
+                    source={{
+                      uri: this.state.drivingRidesPhotos[
+                        item.passengerJourney.User.id.toString()
+                      ]
+                    }}
                     style={{ width: 80, height: 80, borderRadius: 40 }}
                   />
                   <View style={styles.imageHolder}>
@@ -223,6 +261,7 @@ export default class MessageContactsScreen extends React.Component<{
           <FlatList
             style={styles.searchResultsList}
             data={this.state.passengerRides}
+            extraData={this.state}
             keyExtractor={(item: any, index: any) => item.id}
             renderItem={({ item, separators }: any) => (
               <TouchableHighlight
@@ -232,7 +271,11 @@ export default class MessageContactsScreen extends React.Component<{
               >
                 <View style={styles.row}>
                   <Image
-                    source={defaultPic}
+                    source={{
+                      uri: this.state.passengerRidesPhotos[
+                        item.driverJourney.User.id.toString()
+                      ]
+                    }}
                     style={{ width: 80, height: 80, borderRadius: 40 }}
                   />
                   <View style={styles.imageHolder}>

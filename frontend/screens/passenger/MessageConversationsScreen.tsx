@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import Colors from "../../constants/Colors";
 
+import { fetchAPI } from "../../network/Backend";
 const defaultPic = require("../../assets/images/default-profile.png");
 
 let dummyDirections: [
@@ -30,12 +31,29 @@ export default class MessageConversationsScreen extends React.Component<{
     title: "Ride Details"
   };
 
+  constructor(props: any) {
+    super(props);
+    this.getUserPhoto();
+  }
+
+  getUserPhoto = async () => {
+    fetchAPI("/getUserImage/" + this.state.ridePartner.id)
+      .then(response => response.json())
+      .then(response => {
+        this.setState({ userPhoto: response.userImage });
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  };
+
   state = {
     destination: this.props.navigation.getParam("destination"),
     ridePartner: this.props.navigation.getParam("ridePartner"),
     rideDetails: this.props.navigation.getParam("rideDetails"),
     ridePartnerJourney: this.props.navigation.getParam("ridePartnerJourney"),
-    type: this.props.navigation.getParam("type")
+    type: this.props.navigation.getParam("type"),
+    userPhoto: null
   };
 
   startRide = () => {
@@ -51,7 +69,15 @@ export default class MessageConversationsScreen extends React.Component<{
   render() {
     return (
       <View style={styles.container}>
-        <Image source={defaultPic} />
+        <Image
+          style={{ flex: 1, width: undefined, height: undefined }}
+          resizeMode="center"
+          source={
+            this.state.userPhoto !== null
+              ? { uri: this.state.userPhoto }
+              : require("../../assets/images/default-profile.png")
+          }
+        />
         <Text style={{ fontSize: 25, margin: 5 }}>
           {this.state.ridePartner.firstName +
             " " +

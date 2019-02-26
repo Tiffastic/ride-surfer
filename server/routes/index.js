@@ -7,6 +7,8 @@ const RateRide = require("../models").RateRides;
 const pushNotificationController = require("../controllers").pushNotifications;
 const calculateRatingsController = require("../controllers").calculateRatings;
 const biosController = require("../controllers").bios;
+const journeyRidesPhotosController = require("../controllers")
+  .journeyRidesPhotos;
 
 module.exports = app => {
   //Using CORS, without this, Swagger  does not work with local host
@@ -100,4 +102,14 @@ module.exports = app => {
   app.put("/updateBios/:userId", biosController.update);
   app.get("/getUserImage/:userId", biosController.getImage);
   app.post("/createBio", biosController.createBio);
+
+  app.get(
+    "/drivingRidesPhotos/:userId",
+    journeyRidesPhotosController.getDriverPhotos
+  );
+
+  app.get(
+    "/passengerRidesPhotos/:userId",
+    journeyRidesPhotosController.getPassengerPhotos
+  );
 };

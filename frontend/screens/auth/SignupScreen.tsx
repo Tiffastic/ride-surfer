@@ -207,7 +207,7 @@ export default class SignupScreen extends React.Component<{ navigation: any }> {
               "Content-Type": "application/json"
             },
             body: JSON.stringify({
-              userId: userJson.id,
+              userId: responseJson.id,
               ridesGiven: 0,
               ridesTaken: 0
             })
