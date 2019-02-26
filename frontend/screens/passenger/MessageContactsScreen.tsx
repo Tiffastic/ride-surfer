@@ -50,7 +50,6 @@ export default class MessageContactsScreen extends React.Component<{
     let userDetails = await UserSession.get();
     if (userDetails == null) return;
 
-    console.log("fetchDrivingRides");
     fetchAPI("/passengerRides/drive/" + userDetails.id, {
       method: "GET",
       headers: {
@@ -77,7 +76,6 @@ export default class MessageContactsScreen extends React.Component<{
     let userDetails = await UserSession.get();
     if (userDetails == null) return;
 
-    console.log("fetchPassengerRides");
     fetchAPI("/passengerRides/passenger/" + userDetails.id, {
       method: "GET",
       headers: {
@@ -165,7 +163,6 @@ export default class MessageContactsScreen extends React.Component<{
   };
 
   getPassengerRidesPhotos = async () => {
-    console.log("GET Passenger RIDES PHOTOS");
     let userDetails = await UserSession.get();
     if (userDetails == null) return;
 
@@ -178,7 +175,6 @@ export default class MessageContactsScreen extends React.Component<{
   };
 
   getDrivingRidesPhotos = async () => {
-    console.log("GET DRIVING RIDES PHOTOS");
     let userDetails = await UserSession.get();
     if (userDetails == null) return;
 
