@@ -134,52 +134,57 @@ export default class UpdateProfileScreen extends React.Component<{
 
   render() {
     var vehiclesInfo = [];
-    for (let i = 0; i < this.state.vehicles.length; i++) {
-      vehiclesInfo.push(
-        <View style={{ paddingBottom: 10 }}>
-          <Text>Vehicle {i + 1}</Text>
 
-          <TextInput
-            style={Styles.textInput}
-            placeholder={
-              this.state.vehicles[i].make === null
-                ? ""
-                : this.state.vehicles[i].make
-            }
-            onChangeText={data => (this.state.vehicles[i].make = data)}
-          />
+    if (this.state.vehicle !== undefined) {
+      for (let i = 0; i < this.state.vehicles.length; i++) {
+        vehiclesInfo.push(
+          <View style={{ paddingBottom: 10 }}>
+            <Text>Vehicle {i + 1}</Text>
 
-          <TextInput
-            style={Styles.textInput}
-            placeholder={
-              this.state.vehicles[i].model === null
-                ? ""
-                : this.state.vehicles[i].model
-            }
-            onChangeText={data => (this.state.vehicles[i].model = data)}
-          />
+            <TextInput
+              style={Styles.textInput}
+              placeholder={
+                this.state.vehicles[i].make === null
+                  ? ""
+                  : this.state.vehicles[i].make
+              }
+              onChangeText={data => (this.state.vehicles[i].make = data)}
+            />
 
-          <TextInput
-            style={Styles.textInput}
-            placeholder={
-              this.state.vehicles[i].year === null
-                ? ""
-                : this.state.vehicles[i].year.toString()
-            }
-            onChangeText={data => (this.state.vehicles[i].year = Number(data))}
-          />
+            <TextInput
+              style={Styles.textInput}
+              placeholder={
+                this.state.vehicles[i].model === null
+                  ? ""
+                  : this.state.vehicles[i].model
+              }
+              onChangeText={data => (this.state.vehicles[i].model = data)}
+            />
 
-          <TextInput
-            style={Styles.textInput}
-            placeholder={
-              this.state.vehicles[i].plate === null
-                ? ""
-                : this.state.vehicles[i].plate
-            }
-            onChangeText={data => (this.state.vehicles[i].plate = data)}
-          />
-        </View>
-      );
+            <TextInput
+              style={Styles.textInput}
+              placeholder={
+                this.state.vehicles[i].year === null
+                  ? ""
+                  : this.state.vehicles[i].year.toString()
+              }
+              onChangeText={data =>
+                (this.state.vehicles[i].year = Number(data))
+              }
+            />
+
+            <TextInput
+              style={Styles.textInput}
+              placeholder={
+                this.state.vehicles[i].plate === null
+                  ? ""
+                  : this.state.vehicles[i].plate
+              }
+              onChangeText={data => (this.state.vehicles[i].plate = data)}
+            />
+          </View>
+        );
+      }
     }
 
     return (
