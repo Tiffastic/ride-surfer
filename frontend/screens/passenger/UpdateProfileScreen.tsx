@@ -135,7 +135,7 @@ export default class UpdateProfileScreen extends React.Component<{
   render() {
     var vehiclesInfo = [];
 
-    if (this.state.vehicle !== undefined) {
+    if (this.state.vehicles !== undefined) {
       for (let i = 0; i < this.state.vehicles.length; i++) {
         vehiclesInfo.push(
           <View style={{ paddingBottom: 10 }}>
@@ -215,7 +215,7 @@ export default class UpdateProfileScreen extends React.Component<{
             onChangeText={data => (this.state.email = data)}
           />
 
-          <View style={{ marginTop: 20 }} />
+          <View style={{ marginTop: 20 }}>{vehiclesInfo}</View>
 
           <Text>We need a Plus Sign to add more vehicles</Text>
 

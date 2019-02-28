@@ -147,6 +147,7 @@ export default class ProfileScreen extends React.Component<{
   };
 
   render() {
+    console.log("this.state.user.vehicles = ", this.state.user.vehicles);
     let name = this.state.user.firstName + " " + this.state.user.lastName;
     return (
       <View style={styles.container}>
@@ -164,13 +165,12 @@ export default class ProfileScreen extends React.Component<{
           <Text>{this.state.user.email}</Text>
           <FlatList
             data={this.state.user.vehicles}
+            extraData={this.state}
             keyExtractor={(item: any, index: any) => item.id}
             renderItem={({ item, separators }: any) => (
               <View>
-                <Text>
-                  {item.carYear + " " + item.carMake + " " + item.carModel}
-                </Text>
-                <Text>{item.carPlate}</Text>
+                <Text>{item.year + " " + item.make + " " + item.model}</Text>
+                <Text>{item.plate}</Text>
               </View>
             )}
           />
