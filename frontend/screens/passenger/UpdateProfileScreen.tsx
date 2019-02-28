@@ -6,7 +6,8 @@ import {
   ScrollView,
   TextInput,
   View,
-  Button
+  Button,
+  Platform
 } from "react-native";
 
 import Styles from "../../constants/Styles";
@@ -15,11 +16,15 @@ import UserSession from "../../network/UserSession";
 import { fetchAPI } from "../../network/Backend";
 import UserProfileScreen from "./ProfileScreen";
 
+if (Platform.OS === "android") {
+  var headerMode: any = null; // the default headerMode is undefined, and for iOS, undefined shows header
+}
+
 export default class UpdateProfileScreen extends React.Component<{
   navigation: any;
 }> {
   static navigationOptions = {
-    header: null
+    header: headerMode
   };
 
   constructor(props: any) {
@@ -97,7 +102,7 @@ export default class UpdateProfileScreen extends React.Component<{
       .then(() => {
         // set user object cache
 
-        if (this.state.vehicles.length == 0) {
+        if (this.state.vehicles.length === 0) {
           UserSession.set({
             id: this.state.userId,
             firstName: this.state.first_name,
@@ -129,7 +134,6 @@ export default class UpdateProfileScreen extends React.Component<{
 
   render() {
     var vehiclesInfo = [];
-
     for (let i = 0; i < this.state.vehicles.length; i++) {
       vehiclesInfo.push(
         <View style={{ paddingBottom: 10 }}>
@@ -137,25 +141,41 @@ export default class UpdateProfileScreen extends React.Component<{
 
           <TextInput
             style={Styles.textInput}
-            placeholder={this.state.vehicles[i].make}
+            placeholder={
+              this.state.vehicles[i].make === null
+                ? ""
+                : this.state.vehicles[i].make
+            }
             onChangeText={data => (this.state.vehicles[i].make = data)}
           />
 
           <TextInput
             style={Styles.textInput}
-            placeholder={this.state.vehicles[i].model}
+            placeholder={
+              this.state.vehicles[i].model === null
+                ? ""
+                : this.state.vehicles[i].model
+            }
             onChangeText={data => (this.state.vehicles[i].model = data)}
           />
 
           <TextInput
             style={Styles.textInput}
-            placeholder={this.state.vehicles[i].year.toString()}
+            placeholder={
+              this.state.vehicles[i].year === null
+                ? ""
+                : this.state.vehicles[i].year.toString()
+            }
             onChangeText={data => (this.state.vehicles[i].year = Number(data))}
           />
 
           <TextInput
             style={Styles.textInput}
-            placeholder={this.state.vehicles[i].plate}
+            placeholder={
+              this.state.vehicles[i].plate === null
+                ? ""
+                : this.state.vehicles[i].plate
+            }
             onChangeText={data => (this.state.vehicles[i].plate = data)}
           />
         </View>
@@ -190,7 +210,7 @@ export default class UpdateProfileScreen extends React.Component<{
             onChangeText={data => (this.state.email = data)}
           />
 
-          <View style={{ marginTop: 20 }}>{vehiclesInfo}</View>
+          <View style={{ marginTop: 20 }} />
 
           <Text>We need a Plus Sign to add more vehicles</Text>
 
