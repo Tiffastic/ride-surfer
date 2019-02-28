@@ -213,7 +213,7 @@ export default class SignupScreen extends React.Component<{ navigation: any }> {
                 }
               } else {
                 responseJson.vehicles = [vehicleJson];
-                this._saveUserAsync(responseJson).catch(console.log);
+                return this._saveUserAsync(responseJson).catch(console.log);
               }
             })
             .catch(error => {
@@ -243,7 +243,6 @@ export default class SignupScreen extends React.Component<{ navigation: any }> {
   //Also if you want this to work, be sure each json field is correct, I.e. carYear should be a number..
   private _saveUserAsync = async (userDetails: any) => {
     await UserSession.set(userDetails);
-    this.setState({ isLoading: false });
     Alert.alert("New account successfully created!");
     this.props.navigation.navigate("Main");
   };

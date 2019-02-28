@@ -121,7 +121,7 @@ export default class LoginScreen extends React.Component<{ navigation: any }> {
           });
         } else {
           //this func also will take you to the home screen
-          this._saveUserAsync(responseJson).catch(console.log);
+          return this._saveUserAsync(responseJson).catch(console.log);
         }
       })
       .catch(error => {
@@ -132,7 +132,6 @@ export default class LoginScreen extends React.Component<{ navigation: any }> {
 
   private _saveUserAsync = async (userDetails: any) => {
     await UserSession.set(userDetails);
-    this.setState({ isLoading: false });
     this.props.navigation.navigate("Main");
   };
 }

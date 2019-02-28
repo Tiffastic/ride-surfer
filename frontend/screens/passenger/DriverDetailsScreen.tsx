@@ -84,7 +84,6 @@ export default class DriverDetailsScreen extends React.Component<{
   }
 
   render() {
-    // let image = this.state.driver.home;
     let ridePlan = this.state.match.ridePlan;
 
     let dirs = this.generateDirsFromRidePlan(ridePlan);
@@ -207,8 +206,7 @@ export default class DriverDetailsScreen extends React.Component<{
       .then(journeyResponseJson => {
         if (journeyResponseJson.message == "Journey Not Found") {
           this.setState({
-            errorMessage: "Journey not found",
-            isLoading: false
+            errorMessage: "Journey not found"
           });
         } else {
           fetchAPI("/passengerRides/", {
@@ -227,8 +225,7 @@ export default class DriverDetailsScreen extends React.Component<{
             .then(responseJson => {
               if (responseJson.message == "Ride Not Found") {
                 this.setState({
-                  errorMessage: "Error Sending Request",
-                  isLoading: false
+                  errorMessage: "Error Sending Request"
                 });
               } else {
                 this.setState({ isLoading: false });
@@ -245,8 +242,8 @@ export default class DriverDetailsScreen extends React.Component<{
       })
       .catch(error => {
         console.log(error);
-      });
-    // .then(() => this.setState({ isLoading: false }));
+      })
+      .then(() => this.setState({ isLoading: false }));
   };
 }
 
