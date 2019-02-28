@@ -118,7 +118,6 @@ export default class LoginScreen extends React.Component<{ navigation: any }> {
         if (this.state.status === 404) {
           this.setState({
             error: responseJson.message
-            // isLoading: false
           });
         } else {
           //this func also will take you to the home screen
