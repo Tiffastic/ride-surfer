@@ -150,8 +150,6 @@ export default class MessageContactsScreen extends React.Component<{
           this.setState({
             errorMessage: "Ride not found"
           });
-        } else {
-          this.setState({ passengerRides: responseJson });
         }
       })
       .then(() => {

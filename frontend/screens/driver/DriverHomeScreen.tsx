@@ -12,7 +12,6 @@ import Colors from "../../constants/Colors";
 import ProfileScreen from "../passenger/ProfileScreen";
 import MessageContactsScreen from "../passenger/MessageContactsScreen";
 import MessageConversationsScreen from "../passenger/MessageConversationsScreen";
-import PassengerPickerScreen from "./PassengerPickerScreen";
 import AddressPicker from "../../components/AddressPicker";
 
 class DriverHomeScreen extends React.Component<{ navigation: any }> {
@@ -49,12 +48,9 @@ class DriverHomeScreen extends React.Component<{ navigation: any }> {
         }
         this.setState({ isLoading: false });
         Alert.alert(
-          "Your drive was confirmed! Go to the messages screen to view your ride requests."
+          "Your drive was confirmed!",
+          "Go to the messages screen to view your ride requests."
         );
-        this.props.navigation.push("PassengerPicker", {
-          origin: origin,
-          address: destination
-        });
       })
       .catch((error: any) => {
         Alert.alert("Error: couldn't save your trip");
@@ -147,8 +143,7 @@ export default createStackNavigator(
 
     ProfileScreen: ProfileScreen,
     MessageContacts: MessageContactsScreen,
-    MessageConversations: MessageConversationsScreen,
-    PassengerPicker: PassengerPickerScreen
+    MessageConversations: MessageConversationsScreen
   },
 
   {
