@@ -11,7 +11,5 @@ export default createStackNavigator(
     Login: LoginScreen,
     Signup: SignupScreen
   },
-  {
-    headerMode: "none"
-  }
+  {}
 );

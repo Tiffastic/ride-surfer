@@ -5,12 +5,14 @@ import {
   View,
   Dimensions,
   Platform,
-  AppState
+  AppState,
+  Image
 } from "react-native";
 
 import NavigateButton from "../../components/NavigateButton";
 import { fetchAPI } from "../../network/Backend";
 import UserSession from "../../network/UserSession";
+import Icon from "react-native-vector-icons/FontAwesome";
 
 import Colors from "../../constants/Colors";
 import Styles from "../../constants/Styles";
@@ -26,14 +28,14 @@ const LATITUDE_DELTA = 0.0922;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 
 const LOCATION_TASK_NAME = "background-location-task";
-
+const car = <Icon name="car" size={30} color="#900" />;
+const person = <Icon name="user" size={30} color="#900" />;
 let lastSaved: Date;
 
 export default class RideInProgress extends React.Component<{
   navigation: any;
 }> {
   state = {
-    isLoading: true,
     myLocation: { latitude: 0, longitude: 0 },
     ridePartnerLocation: { latitude: 0, longitude: 0 },
     errorMessage: "",
@@ -41,7 +43,10 @@ export default class RideInProgress extends React.Component<{
     ridePartnerJourney: this.props.navigation.getParam("ridePartnerJourney"),
     destination: this.props.navigation.getParam("destination"),
     rideDetails: this.props.navigation.getParam("rideDetails"),
-    appState: AppState.currentState
+    type: this.props.navigation.getParam("type"),
+    appState: AppState.currentState,
+    myMarkerImage: person,
+    partnerMarkerImage: car
   };
 
   componentWillMount() {
@@ -56,6 +61,12 @@ export default class RideInProgress extends React.Component<{
     }
 
     lastSaved = new Date();
+    if (this.state.type === "driver") {
+      this.setState({
+        myMarkerImage: car,
+        partnerMarkerImage: person
+      });
+    }
   }
 
   componentDidMount() {
@@ -92,6 +103,8 @@ export default class RideInProgress extends React.Component<{
 
     saveLocation(coords);
     this.setState({ myLocation: coords });
+
+    this.getRidePartnerLocation();
   };
 
   initializeLocationAsync = async () => {
@@ -123,7 +136,14 @@ export default class RideInProgress extends React.Component<{
             errorMessage: "Journey not found"
           });
         } else {
-          this.setState({ ridePartnerJourney: responseJson });
+          let partnerLocation = {
+            latitude: responseJson.currentLocation.coordinates[0],
+            longitude: responseJson.currentLocation.coordinates[1]
+          };
+          this.setState({
+            ridePartnerJourney: responseJson,
+            ridePartnerLocation: partnerLocation
+          });
         }
       })
       .catch(error => {
@@ -143,21 +163,29 @@ export default class RideInProgress extends React.Component<{
             latitudeDelta: LATITUDE_DELTA,
             longitudeDelta: LONGITUDE_DELTA
           }}
+        >
+          <Marker
+            coordinate={{
+              latitude: this.state.ridePartnerLocation.latitude,
+              longitude: this.state.ridePartnerLocation.longitude
+            }}
+          >
+            {this.state.partnerMarkerImage}
+          </Marker>
+          <Marker coordinate={this.state.myLocation}>
+            {this.state.myMarkerImage}
+          </Marker>
+          <Marker coordinate={this.state.destination.coordinates}>
+            <Icon name="flag" size={30} color="#900" />
+          </Marker>
+        </MapView>
+        <NavigateButton
+          dest={
+            this.state.destination.coordinates.latitude +
+            " " +
+            this.state.destination.coordinates.longitude
+          }
         />
-        <Marker
-          pinColor={"Green"}
-          coordinate={{
-            latitude: this.state.ridePartnerLocation.latitude,
-            longitude: this.state.ridePartnerLocation.longitude
-          }}
-        />
-        <Marker pinColor={"Green"} coordinate={this.state.myLocation} />
-        <Marker
-          pinColor={"Green"}
-          coordinate={this.state.destination.coordinates}
-        />
-        <NavigateButton dest={this.state.destination.description} />
-
         <View style={Styles.buttonView}>
           <Button
             title="Finish"

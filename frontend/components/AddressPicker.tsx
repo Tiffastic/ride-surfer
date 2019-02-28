@@ -80,6 +80,8 @@ export default class AddressPicker extends React.Component<Props, state> {
         if (response[0].street !== null) {
           address +=
             " " +
+            response[0].street +
+            " " +
             response[0].city +
             " " +
             response[0].region +

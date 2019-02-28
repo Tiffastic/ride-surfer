@@ -6,7 +6,8 @@ import {
   Text,
   View,
   TextInput,
-  Button
+  Button,
+  Platform
 } from "react-native";
 
 import Colors from "../../constants/Colors";
@@ -14,15 +15,19 @@ import Styles from "../../constants/Styles";
 import { fetchAPI } from "../../network/Backend";
 import UserSession from "../../network/UserSession";
 
+if (Platform.OS === "android") {
+  var headerMode: any = null;
+}
+
 export default class LoginScreen extends React.Component<{ navigation: any }> {
   static navigationOptions = {
-    header: null
+    header: headerMode
   };
-
   state = {
     email: "",
     password: "",
-    error: ""
+    error: "",
+    status: 0
   };
 
   render() {
@@ -81,20 +86,20 @@ export default class LoginScreen extends React.Component<{ navigation: any }> {
         password: this.state.password
       })
     })
-      .then(response => response.json())
-
+      .then(response => {
+        //this is how to actual check status. you cannot after response.json()
+        this.setState({
+          status: response.status
+        });
+        return response.json();
+      })
       .then(responseJson => {
-        if (responseJson.message == "User Not Found") {
+        if (this.state.status === 404) {
           this.setState({
-            error: "User not found"
-          });
-        } else if (
-          responseJson.message == "Password or Username is incorrect"
-        ) {
-          this.setState({
-            error: "Password or Username is incorrect"
+            error: responseJson.message
           });
         } else {
+          //this func also will take you to the home screen
           this._saveUserAsync(responseJson).catch(console.log);
         }
       })

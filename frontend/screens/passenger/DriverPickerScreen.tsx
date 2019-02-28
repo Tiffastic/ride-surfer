@@ -23,48 +23,6 @@ const ASPECT_RATIO = width / height;
 const LATITUDE_DELTA = 0.0922;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 
-const dummyDrivers = [
-  {
-    key: "shaggy",
-    name: "Shaggy",
-    rating: 4.2,
-    home: require("../../assets/images/h-s1.png"),
-    class: require("../../assets/images/h-l1.png"),
-    work: require("../../assets/images/h-w1.png"),
-    homeDirs: [
-      {
-        key: "1",
-        time: "1 min",
-        desc: "Walk to  4689 Holladay Blvd E",
-        addr: "4689 Holladay Blvd E"
-      },
-      { key: "2", time: "16 mins", desc: "Drive to 2000 1100 E" },
-      { key: "3", time: "5 mins", desc: "Walk to 2011 1100 E" }
-    ],
-    workDirs: [
-      {
-        key: "1",
-        time: "5 mins",
-        desc: "Walk to 4501 2565 E",
-        addr: "4501 2565 E"
-      },
-      { key: "2", time: "15 mins", desc: "Drive to 290 1500 E" },
-      { key: "3", time: "2 mins", desc: "Walk to 295 1500 E" }
-    ],
-    classDirs: [
-      {
-        key: "1",
-        time: "5 mins",
-        desc: "Walk to 4501 2565 E",
-        addr: "4501 2565 E"
-      },
-      { key: "2", time: "15 mins", desc: "Drive to 70 Central Campus Drive" },
-      { key: "3", time: "2 mins", desc: "Walk to 72 Central Campus Dr" }
-    ],
-    profilePic: require("../../assets/images/shaggy.jpg")
-  }
-];
-
 export default class DriverPickerScreen extends React.Component<{
   navigation: any;
 }> {
@@ -87,7 +45,15 @@ export default class DriverPickerScreen extends React.Component<{
   };
 
   componentDidMount() {
-    fetchAPI("/journeys/matches")
+    let origin = [this.state.origin.longitude, this.state.origin.latitude].join(
+      ","
+    );
+    let dest = [
+      this.state.destination.longitude,
+      this.state.destination.latitude
+    ].join(",");
+    let coords = [origin, dest].join(";");
+    fetchAPI(`/journeys/matches?coords=${encodeURIComponent(coords)}`)
       .then(async resp => {
         let json = await resp.json();
         if (!resp.ok) {

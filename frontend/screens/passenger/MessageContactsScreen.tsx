@@ -7,7 +7,8 @@ import {
   TouchableHighlight,
   FlatList,
   Button,
-  ScrollView
+  ScrollView,
+  ActivityIndicator
 } from "react-native";
 import { Location } from "expo";
 import Colors from "../../constants/Colors";
@@ -25,14 +26,19 @@ export default class MessageContactsScreen extends React.Component<{
   };
   constructor(props: any) {
     super(props);
-    this.fetchDrivingRides();
-    this.fetchPassengerRides();
+    this.fetchRides();
   }
 
   state = {
     isLoading: true,
     drivingRides: [],
     passengerRides: []
+  };
+
+  fetchRides = async () => {
+    await this.fetchDrivingRides();
+    await this.fetchPassengerRides();
+    this.setState({ isLoading: false });
   };
 
   fetchDrivingRides = async () => {
@@ -152,6 +158,9 @@ export default class MessageContactsScreen extends React.Component<{
   };
 
   render() {
+    if (this.state.isLoading) {
+      return <ActivityIndicator />;
+    }
     return (
       <View style={styles.container}>
         <ScrollView>

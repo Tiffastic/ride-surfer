@@ -6,16 +6,73 @@ module.exports = (sequelize, DataTypes) => {
       id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
+        allowNull: false,
         primaryKey: true
       },
-      userId: DataTypes.INTEGER,
-      make: DataTypes.TEXT,
-      model: DataTypes.TEXT,
-      year: DataTypes.INTEGER,
-      plate: DataTypes.TEXT,
-      vin: { type: DataTypes.TEXT, unique: true },
-      policyNumber: DataTypes.TEXT,
-      policyProvider: DataTypes.INTEGER
+      userId: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+      },
+      make: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        validate: {
+          isAlpha: {
+            msg: "Car make can only contain letters"
+          }
+        }
+      },
+      model: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        validate: {
+          isAlphanumeric: {
+            msg: "Car Model can not contain symbols"
+          }
+        }
+      },
+      year: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        validate: {
+          isNumeric: {
+            msg: "Car year can only contain numbers"
+          }
+        }
+      },
+      plate: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        validate: {
+          isAlphanumeric: {
+            msg: "Plate can not contain symbols"
+          }
+        }
+      },
+      vin: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        unique: true,
+        validate: {
+          isAlphanumeric: {
+            msg: "Vin can not contain symbols"
+          }
+        }
+      },
+      policyNumber: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        unique: true,
+        validate: {
+          isAlphanumeric: {
+            msg: "Policy number can not contain symbols"
+          }
+        }
+      },
+      policyProvider: {
+        type: DataTypes.TEXT,
+        allowNull: true
+      }
     },
     {}
   );

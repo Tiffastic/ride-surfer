@@ -5,12 +5,11 @@ const bcrypt = require("react-native-bcrypt");
 module.exports = {
   create(req, res) {
     // TODO bcrypt here and then store
-    var salt = bcrypt.genSaltSync(10);
-    var hash = bcrypt.hashSync(req.body.password, salt);
-    req.body.password = hash;
     // Store hash in your password DB.
     return User.create(req.body, { fields: Object.keys(req.body) })
-      .then(user => res.status(201).json(user))
+      .then(user => {
+        res.status(201).json(user);
+      })
       .catch(error => res.status(400).json(error));
   },
 
@@ -55,11 +54,11 @@ module.exports = {
       .then(user => {
         if (!user) {
           return res.status(404).json({
-            message: "User Not Found"
+            message: "Password or Username is incorrect"
           });
         } else if (!bcrypt.compareSync(req.body.password, user.password)) {
           return res.status(404).json({
-            message: "Password or Username is incorrect"
+            message: "Password or Username is incorrect!"
           });
         }
 

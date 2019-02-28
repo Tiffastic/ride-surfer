@@ -13,7 +13,7 @@ module.exports = {
       .then(vehicles => {
         if (!vehicles) {
           return res.status(404).json({
-            message: "User Not Found"
+            message: "Vehicle Not Found"
           });
         }
         return res.status(200).json(vehicles);
@@ -26,7 +26,7 @@ module.exports = {
       .then(vehicle => {
         if (!vehicle) {
           return res.status(404).json({
-            message: "User Not Found"
+            message: "Vehicle Not Found"
           });
         }
         return res.status(200).json(vehicle);
@@ -39,7 +39,7 @@ module.exports = {
       .then(vehicle => {
         if (!vehicle) {
           return res.status(400).json({
-            message: "User Not Found"
+            message: "Vehicle Not Found"
           });
         }
         return vehicle
@@ -59,7 +59,7 @@ module.exports = {
       .then(vehicle => {
         if (!vehicle) {
           return res.status(404).json({
-            message: "User Not Found"
+            message: "Vehicle Not Found"
           });
         }
 
