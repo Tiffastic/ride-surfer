@@ -211,11 +211,17 @@ export default class MessageContactsScreen extends React.Component<{
               >
                 <View style={styles.row}>
                   <Image
-                    source={{
-                      uri: this.state.passengersPhotos[
+                    source={
+                      this.state.passengersPhotos[
                         item.passengerJourney.User.id.toString()
-                      ]
-                    }}
+                      ] === null
+                        ? defaultPic
+                        : {
+                            uri: this.state.passengersPhotos[
+                              item.passengerJourney.User.id.toString()
+                            ]
+                          }
+                    }
                     style={{ width: 80, height: 80, borderRadius: 40 }}
                   />
                   <View style={styles.imageHolder}>
@@ -267,11 +273,17 @@ export default class MessageContactsScreen extends React.Component<{
               >
                 <View style={styles.row}>
                   <Image
-                    source={{
-                      uri: this.state.driversPhotos[
+                    source={
+                      this.state.driversPhotos[
                         item.driverJourney.User.id.toString()
-                      ]
-                    }}
+                      ] === null
+                        ? defaultPic
+                        : {
+                            uri: this.state.driversPhotos[
+                              item.driverJourney.User.id.toString()
+                            ]
+                          }
+                    }
                     style={{ width: 80, height: 80, borderRadius: 40 }}
                   />
                   <View style={styles.imageHolder}>
