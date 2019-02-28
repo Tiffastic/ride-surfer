@@ -2,12 +2,13 @@ import React, { Component } from "react";
 import {
   FlatList,
   TouchableHighlight,
-  Image,
+  ActivityIndicator,
   StyleSheet,
   Text,
   Button,
   Dimensions,
-  View
+  View,
+  Alert
 } from "react-native";
 
 import MapView, { Polyline, Marker } from "react-native-maps";
@@ -35,7 +36,8 @@ export default class DriverDetailsScreen extends React.Component<{
     driverJourney: this.props.navigation.getParam("driverJourney"),
     destinationHumanAddress: null as null | string,
     pickupHumanAddress: null as null | string,
-    dropoffHumanAddress: null as null | string
+    dropoffHumanAddress: null as null | string,
+    isLoading: false
   };
 
   componentWillMount() {
@@ -122,7 +124,6 @@ export default class DriverDetailsScreen extends React.Component<{
             }}
           />
         </MapView>
-
         <View style={{ flex: 1 }}>
           <Text style={{ fontSize: 25, margin: 5 }}>
             {this.state.driverJourney.User.firstName}
@@ -148,18 +149,34 @@ export default class DriverDetailsScreen extends React.Component<{
               </TouchableHighlight>
             )}
           />
-
-          <Button
-            title="Request"
-            onPress={this.onRequest}
-            color={Colors.darkAccent}
-          />
+          {this.state.isLoading ? (
+            <View style={{ flex: 2 }}>
+              <ActivityIndicator
+                size="large"
+                style={{
+                  zIndex: 5,
+                  flex: 1,
+                  justifyContent: "center",
+                  alignItems: "center",
+                  alignSelf: "center"
+                }}
+              />
+            </View>
+          ) : (
+            <Button
+              title="Request"
+              onPress={this.onRequest}
+              color={Colors.darkAccent}
+            />
+          )}
         </View>
       </View>
     );
   }
 
   onRequest = async () => {
+    this.setState({ isLoading: true });
+
     //Send a push notification to driver that passenger wants a ride
     fetchAPI(
       "/ridePushNotificationRequest?driverId=" +
@@ -190,7 +207,8 @@ export default class DriverDetailsScreen extends React.Component<{
       .then(journeyResponseJson => {
         if (journeyResponseJson.message == "Journey Not Found") {
           this.setState({
-            errorMessage: "Journey not found"
+            errorMessage: "Journey not found",
+            isLoading: false
           });
         } else {
           fetchAPI("/passengerRides/", {
@@ -209,9 +227,14 @@ export default class DriverDetailsScreen extends React.Component<{
             .then(responseJson => {
               if (responseJson.message == "Ride Not Found") {
                 this.setState({
-                  errorMessage: "Error Sending Request"
+                  errorMessage: "Error Sending Request",
+                  isLoading: false
                 });
               } else {
+                this.setState({ isLoading: false });
+                Alert.alert(
+                  "Your request was sent! Go to the messages screen to view your ride requests."
+                );
                 this.props.navigation.popToTop();
               }
             })
@@ -223,6 +246,7 @@ export default class DriverDetailsScreen extends React.Component<{
       .catch(error => {
         console.log(error);
       });
+    // .then(() => this.setState({ isLoading: false }));
   };
 }
 
