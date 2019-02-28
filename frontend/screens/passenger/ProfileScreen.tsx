@@ -130,15 +130,10 @@ export default class ProfileScreen extends React.Component<{
         // this.setState({ userPhoto: result.uri });
         var imageData = "data:image/jpeg;base64," + result.base64;
         this.setState({
-          userPhoto: imageData //result.uri
+          userPhoto: imageData
         });
 
-        console.log("uri = ", result.uri);
-
         // send photo to server
-
-        console.log("data = ", result.base64.length);
-        //  var dataUri = "data:image/jpeg;base64," + result.data; // I don't know
 
         fetchAPI("/updateBios/" + this.state.user.id, {
           method: "PUT",
