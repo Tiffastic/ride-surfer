@@ -15,6 +15,7 @@ import Colors from "../../constants/Colors";
 import { fetchAPI } from "../../network/Backend";
 import { number } from "prop-types";
 import UserSession from "../../network/UserSession";
+import { setFlagsFromString } from "v8";
 
 const defaultPic = require("../../assets/images/default-profile.png");
 
@@ -29,15 +30,19 @@ export default class MessageContactsScreen extends React.Component<{
     this.fetchRides();
   }
 
-  state = {
+  state: any = {
     isLoading: true,
     drivingRides: [],
-    passengerRides: []
+    passengerRides: [],
+    driversPhotos: {},
+    passengersPhotos: {}
   };
 
   fetchRides = async () => {
     await this.fetchDrivingRides();
     await this.fetchPassengerRides();
+    await this.getMyDriversPhotos();
+    await this.getMyPassengersPhotos();
     this.setState({ isLoading: false });
   };
 
@@ -157,6 +162,30 @@ export default class MessageContactsScreen extends React.Component<{
       });
   };
 
+  getMyPassengersPhotos = async () => {
+    let userDetails = await UserSession.get();
+    if (userDetails == null) return;
+
+    fetchAPI("/myPassengersPhotos/" + userDetails.id)
+      .then(response => response.json())
+      .then(responseJson => {
+        this.setState({ passengersPhotos: responseJson });
+      })
+      .catch(error => console.log("ERROR = ", error));
+  };
+
+  getMyDriversPhotos = async () => {
+    let userDetails = await UserSession.get();
+    if (userDetails == null) return;
+
+    fetchAPI("/myDriversPhotos/" + userDetails.id)
+      .then(response => response.json())
+      .then(responseJson => {
+        this.setState({ driversPhotos: responseJson });
+      })
+      .catch(error => console.log("ERROR = ", error));
+  };
+
   render() {
     if (this.state.isLoading) {
       return <ActivityIndicator />;
@@ -172,6 +201,7 @@ export default class MessageContactsScreen extends React.Component<{
           <FlatList
             style={styles.searchResultsList}
             data={this.state.drivingRides}
+            extraData={this.state}
             keyExtractor={(item: any, index: any) => item.id}
             renderItem={({ item, separators }: any) => (
               <TouchableHighlight
@@ -181,7 +211,17 @@ export default class MessageContactsScreen extends React.Component<{
               >
                 <View style={styles.row}>
                   <Image
-                    source={defaultPic}
+                    source={
+                      this.state.passengersPhotos[
+                        item.passengerJourney.User.id.toString()
+                      ] === null
+                        ? defaultPic
+                        : {
+                            uri: this.state.passengersPhotos[
+                              item.passengerJourney.User.id.toString()
+                            ]
+                          }
+                    }
                     style={{ width: 80, height: 80, borderRadius: 40 }}
                   />
                   <View style={styles.imageHolder}>
@@ -223,6 +263,7 @@ export default class MessageContactsScreen extends React.Component<{
           <FlatList
             style={styles.searchResultsList}
             data={this.state.passengerRides}
+            extraData={this.state}
             keyExtractor={(item: any, index: any) => item.id}
             renderItem={({ item, separators }: any) => (
               <TouchableHighlight
@@ -232,7 +273,17 @@ export default class MessageContactsScreen extends React.Component<{
               >
                 <View style={styles.row}>
                   <Image
-                    source={defaultPic}
+                    source={
+                      this.state.driversPhotos[
+                        item.driverJourney.User.id.toString()
+                      ] === null
+                        ? defaultPic
+                        : {
+                            uri: this.state.driversPhotos[
+                              item.driverJourney.User.id.toString()
+                            ]
+                          }
+                    }
                     style={{ width: 80, height: 80, borderRadius: 40 }}
                   />
                   <View style={styles.imageHolder}>

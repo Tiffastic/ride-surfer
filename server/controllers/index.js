@@ -5,6 +5,8 @@ const traces = require("./traces");
 const pushNotifications = require("./pushNotifications");
 const passengerRides = require("./passengerRides");
 const calculateRatings = require("./calculateRatings");
+const bios = require("./bios");
+const journeyRidesPhotos = require("./journeyRidePhotos");
 
 module.exports = {
   users,
@@ -13,5 +15,7 @@ module.exports = {
   traces,
   pushNotifications,
   passengerRides,
-  calculateRatings
+  calculateRatings,
+  bios,
+  journeyRidesPhotos
 };

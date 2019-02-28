@@ -16,7 +16,7 @@ module.exports = {
           type: Sequelize.TEXT
         },
         image: {
-          type: Sequelize.BLOB
+          type: Sequelize.TEXT
         },
         ridesGiven: {
           type: Sequelize.INTEGER

@@ -5,6 +5,12 @@ import Colors from "../../constants/Colors";
 
 import UserSession from "../../network/UserSession";
 import { fetchAPI } from "../../network/Backend";
+import Styles from "../../constants/Styles";
+
+import { ImagePicker, Permissions, Constants } from "expo";
+
+// import for upload image
+//const ImagePicker = require("react-native-image-picker").default;
 
 export default class ProfileScreen extends React.Component<{
   navigation: any;
@@ -20,6 +26,7 @@ export default class ProfileScreen extends React.Component<{
     if (userDetails == null) throw ":(";
     this.setState({ user: userDetails });
 
+    this.getUserPhoto();
     this.getRatings();
   };
   static navigationOptions = {
@@ -36,7 +43,9 @@ export default class ProfileScreen extends React.Component<{
     avgOverallRating: 0,
     avgSafetyRating: 0,
     avgTimelinessRating: 0,
-    avgCleanlinessRating: 0
+    avgCleanlinessRating: 0,
+
+    userPhoto: null
   };
 
   getAvgOverallRating() {
@@ -88,6 +97,55 @@ export default class ProfileScreen extends React.Component<{
     this.getAvgCleanlinessRating();
   }
 
+  getUserPhoto() {
+    fetchAPI("/getUserImage/" + this.state.user.id)
+      .then(response => response.json())
+      .then(response => {
+        this.setState({ userPhoto: response.userImage });
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  }
+
+  uploadUserPhoto = async () => {
+    // get permission from user to access their mobile photos
+    const { status: cameraRollPerm } = await Permissions.askAsync(
+      Permissions.CAMERA_ROLL
+    );
+
+    // if user gives permission, then pull up the user's photo gallery and store that photo's uri in the state
+    if (cameraRollPerm === "granted") {
+      let result = await ImagePicker.launchImageLibraryAsync({
+        allowsEditing: true,
+        aspect: [2, 2],
+        mediaTypes: "Images",
+        base64: true // there is a base64 property in ImagePicker, so I don't know why this is underlined red.  But it works.
+      });
+
+      //console.log(result);
+
+      if (!result.cancelled) {
+        // this.setState({ userPhoto: result.uri });
+        var imageData = "data:image/jpeg;base64," + result.base64;
+        this.setState({
+          userPhoto: imageData
+        });
+
+        // send photo to server
+
+        fetchAPI("/updateBios/" + this.state.user.id, {
+          method: "PUT",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ image: imageData })
+        });
+      }
+    } // end of in permission granted if statement
+  };
+
   render() {
     let name = this.state.user.firstName + " " + this.state.user.lastName;
     return (
@@ -95,7 +153,11 @@ export default class ProfileScreen extends React.Component<{
         <Image
           style={{ flex: 1, width: undefined, height: undefined }}
           resizeMode="center"
-          source={require("../../assets/images/default-profile.png")}
+          source={
+            this.state.userPhoto !== null
+              ? { uri: this.state.userPhoto }
+              : require("../../assets/images/default-profile.png")
+          }
         />
         <View style={{ flex: 1, alignItems: "center" }}>
           <Text style={{ fontSize: 25, margin: 10 }}>{name}</Text>
@@ -111,6 +173,13 @@ export default class ProfileScreen extends React.Component<{
                 <Text>{item.carPlate}</Text>
               </View>
             )}
+          />
+        </View>
+
+        <View style={{ margin: 0, borderRadius: 10 }}>
+          <Button
+            title="Upload Photo"
+            onPress={this.uploadUserPhoto.bind(this)}
           />
         </View>
 
@@ -156,5 +225,10 @@ const styles = StyleSheet.create({
   },
   tableRow: {
     flexDirection: "row"
+  },
+  uploadButton: {
+    width: 256,
+    height: 50,
+    backgroundColor: "blue"
   }
 });
