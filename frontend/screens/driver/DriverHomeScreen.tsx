@@ -101,7 +101,9 @@ export default createStackNavigator(
             style={{
               flexDirection: "row",
               justifyContent: "center",
-              alignItems: "center"
+              alignItems: "center",
+              marginLeft: "auto",
+              marginRight: "auto"
             }}
           >
             <Switch
