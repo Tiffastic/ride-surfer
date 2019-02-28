@@ -7,7 +7,9 @@ import {
   Button,
   Platform,
   View,
-  KeyboardAvoidingView
+  KeyboardAvoidingView,
+  ActivityIndicator,
+  Alert
 } from "react-native";
 
 import Colors from "../../constants/Colors";
@@ -15,6 +17,7 @@ import Styles from "../../constants/Styles";
 import { fetchAPI } from "../../network/Backend";
 
 import UserSession from "../../network/UserSession";
+import { isLoaded } from "expo-font";
 
 if (Platform.OS === "android") {
   var headerMode: any = null;
@@ -25,6 +28,7 @@ export default class SignupScreen extends React.Component<{ navigation: any }> {
     header: headerMode
   };
   state = {
+    isLoading: false,
     first_name: "",
     last_name: "",
     email: "",
@@ -83,7 +87,7 @@ export default class SignupScreen extends React.Component<{ navigation: any }> {
 
           <TextInput
             style={Styles.textInput}
-            placeholder="Licence Plate"
+            placeholder="License Plate"
             onChangeText={data => this.setState({ car_plate: data })}
           />
 
@@ -105,11 +109,26 @@ export default class SignupScreen extends React.Component<{ navigation: any }> {
             onChangeText={data => this.setState({ car_year: data })}
           />
 
-          <Button
-            color={Colors.primary}
-            title="Sign Up"
-            onPress={this._register}
-          />
+          {this.state.isLoading ? (
+            <View style={{ flex: 2 }}>
+              <ActivityIndicator
+                size="large"
+                style={{
+                  zIndex: 5,
+                  flex: 1,
+                  justifyContent: "center",
+                  alignItems: "center",
+                  alignSelf: "center"
+                }}
+              />
+            </View>
+          ) : (
+            <Button
+              color={Colors.primary}
+              title="Sign Up"
+              onPress={this._register}
+            />
+          )}
           {showErr}
         </ScrollView>
       </KeyboardAvoidingView>
@@ -117,6 +136,8 @@ export default class SignupScreen extends React.Component<{ navigation: any }> {
   }
 
   private _register = async () => {
+    this.setState({ isLoading: true });
+
     return fetchAPI("/users", {
       method: "POST",
       headers: {
@@ -192,7 +213,7 @@ export default class SignupScreen extends React.Component<{ navigation: any }> {
                 }
               } else {
                 responseJson.vehicles = [vehicleJson];
-                this._saveUserAsync(responseJson).catch(console.log);
+                return this._saveUserAsync(responseJson).catch(console.log);
               }
             })
             .catch(error => {
@@ -216,11 +237,13 @@ export default class SignupScreen extends React.Component<{ navigation: any }> {
       })
       .catch(error => {
         console.log(error);
-      });
+      })
+      .then(() => this.setState({ isLoading: false }));
   };
   //Also if you want this to work, be sure each json field is correct, I.e. carYear should be a number..
   private _saveUserAsync = async (userDetails: any) => {
     await UserSession.set(userDetails);
+    Alert.alert("New account successfully created!");
     this.props.navigation.navigate("Main");
   };
 }

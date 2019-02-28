@@ -248,5 +248,36 @@ module.exports = {
     )
       .then(updatedJourney => res.status(200).json(updatedJourney))
       .catch(error => res.status(400).json(error));
+  },
+  async getDrivingRoute(req, res) {
+    var origin = {
+      type: "Point",
+      coordinates: req.body.origin,
+      crs: { type: "name", properties: { name: "EPSG:4326" } }
+    };
+
+    var destination = {
+      type: "Point",
+      coordinates: req.body.destination,
+      crs: { type: "name", properties: { name: "EPSG:4326" } }
+    };
+    try {
+      let resp = await fetchJourneyPath(
+        { latitude: origin.coordinates[0], longitude: origin.coordinates[1] },
+        {
+          latitude: destination.coordinates[0],
+          longitude: destination.coordinates[1]
+        }
+      );
+      if (resp.routes.length > 1) {
+        console.warn("got multiple routes");
+      }
+      path = resp.routes[0].geometry;
+      res.status(200).json(path);
+    } catch (e) {
+      console.error("Couldn't fetch from routing API: " + e);
+      res.status(500).json({ message: "Internal Server Error" });
+      return;
+    }
   }
 };

@@ -1,13 +1,13 @@
 import React from "react";
 import {
-  Image,
   ScrollView,
   StyleSheet,
   Text,
   View,
   TextInput,
   Button,
-  Platform
+  Platform,
+  ActivityIndicator
 } from "react-native";
 
 import Colors from "../../constants/Colors";
@@ -24,6 +24,7 @@ export default class LoginScreen extends React.Component<{ navigation: any }> {
     header: headerMode
   };
   state = {
+    isLoading: false,
     email: "",
     password: "",
     error: "",
@@ -36,6 +37,7 @@ export default class LoginScreen extends React.Component<{ navigation: any }> {
     ) : (
       <View />
     );
+
     return (
       <ScrollView style={[Styles.wrapper, Styles.container]}>
         <View>
@@ -63,10 +65,28 @@ export default class LoginScreen extends React.Component<{ navigation: any }> {
               secureTextEntry={true}
             />
           </View>
-        </View>
-
-        <View style={Styles.buttonView}>
-          <Button color={Colors.primary} title="Login" onPress={this._logIn} />
+          {this.state.isLoading ? (
+            <View style={{ flex: 2 }}>
+              <ActivityIndicator
+                size="large"
+                style={{
+                  zIndex: 5,
+                  flex: 1,
+                  justifyContent: "center",
+                  alignItems: "center",
+                  alignSelf: "center"
+                }}
+              />
+            </View>
+          ) : (
+            <View style={Styles.buttonView}>
+              <Button
+                color={Colors.primary}
+                title="Login"
+                onPress={this._logIn}
+              />
+            </View>
+          )}
         </View>
 
         {showErr}
@@ -75,6 +95,7 @@ export default class LoginScreen extends React.Component<{ navigation: any }> {
   }
 
   private _logIn = async () => {
+    this.setState({ isLoading: true });
     return fetchAPI("/users/login/", {
       method: "POST",
       headers: {
@@ -100,12 +121,13 @@ export default class LoginScreen extends React.Component<{ navigation: any }> {
           });
         } else {
           //this func also will take you to the home screen
-          this._saveUserAsync(responseJson).catch(console.log);
+          return this._saveUserAsync(responseJson).catch(console.log);
         }
       })
       .catch(error => {
         console.log(error);
-      });
+      })
+      .then(() => this.setState({ isLoading: false }));
   };
 
   private _saveUserAsync = async (userDetails: any) => {

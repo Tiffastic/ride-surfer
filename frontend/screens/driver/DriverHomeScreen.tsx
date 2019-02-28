@@ -48,7 +48,9 @@ class DriverHomeScreen extends React.Component<{ navigation: any }> {
           throw json;
         }
         this.setState({ isLoading: false });
-        Alert.alert("Your drive was confirmed");
+        Alert.alert(
+          "Your drive was confirmed! Go to the messages screen to view your ride requests."
+        );
         this.props.navigation.push("PassengerPicker", {
           origin: origin,
           address: destination
