@@ -31,10 +31,6 @@ module.exports = {
       .then(driverRide => {
         driverRide.map(ride => {
           userIds.push(ride.passengerJourney.User.id);
-          console.log(
-            "ride.passengerJourney.User.id = ",
-            ride.passengerJourney.User.id
-          );
         });
       })
       .then(() => {
@@ -44,6 +40,8 @@ module.exports = {
           }).then(bio => {
             images[id.toString()] = bio.image;
 
+            // asynchronous programming causes send to happen before foreach loop finishes.
+            //So we have to control sending response with this if statement.
             i++;
             if (i >= userIds.length) {
               res.status(200).send(images);
@@ -79,10 +77,6 @@ module.exports = {
       .then(passengerRide => {
         passengerRide.map(ride => {
           userIds.push(ride.driverJourney.User.id);
-          console.log(
-            "ride.driverJourney.User.id = ",
-            ride.driverJourney.User.id
-          );
         });
       })
       .then(() => {
@@ -92,6 +86,8 @@ module.exports = {
           }).then(bio => {
             images[id.toString()] = bio.image;
 
+            // asynchronous programming causes send to happen before foreach loop is done, so we have to control when
+            // the send happens with this if statement
             i++;
             if (i >= userIds.length) {
               res.status(200).send(images);
