@@ -5,7 +5,7 @@ const PassengerRide = require("../models").PassengerRide;
 const User = require("../models").User;
 
 module.exports = {
-  getDriverPhotos(req, res) {
+  getMyPassengersPhotos(req, res) {
     const userIds = [];
     const images = {};
     var i = 0;
@@ -13,6 +13,7 @@ module.exports = {
     PassengerRide.findAll({
       include: [
         {
+          // Get all the journeys for which I am the driver
           model: Journey,
           as: "driverJourney",
           attributes: ["id", "userId", "origin", "destination", "arrivalAt"],
@@ -29,7 +30,11 @@ module.exports = {
     })
       .then(driverRide => {
         driverRide.map(ride => {
-          userIds.push(ride.driverJourney.User.id);
+          userIds.push(ride.passengerJourney.User.id);
+          console.log(
+            "ride.passengerJourney.User.id = ",
+            ride.passengerJourney.User.id
+          );
         });
       })
       .then(() => {
@@ -48,7 +53,7 @@ module.exports = {
       });
   },
 
-  getPassengerPhotos(req, res) {
+  getMyDriversPhotos(req, res) {
     const userIds = [];
     const images = {};
     var i = 0;
@@ -56,6 +61,7 @@ module.exports = {
     PassengerRide.findAll({
       include: [
         {
+          // Get all the journeys for which I am the passenger
           model: Journey,
           as: "driverJourney",
           attributes: ["id", "userId", "origin", "destination", "arrivalAt"],
@@ -72,7 +78,11 @@ module.exports = {
     })
       .then(passengerRide => {
         passengerRide.map(ride => {
-          userIds.push(ride.passengerJourney.User.id);
+          userIds.push(ride.driverJourney.User.id);
+          console.log(
+            "ride.driverJourney.User.id = ",
+            ride.driverJourney.User.id
+          );
         });
       })
       .then(() => {

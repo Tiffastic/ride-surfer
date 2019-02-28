@@ -34,15 +34,15 @@ export default class MessageContactsScreen extends React.Component<{
     isLoading: true,
     drivingRides: [],
     passengerRides: [],
-    drivingRidesPhotos: {},
-    passengerRidesPhotos: {}
+    driversPhotos: {},
+    passengersPhotos: {}
   };
 
   fetchRides = async () => {
     await this.fetchDrivingRides();
     await this.fetchPassengerRides();
-    await this.getDrivingRidesPhotos();
-    await this.getPassengerRidesPhotos();
+    await this.getMyDriversPhotos();
+    await this.getMyPassengersPhotos();
     this.setState({ isLoading: false });
   };
 
@@ -162,26 +162,26 @@ export default class MessageContactsScreen extends React.Component<{
       });
   };
 
-  getPassengerRidesPhotos = async () => {
+  getMyPassengersPhotos = async () => {
     let userDetails = await UserSession.get();
     if (userDetails == null) return;
 
-    fetchAPI("/passengerRidesPhotos/" + userDetails.id)
+    fetchAPI("/myPassengersPhotos/" + userDetails.id)
       .then(response => response.json())
       .then(responseJson => {
-        this.setState({ passengerRidesPhotos: responseJson });
+        this.setState({ passengersPhotos: responseJson });
       })
       .catch(error => console.log("ERROR = ", error));
   };
 
-  getDrivingRidesPhotos = async () => {
+  getMyDriversPhotos = async () => {
     let userDetails = await UserSession.get();
     if (userDetails == null) return;
 
-    fetchAPI("/drivingRidesPhotos/" + userDetails.id)
+    fetchAPI("/myDriversPhotos/" + userDetails.id)
       .then(response => response.json())
       .then(responseJson => {
-        this.setState({ drivingRidesPhotos: responseJson });
+        this.setState({ driversPhotos: responseJson });
       })
       .catch(error => console.log("ERROR = ", error));
   };
@@ -212,7 +212,7 @@ export default class MessageContactsScreen extends React.Component<{
                 <View style={styles.row}>
                   <Image
                     source={{
-                      uri: this.state.drivingRidesPhotos[
+                      uri: this.state.passengersPhotos[
                         item.passengerJourney.User.id.toString()
                       ]
                     }}
@@ -268,7 +268,7 @@ export default class MessageContactsScreen extends React.Component<{
                 <View style={styles.row}>
                   <Image
                     source={{
-                      uri: this.state.passengerRidesPhotos[
+                      uri: this.state.driversPhotos[
                         item.driverJourney.User.id.toString()
                       ]
                     }}

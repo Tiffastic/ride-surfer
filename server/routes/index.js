@@ -104,12 +104,12 @@ module.exports = app => {
   app.post("/createBio", biosController.createBio);
 
   app.get(
-    "/drivingRidesPhotos/:userId",
-    journeyRidesPhotosController.getDriverPhotos
+    "/myDriversPhotos/:userId",
+    journeyRidesPhotosController.getMyDriversPhotos
   );
 
   app.get(
-    "/passengerRidesPhotos/:userId",
-    journeyRidesPhotosController.getPassengerPhotos
+    "/myPassengersPhotos/:userId",
+    journeyRidesPhotosController.getMyPassengersPhotos
   );
 };
