@@ -7,18 +7,20 @@ import {
   Alert,
   Dimensions
 } from "react-native";
-import { createStackNavigator } from "react-navigation";
 
+import Icon from "react-native-vector-icons/FontAwesome";
 import Colors from "../constants/Colors";
 import HeaderButtons, { HeaderButton } from "react-navigation-header-buttons";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import { fetchAPI } from "../network/Backend";
+
 // import ProfileScreen from "../screens/passenger/ProfileScreen";
 // import MessageContactsScreen from "../passenger/MessageContactsScreen";
 // import MessageConversationsScreen from "../passenger/MessageConversationsScreen";
 // import PassengerPickerScreen from "./PassengerPickerScreen";
 
 import { Permissions, Location } from "expo";
-import MapView, { Marker } from "react-native-maps";
+import MapView, { Marker, Polyline } from "react-native-maps";
 import { geocodeAsync } from "expo-location";
 
 const { width, height } = Dimensions.get("window");
@@ -36,6 +38,8 @@ export type state = {
   destinationLocationInput: string;
   destinationLocation: { latitude: number; longitude: number } | null;
   errorMessage: string;
+  drivingRoute: any;
+  status: any;
 };
 
 export type Props = {
@@ -55,14 +59,19 @@ export default class AddressPicker extends React.Component<Props, state> {
       startLocation: { latitude: LATITUDE, longitude: LONGITUDE },
       destinationLocationInput: "",
       destinationLocation: null,
-      errorMessage: ""
+      errorMessage: "",
+      drivingRoute: [],
+      status: ""
     };
   }
 
   componentDidMount() {
     this.fetchCurrentLocation(position => {
       this.setState({
-        startLocation: position.coords,
+        startLocation: {
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude
+        },
         startLocationInput: "Current Location"
       });
       this.fetchMarkerData();
@@ -92,6 +101,7 @@ export default class AddressPicker extends React.Component<Props, state> {
           destinationLocation: coords,
           destinationLocationInput: address
         });
+        this.getDrivingRoute();
       }
     });
   };
@@ -103,29 +113,33 @@ export default class AddressPicker extends React.Component<Props, state> {
         errorMessage: "Permission to access location was denied"
       });
     } else {
-      await this.geocodeStartLocation();
-      await this.geocodeDestinationLocation();
-      this.fetchMarkerData();
+      this.geocodeStartLocation().then(() =>
+        this.geocodeDestinationLocation().then(() =>
+          this.getDrivingRoute().then(() => this.fetchMarkerData())
+        )
+      );
     }
   };
 
   private geocodeStartLocation = async () => {
     if (this.state.startLocationInput !== "Current Location") {
-      Location.geocodeAsync(this.state.startLocationInput).then(response => {
-        if (response.length > 0) {
-          let coords = {
-            latitude: response[0].latitude,
-            longitude: response[0].longitude
-          };
-          this.setState({ startLocation: coords });
+      await Location.geocodeAsync(this.state.startLocationInput).then(
+        response => {
+          if (response.length > 0) {
+            let coords = {
+              latitude: response[0].latitude,
+              longitude: response[0].longitude
+            };
+            this.setState({ startLocation: coords });
+          }
         }
-      });
+      );
     }
   };
 
   private geocodeDestinationLocation = async () => {
     if (this.state.destinationLocationInput !== "Current Location") {
-      Location.geocodeAsync(this.state.destinationLocationInput).then(
+      await Location.geocodeAsync(this.state.destinationLocationInput).then(
         response => {
           if (response.length > 0) {
             let coords = {
@@ -137,6 +151,46 @@ export default class AddressPicker extends React.Component<Props, state> {
         }
       );
     }
+  };
+
+  private getDrivingRoute = async () => {
+    if (this.state.destinationLocation == null) {
+      console.log("no dest");
+      return;
+    }
+    await fetchAPI("/getDrivingRoute/", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        destination: [
+          this.state.destinationLocation.latitude,
+          this.state.destinationLocation.longitude
+        ],
+        origin: [
+          this.state.startLocation.latitude,
+          this.state.startLocation.longitude
+        ]
+      })
+    })
+      .then(response => {
+        this.setState({
+          status: response.status
+        });
+        return response.json();
+      })
+      .then(responseJson => {
+        if (this.state.status === 500) {
+          console.log(responseJson.message);
+        } else {
+          this.setState({ drivingRoute: responseJson.coordinates });
+        }
+      })
+      .catch(error => {
+        console.log(error);
+      });
   };
 
   fetchMarkerData() {
@@ -171,26 +225,53 @@ export default class AddressPicker extends React.Component<Props, state> {
     );
   };
 
+  private getRegionForCoordinates(points: any) {
+    // points should be an array of { latitude: X, longitude: Y }
+    let minX: number, maxX: number, minY: number, maxY: number;
+
+    // init first point
+    (point => {
+      minX = point.latitude;
+      maxX = point.latitude;
+      minY = point.longitude;
+      maxY = point.longitude;
+    })(points[0]);
+
+    // calculate rect
+    points.map((point: any) => {
+      minX = Math.min(minX, point.latitude);
+      maxX = Math.max(maxX, point.latitude);
+      minY = Math.min(minY, point.longitude);
+      maxY = Math.max(maxY, point.longitude);
+    });
+
+    const midX = (minX + maxX) / 2;
+    const midY = (minY + maxY) / 2;
+    const deltaX = (maxX - minX) * 1.5;
+    const deltaY = (maxY - minY) * 1.5;
+
+    return {
+      latitude: midX,
+      longitude: midY,
+      latitudeDelta: deltaX,
+      longitudeDelta: deltaY
+    };
+  }
+
   render() {
-    let mapCenter = this.state.destinationLocation;
-    if (!mapCenter) {
-      mapCenter = this.state.startLocation;
+    let region = {
+      latitude: this.state.startLocation.latitude,
+      longitude: this.state.startLocation.longitude,
+      latitudeDelta: LATITUDE_DELTA,
+      longitudeDelta: LONGITUDE_DELTA
+    };
+    if (this.state.destinationLocation !== null) {
+      region = this.getRegionForCoordinates([
+        this.state.destinationLocation,
+        this.state.startLocation
+      ]);
     }
 
-    let markers = [
-      {
-        color: "green",
-        latitude: this.state.startLocation.latitude,
-        longitude: this.state.startLocation.longitude
-      }
-    ];
-    if (this.state.destinationLocation !== null) {
-      markers.push({
-        color: "red",
-        latitude: this.state.destinationLocation.latitude,
-        longitude: this.state.destinationLocation.longitude
-      });
-    }
     return (
       <View style={styles.container}>
         <View style={{ flexDirection: "row" }}>
@@ -276,23 +357,24 @@ export default class AddressPicker extends React.Component<Props, state> {
         <MapView
           style={{ flex: 1 }}
           provider="google"
-          region={{
-            latitude: mapCenter.latitude,
-            longitude: mapCenter.longitude,
-            latitudeDelta: LATITUDE_DELTA,
-            longitudeDelta: LONGITUDE_DELTA
-          }}
+          region={region}
           onPress={this.onMapPress}
         >
-          {markers.map((m, i) => (
-            <Marker
-              pinColor={m.color}
-              coordinate={{
-                latitude: m.latitude,
-                longitude: m.longitude
-              }}
+          <Marker coordinate={this.state.startLocation} />
+          {this.state.destinationLocation !== null && (
+            <Marker coordinate={this.state.destinationLocation}>
+              <Icon name="flag" size={30} color="red" />
+            </Marker>
+          )}
+          {this.state.drivingRoute && (
+            <Polyline
+              coordinates={this.state.drivingRoute.map((c: number[]) => ({
+                latitude: c[1],
+                longitude: c[0]
+              }))}
+              strokeWidth={2}
             />
-          ))}
+          )}
         </MapView>
       </View>
     );

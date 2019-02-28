@@ -52,6 +52,7 @@ module.exports = app => {
   app.post("/journeys", journeysController.create);
   app.put("/journeys/updateLocation", journeysController.updateAll);
   app.put("/journeys/:id", journeysController.update);
+  app.post("/getDrivingRoute", journeysController.getDrivingRoute);
 
   app.get("/traces", tracesController.retrieveAll);
   app.get("/traces/:id", tracesController.retrieve);
