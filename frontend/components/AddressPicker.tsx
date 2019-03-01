@@ -14,11 +14,6 @@ import HeaderButtons, { HeaderButton } from "react-navigation-header-buttons";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { fetchAPI } from "../network/Backend";
 
-// import ProfileScreen from "../screens/passenger/ProfileScreen";
-// import MessageContactsScreen from "../passenger/MessageContactsScreen";
-// import MessageConversationsScreen from "../passenger/MessageConversationsScreen";
-// import PassengerPickerScreen from "./PassengerPickerScreen";
-
 import { Permissions, Location } from "expo";
 import MapView, { Marker, Polyline } from "react-native-maps";
 import { geocodeAsync } from "expo-location";

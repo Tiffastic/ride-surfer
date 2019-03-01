@@ -230,7 +230,8 @@ export default class DriverDetailsScreen extends React.Component<{
               } else {
                 this.setState({ isLoading: false });
                 Alert.alert(
-                  "Your request was sent! Go to the messages screen to view your ride requests."
+                  "Your request was sent!",
+                  "Go to the messages screen to view your ride requests."
                 );
                 this.props.navigation.popToTop();
               }
