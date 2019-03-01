@@ -1,7 +1,16 @@
 import React from "react";
-import { View, FlatList, StyleSheet, Text, Button, Image } from "react-native";
+import {
+  View,
+  FlatList,
+  StyleSheet,
+  Text,
+  Button,
+  Image,
+  ShadowPropTypesIOS
+} from "react-native";
 
 import Colors from "../../constants/Colors";
+import Icon from "react-native-vector-icons/FontAwesome";
 
 import UserSession from "../../network/UserSession";
 import { fetchAPI } from "../../network/Backend";
@@ -12,9 +21,19 @@ import { ImagePicker, Permissions, Constants } from "expo";
 // import for upload image
 //const ImagePicker = require("react-native-image-picker").default;
 
-export default class ProfileScreen extends React.Component<{
-  navigation: any;
-}> {
+export default class ProfileScreen extends React.Component<{}> {
+  static navigationOptions = ({ navigation }: any) => {
+    return {
+      headerTitle: "Profile",
+      headerRight: (
+        <Button
+          onPress={() => navigation.navigate("UpdateProfile")}
+          title="Edit"
+        />
+      )
+    };
+  };
+
   constructor(props: any) {
     super(props);
     this._bootstrapAsync();
@@ -29,9 +48,7 @@ export default class ProfileScreen extends React.Component<{
     this.getUserPhoto();
     this.getRatings();
   };
-  static navigationOptions = {
-    title: "Profile"
-  };
+
   state = {
     user: {
       id: "",
@@ -47,6 +64,8 @@ export default class ProfileScreen extends React.Component<{
 
     userPhoto: null
   };
+
+  updateProfile() {}
 
   getAvgOverallRating() {
     fetchAPI("/usersOverallRating/" + this.state.user.id)
@@ -123,8 +142,6 @@ export default class ProfileScreen extends React.Component<{
         base64: true // there is a base64 property in ImagePicker, so I don't know why this is underlined red.  But it works.
       });
 
-      //console.log(result);
-
       if (!result.cancelled) {
         // this.setState({ userPhoto: result.uri });
         var imageData = "data:image/jpeg;base64," + result.base64;
@@ -150,49 +167,57 @@ export default class ProfileScreen extends React.Component<{
     let name = this.state.user.firstName + " " + this.state.user.lastName;
     return (
       <View style={styles.container}>
-        <Image
-          style={{ flex: 1, width: undefined, height: undefined }}
-          resizeMode="center"
-          source={
-            this.state.userPhoto !== null
-              ? { uri: this.state.userPhoto }
-              : require("../../assets/images/default-profile.png")
-          }
-        />
-        <View style={{ flex: 1, alignItems: "center" }}>
-          <Text style={{ fontSize: 25, margin: 10 }}>{name}</Text>
-          <Text>{this.state.user.email}</Text>
+        <View style={{ flexDirection: "row" }}>
+          <Image
+            style={{ width: 150, height: 150, borderRadius: 70 }}
+            resizeMode="center"
+            source={
+              this.state.userPhoto !== null
+                ? { uri: this.state.userPhoto }
+                : require("../../assets/images/default-profile.png")
+            }
+          />
+          <View style={{ marginLeft: -15, justifyContent: "flex-end" }}>
+            <Icon
+              name="pencil"
+              size={30}
+              color={Colors.darkAccent}
+              onPress={this.uploadUserPhoto.bind(this)}
+            />
+          </View>
+        </View>
+        <View style={{ flex: 2, alignItems: "center" }}>
+          <Text style={{ fontSize: 34, margin: 10 }}>{name}</Text>
+          <Text style={{ fontSize: 20 }}>{this.state.user.email}</Text>
           <FlatList
             data={this.state.user.vehicles}
             extraData={this.state}
             keyExtractor={(item: any, index: any) => item.id}
             renderItem={({ item, separators }: any) => (
-              <View>
-                <Text>{item.year + " " + item.make + " " + item.model}</Text>
-                <Text>{item.plate}</Text>
+              <View style={{ flex: 1, alignItems: "center" }}>
+                <Text style={{ fontSize: 20 }}>
+                  {item.year + " " + item.make + " " + item.model}
+                </Text>
+                <Text style={{ fontSize: 20 }}>{item.plate}</Text>
               </View>
             )}
           />
         </View>
 
-        <View style={{ margin: 0, borderRadius: 10 }}>
-          <Button
-            title="Upload Photo"
-            onPress={this.uploadUserPhoto.bind(this)}
-          />
-        </View>
-
         <View style={{ flex: 1, alignItems: "center", margin: 10 }}>
-          <Text>Overall: {this.state.avgOverallRating}</Text>
-          <Text>Safety: {this.state.avgSafetyRating}</Text>
-          <Text>Timeliness: {this.state.avgTimelinessRating}</Text>
-          <Text>Cleanliness: {this.state.avgCleanlinessRating}</Text>
+          <Text style={{ fontSize: 18 }}>
+            Overall: {this.state.avgOverallRating} ★
+          </Text>
+          <Text style={{ fontSize: 18 }}>
+            Safety: {this.state.avgSafetyRating} ★
+          </Text>
+          <Text style={{ fontSize: 18 }}>
+            Timeliness: {this.state.avgTimelinessRating} ★
+          </Text>
+          <Text style={{ fontSize: 18 }}>
+            Cleanliness: {this.state.avgCleanlinessRating} ★
+          </Text>
         </View>
-
-        <Button
-          title="Update Profile"
-          onPress={() => this.props.navigation.navigate("UpdateProfile")}
-        />
 
         <Button
           title="Register For Push Notification"
@@ -220,7 +245,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: 15,
-    backgroundColor: "#fff"
+    backgroundColor: "#fff",
+    alignItems: "center"
   },
   tableRow: {
     flexDirection: "row"

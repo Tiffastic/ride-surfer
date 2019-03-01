@@ -150,10 +150,14 @@ export default class DriverPickerScreen extends React.Component<{
                 <Text style={styles.searchResultsName}>
                   {item.journey.User.firstName}
                 </Text>
-                <Text style={styles.searchResultsAddress}>
-                  {this.state.overallRatings[item.journey.User.id.toString()]}{" "}
-                  stars
-                </Text>
+                {this.state.overallRatings[item.journey.User.id.toString()] ? (
+                  <Text style={styles.searchResultsAddress}>
+                    {this.state.overallRatings[item.journey.User.id.toString()]}{" "}
+                    ★
+                  </Text>
+                ) : (
+                  <Text style={styles.searchResultsAddress}>New Driver</Text>
+                )}
               </View>
             </TouchableHighlight>
           )}

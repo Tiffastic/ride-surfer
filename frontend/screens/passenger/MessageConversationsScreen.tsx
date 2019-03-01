@@ -81,8 +81,6 @@ export default class MessageConversationsScreen extends React.Component<{
         <Text style={{ fontSize: 25, margin: 5 }}>
           {this.state.ridePartner.firstName +
             " " +
-            this.state.ridePartner.id +
-            " " +
             this.state.ridePartner.lastName}
         </Text>
 
