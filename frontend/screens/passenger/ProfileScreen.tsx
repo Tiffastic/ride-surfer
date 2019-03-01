@@ -21,7 +21,9 @@ import { ImagePicker, Permissions, Constants } from "expo";
 // import for upload image
 //const ImagePicker = require("react-native-image-picker").default;
 
-export default class ProfileScreen extends React.Component<{}> {
+export default class ProfileScreen extends React.Component<{
+  navigation: any;
+}> {
   static navigationOptions = ({ navigation }: any) => {
     return {
       headerTitle: "Profile",
@@ -205,18 +207,32 @@ export default class ProfileScreen extends React.Component<{}> {
         </View>
 
         <View style={{ flex: 1, alignItems: "center", margin: 10 }}>
-          <Text style={{ fontSize: 18 }}>
-            Overall: {this.state.avgOverallRating} ★
-          </Text>
-          <Text style={{ fontSize: 18 }}>
-            Safety: {this.state.avgSafetyRating} ★
-          </Text>
-          <Text style={{ fontSize: 18 }}>
-            Timeliness: {this.state.avgTimelinessRating} ★
-          </Text>
-          <Text style={{ fontSize: 18 }}>
-            Cleanliness: {this.state.avgCleanlinessRating} ★
-          </Text>
+          {this.state.avgOverallRating === undefined && (
+            <Text style={{ fontSize: 18 }}>
+              Overall: {this.state.avgOverallRating} ★
+            </Text>
+          )}
+          {this.state.avgSafetyRating === undefined && (
+            <Text style={{ fontSize: 18 }}>
+              Safety: {this.state.avgSafetyRating} ★
+            </Text>
+          )}
+          {this.state.avgTimelinessRating === undefined && (
+            <Text style={{ fontSize: 18 }}>
+              Timeliness: {this.state.avgTimelinessRating} ★
+            </Text>
+          )}
+          {this.state.avgCleanlinessRating === undefined && (
+            <Text style={{ fontSize: 18 }}>
+              Cleanliness: {this.state.avgCleanlinessRating} ★
+            </Text>
+          )}
+          {!this.state.avgOverallRating &&
+            !this.state.avgSafetyRating &&
+            !this.state.avgTimelinessRating &&
+            !this.state.avgCleanlinessRating && (
+              <Text style={{ fontSize: 18 }}>No ratings yet</Text>
+            )}
         </View>
 
         <Button
