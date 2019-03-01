@@ -59,10 +59,10 @@ export default class ProfileScreen extends React.Component<{
       email: "",
       vehicles: [{}]
     },
-    avgOverallRating: 0,
-    avgSafetyRating: 0,
-    avgTimelinessRating: 0,
-    avgCleanlinessRating: 0,
+    avgOverallRating: null,
+    avgSafetyRating: null,
+    avgTimelinessRating: null,
+    avgCleanlinessRating: null,
 
     userPhoto: null
   };
@@ -207,22 +207,22 @@ export default class ProfileScreen extends React.Component<{
         </View>
 
         <View style={{ flex: 1, alignItems: "center", margin: 10 }}>
-          {this.state.avgOverallRating === undefined && (
+          {this.state.avgOverallRating !== null && (
             <Text style={{ fontSize: 18 }}>
               Overall: {this.state.avgOverallRating} ★
             </Text>
           )}
-          {this.state.avgSafetyRating === undefined && (
+          {this.state.avgSafetyRating !== null && (
             <Text style={{ fontSize: 18 }}>
               Safety: {this.state.avgSafetyRating} ★
             </Text>
           )}
-          {this.state.avgTimelinessRating === undefined && (
+          {this.state.avgTimelinessRating !== null && (
             <Text style={{ fontSize: 18 }}>
               Timeliness: {this.state.avgTimelinessRating} ★
             </Text>
           )}
-          {this.state.avgCleanlinessRating === undefined && (
+          {this.state.avgCleanlinessRating !== null && (
             <Text style={{ fontSize: 18 }}>
               Cleanliness: {this.state.avgCleanlinessRating} ★
             </Text>
