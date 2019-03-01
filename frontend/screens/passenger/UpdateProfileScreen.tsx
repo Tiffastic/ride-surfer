@@ -118,10 +118,10 @@ export default class UpdateProfileScreen extends React.Component<{
             email: this.state.email,
             vehicles: [
               {
-                carPlate: this.state.vehicles[0].plate,
-                carMake: this.state.vehicles[0].make,
-                carModel: this.state.vehicles[0].model,
-                carYear: this.state.vehicles[0].year
+                plate: this.state.vehicles[0].plate,
+                make: this.state.vehicles[0].make,
+                model: this.state.vehicles[0].model,
+                year: this.state.vehicles[0].year
               }
             ]
           });

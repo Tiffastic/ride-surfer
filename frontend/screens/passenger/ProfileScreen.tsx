@@ -147,7 +147,6 @@ export default class ProfileScreen extends React.Component<{
   };
 
   render() {
-    console.log("this.state.user.vehicles = ", this.state.user.vehicles);
     let name = this.state.user.firstName + " " + this.state.user.lastName;
     return (
       <View style={styles.container}>
