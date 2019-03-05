@@ -40,6 +40,7 @@ export default class RideInProgress extends React.Component<{
     ridePartnerLocation: { latitude: 0, longitude: 0 },
     errorMessage: "",
     ridePartner: this.props.navigation.getParam("ridePartner"),
+    ridePartnerPhoto: this.props.navigation.getParam("ridePartnerPhoto"),
     ridePartnerJourney: this.props.navigation.getParam("ridePartnerJourney"),
     destination: this.props.navigation.getParam("destination"),
     rideDetails: this.props.navigation.getParam("rideDetails"),
@@ -193,7 +194,8 @@ export default class RideInProgress extends React.Component<{
               TaskManager.unregisterTaskAsync(LOCATION_TASK_NAME);
               this.props.navigation.navigate("RateDriver", {
                 ridePartner: this.state.ridePartner,
-                rideDetails: this.state.rideDetails
+                rideDetails: this.state.rideDetails,
+                ridePartnerPhoto: this.state.ridePartnerPhoto
               });
             }}
             color={Colors.darkAccent}

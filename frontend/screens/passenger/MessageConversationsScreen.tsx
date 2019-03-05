@@ -60,6 +60,7 @@ export default class MessageConversationsScreen extends React.Component<{
     this.props.navigation.navigate("RideInProgress", {
       destination: this.state.destination,
       ridePartner: this.state.ridePartner,
+      ridePartnerPhoto: this.state.userPhoto,
       rideDetails: this.state.rideDetails,
       ridePartnerJourney: this.state.ridePartnerJourney,
       type: this.state.type
@@ -75,7 +76,7 @@ export default class MessageConversationsScreen extends React.Component<{
           source={
             this.state.userPhoto !== null
               ? { uri: this.state.userPhoto }
-              : require("../../assets/images/default-profile.png")
+              : defaultPic
           }
         />
         <Text style={{ fontSize: 25, margin: 5 }}>
