@@ -59,10 +59,10 @@ export default class ProfileScreen extends React.Component<{
       email: "",
       vehicles: [{}]
     },
-    avgOverallRating: null,
-    avgSafetyRating: null,
-    avgTimelinessRating: null,
-    avgCleanlinessRating: null,
+    avgOverallRating: null as null | number,
+    avgSafetyRating: null as null | number,
+    avgTimelinessRating: null as null | number,
+    avgCleanlinessRating: null as null | number,
 
     userPhoto: null
   };
@@ -167,6 +167,9 @@ export default class ProfileScreen extends React.Component<{
 
   render() {
     let name = this.state.user.firstName + " " + this.state.user.lastName;
+
+    let round = (number: number) => Math.round(number * 10) / 10;
+
     return (
       <View style={styles.container}>
         <View style={{ flexDirection: "row" }}>
@@ -209,22 +212,22 @@ export default class ProfileScreen extends React.Component<{
         <View style={{ flex: 1, alignItems: "center", margin: 10 }}>
           {this.state.avgOverallRating !== null && (
             <Text style={{ fontSize: 18 }}>
-              Overall: {this.state.avgOverallRating} ★
+              Overall: {round(this.state.avgOverallRating)} ★
             </Text>
           )}
           {this.state.avgSafetyRating !== null && (
             <Text style={{ fontSize: 18 }}>
-              Safety: {this.state.avgSafetyRating} ★
+              Safety: {round(this.state.avgSafetyRating)} ★
             </Text>
           )}
           {this.state.avgTimelinessRating !== null && (
             <Text style={{ fontSize: 18 }}>
-              Timeliness: {this.state.avgTimelinessRating} ★
+              Timeliness: {round(this.state.avgTimelinessRating)} ★
             </Text>
           )}
           {this.state.avgCleanlinessRating !== null && (
             <Text style={{ fontSize: 18 }}>
-              Cleanliness: {this.state.avgCleanlinessRating} ★
+              Cleanliness: {round(this.state.avgCleanlinessRating)} ★
             </Text>
           )}
           {!this.state.avgOverallRating &&
