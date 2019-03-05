@@ -124,6 +124,8 @@ export default class DriverPickerScreen extends React.Component<{
       );
     }
 
+    let round = (number: number) => Math.round(number * 10) / 10;
+
     let content = (
       <View style={{ flex: 2 }}>
         <Text style={Styles.paragraphText}>
@@ -152,8 +154,10 @@ export default class DriverPickerScreen extends React.Component<{
                 </Text>
                 {this.state.overallRatings[item.journey.User.id.toString()] ? (
                   <Text style={styles.searchResultsAddress}>
-                    {this.state.overallRatings[item.journey.User.id.toString()]}{" "}
-                    ★
+                    {round(
+                      this.state.overallRatings[item.journey.User.id.toString()]
+                    )}{" "}
+                    *
                   </Text>
                 ) : (
                   <Text style={styles.searchResultsAddress}>New Driver</Text>
