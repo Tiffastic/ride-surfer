@@ -4,16 +4,12 @@ import { AppLoading, Asset, Font } from "expo";
 import AppNavigator from "./navigation/AppNavigator";
 
 interface AppProps {
-  skipLoadingScreen?: boolean;
+  skipLoadingScreen: false;
 }
 
 export default class App extends React.Component<AppProps> {
   state = {
     isLoadingComplete: false
-  };
-
-  props = {
-    skipLoadingScreen: false
   };
 
   render() {
