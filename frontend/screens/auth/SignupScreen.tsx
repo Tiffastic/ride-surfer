@@ -49,89 +49,64 @@ export default class SignupScreen extends React.Component<{ navigation: any }> {
       <View />
     );
     return (
-      <KeyboardAvoidingView
-        style={Styles.container}
-        behavior="padding"
-        keyboardVerticalOffset={22}
-        enabled
-      >
-        <ScrollView style={[Styles.wrapper, Styles.container]}>
-          <Text style={Styles.titleText}>Ride Surfer</Text>
+      <ScrollView style={[Styles.wrapper, Styles.container]}>
+        <Text style={Styles.titleText}>Ride Surfer</Text>
 
-          <Text style={Styles.paragraphText}>Create an Account</Text>
+        <Text style={Styles.paragraphText}>Create an Account</Text>
 
-          <TextInput
-            style={Styles.textInput}
-            placeholder="First Name"
-            onChangeText={data => this.setState({ first_name: data })}
-          />
+        <TextInput
+          style={Styles.textInput}
+          placeholder="First Name*"
+          onChangeText={data => this.setState({ first_name: data })}
+        />
 
-          <TextInput
-            style={Styles.textInput}
-            placeholder="Last Name"
-            onChangeText={data => this.setState({ last_name: data })}
-          />
+        <TextInput
+          style={Styles.textInput}
+          placeholder="Last Name*"
+          onChangeText={data => this.setState({ last_name: data })}
+        />
 
-          <TextInput
-            style={Styles.textInput}
-            placeholder="Email"
-            onChangeText={data => this.setState({ email: data })}
-          />
+        <TextInput
+          style={Styles.textInput}
+          placeholder="Email*"
+          onChangeText={data => this.setState({ email: data })}
+        />
 
-          <TextInput
-            style={Styles.textInput}
-            placeholder="Password"
-            secureTextEntry={true}
-            onChangeText={data => this.setState({ password: data })}
-          />
+        <TextInput
+          style={Styles.textInput}
+          placeholder="Password*"
+          secureTextEntry={true}
+          onChangeText={data => this.setState({ password: data })}
+        />
+        <Button
+          color={Colors.primary}
+          title="Add Car Details"
+          onPress={this._goToSignupDriver}
+        />
+        <View style={Styles.textInput} />
 
-          <TextInput
-            style={Styles.textInput}
-            placeholder="License Plate"
-            onChangeText={data => this.setState({ car_plate: data })}
-          />
-
-          <TextInput
-            style={Styles.textInput}
-            placeholder="Car Make"
-            onChangeText={data => this.setState({ car_make: data })}
-          />
-
-          <TextInput
-            style={Styles.textInput}
-            placeholder="Car Model"
-            onChangeText={data => this.setState({ car_model: data })}
-          />
-
-          <TextInput
-            style={Styles.textInput}
-            placeholder="Car Year"
-            onChangeText={data => this.setState({ car_year: data })}
-          />
-
-          {this.state.isLoading ? (
-            <View style={{ flex: 2 }}>
-              <ActivityIndicator
-                size="large"
-                style={{
-                  zIndex: 5,
-                  flex: 1,
-                  justifyContent: "center",
-                  alignItems: "center",
-                  alignSelf: "center"
-                }}
-              />
-            </View>
-          ) : (
-            <Button
-              color={Colors.primary}
-              title="Sign Up"
-              onPress={this._register}
+        {this.state.isLoading ? (
+          <View style={{ flex: 2 }}>
+            <ActivityIndicator
+              size="large"
+              style={{
+                zIndex: 5,
+                flex: 1,
+                justifyContent: "center",
+                alignItems: "center",
+                alignSelf: "center"
+              }}
             />
-          )}
-          {showErr}
-        </ScrollView>
-      </KeyboardAvoidingView>
+          </View>
+        ) : (
+          <Button
+            color={Colors.primary}
+            title="Sign Up"
+            onPress={this._register}
+          />
+        )}
+        {showErr}
+      </ScrollView>
     );
   }
 
@@ -246,6 +221,23 @@ export default class SignupScreen extends React.Component<{ navigation: any }> {
     Alert.alert("New account successfully created!");
     this.props.navigation.navigate("Main");
   };
+
+  //Navs to driver deets, using a "callback" to set this classes state upon child class nav.goBack
+  //made possible with returnData and a bind?
+  private _goToSignupDriver = () => {
+    this.props.navigation.navigate("SignupDriver", {
+      returnData: this.returnData.bind(this)
+    });
+  };
+
+  private returnData(make: any, model: any, year: any, plate: any) {
+    this.setState({
+      car_make: make,
+      car_model: model,
+      car_year: year,
+      car_plate: plate
+    });
+  }
 }
 
 const styles = StyleSheet.create({
