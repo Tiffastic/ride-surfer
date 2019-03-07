@@ -157,7 +157,7 @@ export default class DriverPickerScreen extends React.Component<{
                     {round(
                       this.state.overallRatings[item.journey.User.id.toString()]
                     )}{" "}
-                    *
+                    ★
                   </Text>
                 ) : (
                   <Text style={styles.searchResultsAddress}>New Driver</Text>
