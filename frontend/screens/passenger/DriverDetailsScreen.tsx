@@ -65,17 +65,18 @@ export default class DriverDetailsScreen extends React.Component<{
 
   private generateDirsFromRidePlan(ridePlan: any) {
     let round = (number: number) => Math.round(number * 10) / 10;
+    let toMiles = (number: number) => number * 0.621371;
     let dirs = [
       {
-        time: round(ridePlan.pickup.distance) + " km",
+        time: round(toMiles(ridePlan.pickup.distance)) + " miles",
         desc: "Walk to " + (this.state.pickupHumanAddress || "pickup")
       },
       {
-        time: round(ridePlan.drivingDistance) + " km",
+        time: round(toMiles(ridePlan.drivingDistance)) + " miles",
         desc: "Ride to " + (this.state.dropoffHumanAddress || "dropoff")
       },
       {
-        time: round(ridePlan.dropoff.distance) + " km",
+        time: round(toMiles(ridePlan.dropoff.distance)) + " miles",
         desc: "Walk to " + (this.state.destinationHumanAddress || "destination")
       }
     ];
