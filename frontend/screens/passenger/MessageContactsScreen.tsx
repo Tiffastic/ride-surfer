@@ -8,14 +8,13 @@ import {
   FlatList,
   Button,
   ScrollView,
-  ActivityIndicator
+  ActivityIndicator,
+  TouchableOpacity
 } from "react-native";
 import { Location } from "expo";
 import Colors from "../../constants/Colors";
 import { fetchAPI } from "../../network/Backend";
-import { number } from "prop-types";
 import UserSession from "../../network/UserSession";
-import { setFlagsFromString } from "v8";
 
 const defaultPic = require("../../assets/images/default-profile.png");
 
@@ -39,10 +38,12 @@ export default class MessageContactsScreen extends React.Component<{
   };
 
   fetchRides = async () => {
-    await this.fetchDrivingRides();
-    await this.fetchPassengerRides();
-    await this.getMyDriversPhotos();
-    await this.getMyPassengersPhotos();
+    await Promise.all([
+      this.fetchDrivingRides(),
+      this.fetchPassengerRides(),
+      this.getMyDriversPhotos(),
+      this.getMyPassengersPhotos()
+    ]);
     this.setState({ isLoading: false });
   };
 
@@ -184,6 +185,19 @@ export default class MessageContactsScreen extends React.Component<{
       .catch(error => console.log("ERROR = ", error));
   };
 
+  viewProfile = (item: any) => {
+    let user = {
+      id: item.id,
+      firstName: item.firstName,
+      lastName: item.lastName,
+      email: item.email,
+      vehicles: item.vehicles
+    };
+    this.props.navigation.push("GenericProfile", {
+      user: user
+    });
+  };
+
   render() {
     if (this.state.isLoading) {
       return <ActivityIndicator />;
@@ -193,7 +207,7 @@ export default class MessageContactsScreen extends React.Component<{
         <ScrollView>
           {this.state.drivingRides.length > 0 && (
             <View style={{ alignItems: "center" }}>
-              <Text style={styles.name}>Driving</Text>
+              <Text style={styles.name}>My Drives</Text>
             </View>
           )}
           <FlatList
@@ -208,20 +222,24 @@ export default class MessageContactsScreen extends React.Component<{
                 onPress={() => this.messageSelected(item, "driver")}
               >
                 <View style={styles.row}>
-                  <Image
-                    source={
-                      this.state.passengersPhotos[
-                        item.passengerJourney.User.id.toString()
-                      ] === null
-                        ? defaultPic
-                        : {
-                            uri: this.state.passengersPhotos[
-                              item.passengerJourney.User.id.toString()
-                            ]
-                          }
-                    }
-                    style={{ width: 80, height: 80, borderRadius: 40 }}
-                  />
+                  <TouchableOpacity
+                    onPress={() => this.viewProfile(item.passengerJourney.User)}
+                  >
+                    <Image
+                      source={
+                        this.state.passengersPhotos[
+                          item.passengerJourney.User.id.toString()
+                        ] === null
+                          ? defaultPic
+                          : {
+                              uri: this.state.passengersPhotos[
+                                item.passengerJourney.User.id.toString()
+                              ]
+                            }
+                      }
+                      style={{ width: 80, height: 80, borderRadius: 40 }}
+                    />
+                  </TouchableOpacity>
                   <View style={styles.imageHolder}>
                     <Text>
                       {item.passengerJourney.User.firstName +
@@ -255,7 +273,7 @@ export default class MessageContactsScreen extends React.Component<{
           />
           {this.state.passengerRides.length > 0 && (
             <View style={{ alignItems: "center" }}>
-              <Text style={styles.name}>Riding</Text>
+              <Text style={styles.name}>My Rides</Text>
             </View>
           )}
           <FlatList
@@ -270,20 +288,24 @@ export default class MessageContactsScreen extends React.Component<{
                 onPress={() => this.messageSelected(item, "passenger")}
               >
                 <View style={styles.row}>
-                  <Image
-                    source={
-                      this.state.driversPhotos[
-                        item.driverJourney.User.id.toString()
-                      ] === null
-                        ? defaultPic
-                        : {
-                            uri: this.state.driversPhotos[
-                              item.driverJourney.User.id.toString()
-                            ]
-                          }
-                    }
-                    style={{ width: 80, height: 80, borderRadius: 40 }}
-                  />
+                  <TouchableOpacity
+                    onPress={() => this.viewProfile(item.driverJourney.User)}
+                  >
+                    <Image
+                      source={
+                        this.state.driversPhotos[
+                          item.driverJourney.User.id.toString()
+                        ] === null
+                          ? defaultPic
+                          : {
+                              uri: this.state.driversPhotos[
+                                item.driverJourney.User.id.toString()
+                              ]
+                            }
+                      }
+                      style={{ width: 80, height: 80, borderRadius: 40 }}
+                    />
+                  </TouchableOpacity>
                   <View style={styles.imageHolder}>
                     <Text>
                       {item.driverJourney.User.firstName +

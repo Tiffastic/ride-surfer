@@ -1,6 +1,7 @@
 const PassengerRide = require("../models").PassengerRide;
 const Journey = require("../models").Journey;
 const User = require("../models").User;
+const Vehicle = require("../models").Vehicle;
 const sequelize = require("../models").sequelize;
 const Sequelize = require("../models").Sequelize;
 
@@ -37,7 +38,18 @@ module.exports = {
           model: Journey,
           as: "passengerJourney",
           attributes: ["id", "userId", "origin", "destination", "arrivalAt"],
-          include: [User]
+          include: [
+            {
+              model: User,
+              include: [
+                {
+                  model: Vehicle,
+                  as: "vehicles",
+                  attributes: ["id", "year", "make", "model", "plate"]
+                }
+              ]
+            }
+          ]
         }
       ]
     })
@@ -59,7 +71,18 @@ module.exports = {
           model: Journey,
           as: "driverJourney",
           attributes: ["id", "userId", "origin", "destination", "arrivalAt"],
-          include: [User]
+          include: [
+            {
+              model: User,
+              include: [
+                {
+                  model: Vehicle,
+                  as: "vehicles",
+                  attributes: ["id", "year", "make", "model", "plate"]
+                }
+              ]
+            }
+          ]
         },
         {
           model: Journey,

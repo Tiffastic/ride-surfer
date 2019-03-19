@@ -1,5 +1,6 @@
 const Journey = require("../models").Journey;
 const User = require("../models").User;
+const Vehicle = require("../models").Vehicle;
 const https = require("https");
 const turf = require("@turf/turf");
 
@@ -114,7 +115,10 @@ module.exports = {
     if (coords === null) {
       return res.status(401).json({ message: "Couldn't parse coords string" });
     }
-    return Journey.findAll({ where: { isDriver: true }, include: [User] })
+    return Journey.findAll({
+      where: { isDriver: true },
+      include: [User]
+    })
       .then(journeys => {
         if (!journeys) {
           return res.status(404).json({

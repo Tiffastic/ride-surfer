@@ -3,38 +3,29 @@ import {
   View,
   FlatList,
   StyleSheet,
-  Text,
-  Button,
-  Image,
   TouchableHighlight,
-  ShadowPropTypesIOS
+  Text,
+  Image
 } from "react-native";
 
-import Colors from "../../constants/Colors";
-import Icon from "react-native-vector-icons/FontAwesome";
-
-import UserSession from "../../network/UserSession";
 import { fetchAPI } from "../../network/Backend";
-import Styles from "../../constants/Styles";
 
-import { ImagePicker, Permissions, Constants } from "expo";
-
-// import for upload image
-//const ImagePicker = require("react-native-image-picker").default;
-
-export default class ProfileScreen extends React.Component<{
+export default class GenericProfileScreen extends React.Component<{
   navigation: any;
 }> {
   static navigationOptions = ({ navigation }: any) => {
     return {
-      headerTitle: "Profile",
-      headerRight: (
-        <Button
-          onPress={() => navigation.navigate("UpdateProfile")}
-          title="Edit"
-        />
-      )
+      headerTitle: "Profile"
     };
+  };
+
+  state = {
+    user: this.props.navigation.getParam("user"),
+    avgOverallRating: null as null | number,
+    avgSafetyRating: null as null | number,
+    avgTimelinessRating: null as null | number,
+    avgCleanlinessRating: null as null | number,
+    userPhoto: null
   };
 
   constructor(props: any) {
@@ -44,28 +35,8 @@ export default class ProfileScreen extends React.Component<{
 
   // Fetch the token from storage then navigate to our appropriate place
   _bootstrapAsync = async () => {
-    var userDetails = await UserSession.get();
-    if (userDetails == null) throw ":(";
-    this.setState({ user: userDetails });
-
     this.getUserPhoto();
     this.getRatings();
-  };
-
-  state = {
-    user: {
-      id: "",
-      firstName: "Not Found",
-      lastName: "",
-      email: "",
-      vehicles: [{}]
-    },
-    avgOverallRating: null as null | number,
-    avgSafetyRating: null as null | number,
-    avgTimelinessRating: null as null | number,
-    avgCleanlinessRating: null as null | number,
-
-    userPhoto: null
   };
 
   updateProfile() {}
@@ -130,42 +101,6 @@ export default class ProfileScreen extends React.Component<{
       });
   }
 
-  uploadUserPhoto = async () => {
-    // get permission from user to access their mobile photos
-    const { status: cameraRollPerm } = await Permissions.askAsync(
-      Permissions.CAMERA_ROLL
-    );
-
-    // if user gives permission, then pull up the user's photo gallery and store that photo's uri in the state
-    if (cameraRollPerm === "granted") {
-      let result = await ImagePicker.launchImageLibraryAsync({
-        allowsEditing: true,
-        aspect: [2, 2],
-        mediaTypes: "Images",
-        base64: true // there is a base64 property in ImagePicker, so I don't know why this is underlined red.  But it works.
-      });
-
-      if (!result.cancelled) {
-        // this.setState({ userPhoto: result.uri });
-        var imageData = "data:image/jpeg;base64," + result.base64;
-        this.setState({
-          userPhoto: imageData
-        });
-
-        // send photo to server
-
-        fetchAPI("/updateBios/" + this.state.user.id, {
-          method: "PUT",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ image: imageData })
-        });
-      }
-    } // end of in permission granted if statement
-  };
-
   render() {
     let name = this.state.user.firstName + " " + this.state.user.lastName;
 
@@ -195,14 +130,6 @@ export default class ProfileScreen extends React.Component<{
               }
             />
           </TouchableHighlight>
-          <View style={{ marginLeft: -15, justifyContent: "flex-end" }}>
-            <Icon
-              name="pencil"
-              size={30}
-              color={Colors.darkAccent}
-              onPress={this.uploadUserPhoto.bind(this)}
-            />
-          </View>
         </View>
         <View style={{ flex: 2, alignItems: "center" }}>
           <Text style={{ fontSize: 34, margin: 10 }}>{name}</Text>
@@ -257,27 +184,9 @@ export default class ProfileScreen extends React.Component<{
               <Text style={{ fontSize: 18 }}>No ratings yet</Text>
             )}
         </View>
-
-        <Button
-          title="Register For Push Notification"
-          onPress={() =>
-            this.props.navigation.navigate("PushNotificationsRegister")
-          }
-        />
-
-        <Button
-          title="Log Out"
-          onPress={this._logOut}
-          color={Colors.darkAccent}
-        />
       </View>
     );
   }
-
-  _logOut = async () => {
-    await UserSession.clear();
-    this.props.navigation.navigate("Auth");
-  };
 }
 
 const styles = StyleSheet.create({
