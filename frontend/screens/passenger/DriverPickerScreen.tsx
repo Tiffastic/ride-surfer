@@ -23,6 +23,72 @@ const ASPECT_RATIO = width / height;
 const LATITUDE_DELTA = 0.0922;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 
+const defaultProfilePic = require("../../assets/images/default-profile.png");
+
+let round = (number: number) => Math.round(number * 10) / 10;
+
+class DriverItem extends React.Component<{ driver: any }> {
+  state = {
+    overallRatings: null as number | null,
+    userPhoto: null
+  };
+
+  componentWillMount() {
+    let driverId = this.props.driver.journey.User.id as number;
+    this.getOverallRatings(driverId);
+    this.getUserPhoto(driverId);
+  }
+
+  private getOverallRatings(driverId: number) {
+    fetchAPI("/usersOverallRating/" + driverId)
+      .then(resp => resp.json())
+      .then(resp => {
+        this.setState({
+          overallRatings: resp.avgOverall
+        });
+      })
+      .catch(error => {
+        console.log("ERROR  = " + error);
+      });
+  }
+
+  private getUserPhoto(userId: number) {
+    fetchAPI("/getUserImage/" + userId)
+      .then(response => response.json())
+      .then(response => {
+        this.setState({ userPhoto: response.userImage });
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  }
+
+  render() {
+    return (
+      <View style={{ flexDirection: "row", alignItems: "center" }}>
+        <Image
+          source={
+            this.state.userPhoto !== null
+              ? { uri: this.state.userPhoto }
+              : defaultProfilePic
+          }
+          style={{ width: 50, height: 50 }}
+        />
+        <Text style={styles.searchResultsName}>
+          {this.props.driver.journey.User.firstName}
+        </Text>
+        {this.state.overallRatings ? (
+          <Text style={styles.searchResultsAddress}>
+            {round(this.state.overallRatings)} ★
+          </Text>
+        ) : (
+          <Text style={styles.searchResultsAddress}>New Driver</Text>
+        )}
+      </View>
+    );
+  }
+}
+
 export default class DriverPickerScreen extends React.Component<{
   navigation: any;
 }> {
@@ -65,8 +131,6 @@ export default class DriverPickerScreen extends React.Component<{
           (res: any) => (res.key = res.journey.id.toString())
         );
 
-        this.getDriverAvgOverallRatings(json.matches);
-
         this.setState({
           loading: false,
           drivers: json.matches
@@ -77,25 +141,6 @@ export default class DriverPickerScreen extends React.Component<{
         console.log(error);
         this.setState({ errorMessage: error.toString() });
       });
-  }
-
-  getDriverAvgOverallRatings(matches: any[]) {
-    matches.forEach((driver: any) => {
-      var driverId = driver.journey.User.id;
-
-      fetchAPI("/usersOverallRating/" + driverId)
-        .then(resp => resp.json())
-        .then(resp => {
-          this.setState(state => {
-            let ratings = Object.assign({}, state.overallRatings);
-            ratings[resp.personRatedId.toString()] = resp.avgOverall;
-            return ratings;
-          });
-        })
-        .catch(error => {
-          console.log("ERROR  = " + error);
-        });
-    });
   }
 
   render() {
@@ -109,8 +154,6 @@ export default class DriverPickerScreen extends React.Component<{
         </View>
       );
     }
-
-    let round = (number: number) => Math.round(number * 10) / 10;
 
     let content = (
       <View style={{ flex: 2 }}>
@@ -130,25 +173,7 @@ export default class DriverPickerScreen extends React.Component<{
               onShowUnderlay={separators.highlight}
               onHideUnderlay={separators.unhighlight}
             >
-              <View style={{ flexDirection: "row", alignItems: "center" }}>
-                {/* <Image
-                  source={item.journey.User.profilePic}
-                  style={{ width: 50, height: 50 }}
-                /> */}
-                <Text style={styles.searchResultsName}>
-                  {item.journey.User.firstName}
-                </Text>
-                {this.state.overallRatings[item.journey.User.id.toString()] ? (
-                  <Text style={styles.searchResultsAddress}>
-                    {round(
-                      this.state.overallRatings[item.journey.User.id.toString()]
-                    )}{" "}
-                    ★
-                  </Text>
-                ) : (
-                  <Text style={styles.searchResultsAddress}>New Driver</Text>
-                )}
-              </View>
+              <DriverItem driver={item} />
             </TouchableHighlight>
           )}
         />
