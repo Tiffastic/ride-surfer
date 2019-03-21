@@ -6,23 +6,43 @@ import {
   Text,
   Button,
   Image,
-  TouchableHighlight,
-  ShadowPropTypesIOS
+  TouchableHighlight
 } from "react-native";
-
+import Ionicons from "react-native-vector-icons/Ionicons";
+import { createStackNavigator } from "react-navigation";
+import HeaderButtons, { HeaderButton } from "react-navigation-header-buttons";
 import Colors from "../../constants/Colors";
 import Icon from "react-native-vector-icons/FontAwesome";
-
 import UserSession from "../../network/UserSession";
 import { fetchAPI } from "../../network/Backend";
 import Styles from "../../constants/Styles";
-
+import UpdateProfileScreen from "./UpdateProfileScreen";
 import { ImagePicker, Permissions, Constants } from "expo";
+
+const IoniconsHeaderButton = (passMeFurther: any) => (
+  // the `passMeFurther` variable here contains props from <Item .../> as well as <HeaderButtons ... />
+  // and it is important to pass those props to `HeaderButton`
+  // then you may add some information like icon size or color (if you use icons)
+  <HeaderButton
+    {...passMeFurther}
+    IconComponent={Ionicons}
+    iconSize={40}
+    color={Colors.primary}
+    buttonStyle={{
+      // backgroundColor: "rgba(92, 99,216, 1)",
+      height: 60
+      // textAlignVertical: 'center',
+
+      // borderWidth: 0,
+      // borderRadius: 5
+    }}
+  />
+);
 
 // import for upload image
 //const ImagePicker = require("react-native-image-picker").default;
 
-export default class ProfileScreen extends React.Component<{
+class ProfileScreen extends React.Component<{
   navigation: any;
 }> {
   static navigationOptions = ({ navigation }: any) => {
@@ -33,7 +53,22 @@ export default class ProfileScreen extends React.Component<{
           onPress={() => navigation.navigate("UpdateProfile")}
           title="Edit"
         />
-      )
+      ),
+      headerLeft: (
+        <HeaderButtons HeaderButtonComponent={IoniconsHeaderButton}>
+          <HeaderButton
+            title="ProfileIcon"
+            iconName="ios-menu"
+            onPress={() => navigation.openDrawer()}
+          />
+        </HeaderButtons>
+      ),
+      headerTitleStyle: {
+        textAlign: "center",
+        fontWeight: "bold",
+        height: 45,
+        flex: 1
+      }
     };
   };
 
@@ -279,6 +314,28 @@ export default class ProfileScreen extends React.Component<{
     this.props.navigation.navigate("Auth");
   };
 }
+
+export default createStackNavigator(
+  {
+    //RouteConfigs
+    HomeScreen: {
+      screen: ProfileScreen,
+      navigationOptions: ({ navigation }: { navigation: any }) => ({
+        headerTitle: "Profile",
+        headerRight: (
+          <Button
+            onPress={() => navigation.navigate("UpdateProfile")}
+            title="Edit"
+          />
+        )
+      })
+    },
+    UpdateProfile: UpdateProfileScreen
+  },
+  {
+    initialRouteName: "HomeScreen"
+  }
+);
 
 const styles = StyleSheet.create({
   container: {
