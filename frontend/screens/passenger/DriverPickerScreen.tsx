@@ -26,7 +26,7 @@ const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 export default class DriverPickerScreen extends React.Component<{
   navigation: any;
 }> {
-  state: any = {
+  state = {
     loading: true,
     origin: this.props.navigation.getParam("origin"),
     destination: this.props.navigation.getParam("destination"),
@@ -61,20 +61,16 @@ export default class DriverPickerScreen extends React.Component<{
           throw json;
         }
         console.log(JSON.stringify(json));
-        json.matches.forEach(res => (res.key = res.journey.id.toString()));
+        json.matches.forEach(
+          (res: any) => (res.key = res.journey.id.toString())
+        );
 
-        this.state.drivers = json.matches;
-        this.getDriverAvgOverallRatings();
+        this.getDriverAvgOverallRatings(json.matches);
 
-        //read comments inside of getDriverAvgoverallRatigns for explaination.
-        //long story short, how do we make getDriver... async, so we can .then
-        //right here instead of inside the getDriver... method.
-        /*
         this.setState({
           loading: false,
           drivers: json.matches
         });
-        */
       })
 
       .catch(error => {
@@ -83,34 +79,23 @@ export default class DriverPickerScreen extends React.Component<{
       });
   }
 
-  getDriverAvgOverallRatings() {
-    var self: any = this;
+  getDriverAvgOverallRatings(matches: any[]) {
+    matches.forEach((driver: any) => {
+      var driverId = driver.journey.User.id;
 
-    var numOfDrivers = 0;
-    this.state.drivers.forEach(
-      (driver: any) =>
-        function() {
-          var driverId = driver.journey.User.id;
-
-          fetchAPI("/usersOverallRating/" + driverId)
-            .then(resp => resp.json())
-            .then(resp => {
-              self.state.overallRatings[resp.personRatedId.toString()] =
-                resp.avgOverall;
-
-              // CANNOT SET STATE UNTILL THE OVERALL-RATINGS ARRAY IS FILLED, ELSE THE FLATLIST WON'T SHOW THE RATINGS UNLESS WE MANUALLY CLICK ON THE LIST ITEM
-              numOfDrivers++;
-              if (numOfDrivers === self.state.drivers.length) {
-                self.setState({
-                  loading: false
-                });
-              }
-            })
-            .catch(error => {
-              console.log("ERROR  = " + error);
-            });
-        }.bind(this)() // MUST BIND THE FUNCTION OR ELSE THIS.STATE.<OBJECT> IS UNDEFINED
-    );
+      fetchAPI("/usersOverallRating/" + driverId)
+        .then(resp => resp.json())
+        .then(resp => {
+          this.setState(state => {
+            let ratings = Object.assign({}, state.overallRatings);
+            ratings[resp.personRatedId.toString()] = resp.avgOverall;
+            return ratings;
+          });
+        })
+        .catch(error => {
+          console.log("ERROR  = " + error);
+        });
+    });
   }
 
   render() {
