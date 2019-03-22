@@ -8,7 +8,8 @@ import {
   Button,
   Dimensions,
   View,
-  Alert
+  Alert,
+  Image
 } from "react-native";
 
 import MapView, { Polyline, Marker } from "react-native-maps";
@@ -19,6 +20,8 @@ const { width, height } = Dimensions.get("window");
 const ASPECT_RATIO = width / height;
 const LATITUDE_DELTA = 0.0922;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
+
+const defaultProfilePic = require("../../assets/images/default-profile.png");
 
 import Colors from "../../constants/Colors";
 import { number, string } from "prop-types";
@@ -37,6 +40,7 @@ export default class DriverDetailsScreen extends React.Component<{
     destinationHumanAddress: null as null | string,
     pickupHumanAddress: null as null | string,
     dropoffHumanAddress: null as null | string,
+    driverProfilePic: null,
     isLoading: false
   };
 
@@ -61,6 +65,8 @@ export default class DriverDetailsScreen extends React.Component<{
     geocodeAddress(this.state.destination, "destinationHumanAddress");
     geocodeAddress(ridePlan.pickup, "pickupHumanAddress");
     geocodeAddress(ridePlan.dropoff, "dropoffHumanAddress");
+
+    this.getDriverProfilePic();
   }
 
   private generateDirsFromRidePlan(ridePlan: any) {
@@ -80,8 +86,25 @@ export default class DriverDetailsScreen extends React.Component<{
         desc: "Walk to " + (this.state.destinationHumanAddress || "destination")
       }
     ];
-    dirs.forEach((d: any, i) => (d.key = i));
+    dirs.forEach((d: any, i) => (d.key = i.toString()));
     return dirs;
+  }
+
+  private viewProfile = () => {
+    this.props.navigation.push("GenericProfile", {
+      user: this.state.driverJourney.User
+    });
+  };
+
+  private getDriverProfilePic() {
+    fetchAPI("/getUserImage/" + this.state.driverJourney.User.id)
+      .then(response => response.json())
+      .then(response => {
+        this.setState({ driverProfilePic: response.userImage });
+      })
+      .catch(error => {
+        console.log(error);
+      });
   }
 
   render() {
@@ -92,7 +115,7 @@ export default class DriverDetailsScreen extends React.Component<{
     return (
       <View style={styles.container}>
         <MapView
-          style={{ flex: 1.25 }}
+          style={{ flex: 1 }}
           provider="google"
           region={{
             latitude: this.state.destination.latitude,
@@ -125,9 +148,22 @@ export default class DriverDetailsScreen extends React.Component<{
           />
         </MapView>
         <View style={{ flex: 1 }}>
-          <Text style={{ fontSize: 25, margin: 5 }}>
-            {this.state.driverJourney.User.firstName}
-          </Text>
+          <View style={{ flexDirection: "row" }}>
+            <Image
+              style={{ width: 50, height: 50 }}
+              source={
+                this.state.driverProfilePic !== null
+                  ? { uri: this.state.driverProfilePic }
+                  : defaultProfilePic
+              }
+            />
+            <Text
+              onPress={this.viewProfile}
+              style={{ fontSize: 25, margin: 5 }}
+            >
+              {this.state.driverJourney.User.firstName}
+            </Text>
+          </View>
 
           <Text style={{ fontSize: 15, marginLeft: 5 }}>
             Directions to {this.state.destinationHumanAddress}
