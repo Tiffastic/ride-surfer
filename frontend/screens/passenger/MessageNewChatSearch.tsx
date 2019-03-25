@@ -4,13 +4,9 @@ import {
   Text,
   TextInput,
   Button,
-  FlatList,
-  TouchableHighlight,
   StyleSheet,
-  ListRenderItemInfo,
   ActivityIndicator,
-  Image,
-  Dimensions
+  KeyboardAvoidingView
 } from "react-native";
 
 import { fetchAPI } from "../../network/Backend";
@@ -73,24 +69,31 @@ export default class MessageContactsScreen extends React.Component<{
     }
     return (
       <View style={styles.container}>
-        {showErr}
-        <TextInput
-          value={this.state.recipientEmail}
-          placeholder="RideSurfer@Email.com"
-          onSubmitEditing={() => {
-            this.submitChatMessage();
-          }}
-          onChangeText={typed => this.setState({ recipientEmail: typed })}
-        />
+        <KeyboardAvoidingView
+          style={styles.container}
+          keyboardVerticalOffset={100}
+          behavior="padding"
+          enabled
+        >
+          {showErr}
+          <TextInput
+            value={this.state.recipientEmail}
+            placeholder="RideSurfer@Email.com"
+            onSubmitEditing={() => {
+              this.submitChatMessage();
+            }}
+            onChangeText={typed => this.setState({ recipientEmail: typed })}
+          />
 
-        <Button
-          title="Start New Chat"
-          onPress={() => {
-            // get picture and recipient's user id from backend
-            // pass that info to MessageConversationsScreen
-            this.submitChatMessage();
-          }}
-        />
+          <Button
+            title="Start New Chat"
+            onPress={() => {
+              // get picture and recipient's user id from backend
+              // pass that info to MessageConversationsScreen
+              this.submitChatMessage();
+            }}
+          />
+        </KeyboardAvoidingView>
       </View>
     );
   }
