@@ -45,12 +45,6 @@ export default class MessageContactsScreen extends React.Component<{
   };
 
   sortMostRecentChats = async () => {
-    // this.setState({ recentPreviousChats: this.state.recentPreviousChats });
-    console.log(
-      "LENGTH OF RECENTPREVIOUSCHATS = ",
-      this.state.recentPreviousChats.length
-    );
-
     // sort the chats, make the highest chat date first in the array
     this.state.recentPreviousChats.sort(function(a: any, b: any) {
       return new Date(b.date) - new Date(a.date); // this works
@@ -131,16 +125,10 @@ export default class MessageContactsScreen extends React.Component<{
 
     this.setState({ userId: userDetails.id });
 
-    console.log(
-      "getUserInfo In MessageConversations, userId = " + this.state.userId
-    );
-
     await fetchAPI("/getUserImage/" + this.state.userId)
       .then(response => response.json())
       .then(response => {
         this.setState({ userImage: response.userImage });
-        //  AsyncStorage.setItem("userImage", response.userImage); // save user image in async storage
-        // console.log("GET USER PHOTO, userImage = ", response.userImage);
       })
       .catch(error => {
         console.log("ERROR GET USER Photo = ", error);

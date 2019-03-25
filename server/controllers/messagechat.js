@@ -103,6 +103,12 @@ module.exports = {
       order: [["createdAt", "DESC"]]
     })
       .then(array => {
+        // if there are no messages, then return
+        if (array.length == 0) {
+          res.status(200).json({
+            chatRecipients: dict
+          });
+        }
         // getting the unique partners and their messages
         array.forEach(item => {
           if (chatRecipients.size < 11) {
@@ -202,6 +208,12 @@ module.exports = {
       order: [["createdAt", "DESC"]]
     })
       .then(array => {
+        // if there is no messages, then return
+        if (array.length == 0) {
+          res.status(200).json({
+            chatSenders: dict
+          });
+        }
         // getting the unique partners and their messages
         array.forEach(item => {
           if (chatSenders.size < 11) {
