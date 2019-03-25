@@ -183,10 +183,7 @@ export default class MessageConversationsScreen extends React.Component<{
               {this.props.navigation.getParam("recipientLastName")}{" "}
             </Text>
 
-            <Text>
-              {this.props.navigation.getParam("recipientEmail")}{" "}
-              {this.props.navigation.getParam("recipientId")}
-            </Text>
+            <Text>{this.props.navigation.getParam("recipientEmail")} </Text>
           </View>
 
           <ScrollView showsVerticalScrollIndicator={false}>
