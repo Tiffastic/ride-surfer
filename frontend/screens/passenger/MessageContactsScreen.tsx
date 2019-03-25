@@ -30,7 +30,8 @@ export default class MessageContactsScreen extends React.Component<{
   }
 
   state: any = {
-    isLoading: true,
+    isLoading_WhoSentMeMail: true,
+    isLoading_WhoISentMailto: true,
     userId: "",
     userImage: "",
     recentPreviousChats: []
@@ -38,14 +39,12 @@ export default class MessageContactsScreen extends React.Component<{
 
   bootstrap = async () => {
     await this.getUserInfo(); // IMPORTANT, NEED userId first before we can move on
-    await this.getMyRecentChats();
-    await this.sortMostRecentChats();
-
-    this.setState({ isLoading: false });
+    this.getMyRecentChats();
   };
 
   sortMostRecentChats = async () => {
     // sort the chats, make the highest chat date first in the array
+    // in case the person sent mail to me AND I sent mail to the person, then get the most recent chat from either of us
     this.state.recentPreviousChats.sort(function(a: any, b: any) {
       return new Date(b.date) - new Date(a.date); // this works
     });
@@ -67,24 +66,36 @@ export default class MessageContactsScreen extends React.Component<{
   };
 
   getMyRecentChats = async () => {
-    await fetchAPI("/getWhoISentMailTo?meId=" + this.state.userId)
+    // get chats from who I recently sent mail to
+    fetchAPI("/getWhoISentMailTo?meId=" + this.state.userId)
       .then(response => response.json())
       .then(responseJson => {
         for (let key in responseJson.chatRecipients) {
           this.state.recentPreviousChats.push(responseJson.chatRecipients[key]);
         }
       })
-
+      .then(() => {
+        this.sortMostRecentChats();
+      })
+      .then(() => {
+        this.setState({ isLoading_WhoISentMailto: false });
+      })
       .catch(err => console.log(err));
 
-    await fetchAPI("/getWhoSentMeMail?meId=" + this.state.userId)
+    // get chats from people who sent mail to me
+    fetchAPI("/getWhoSentMeMail?meId=" + this.state.userId)
       .then(response => response.json())
       .then(responseJson => {
         for (let key in responseJson.chatSenders) {
           this.state.recentPreviousChats.push(responseJson.chatSenders[key]);
         }
       })
-
+      .then(() => {
+        this.sortMostRecentChats();
+      })
+      .then(() => {
+        this.setState({ isLoading_WhoSentMeMail: false });
+      })
       .catch(err => console.log(err));
   };
 
@@ -136,7 +147,10 @@ export default class MessageContactsScreen extends React.Component<{
   };
 
   render() {
-    if (this.state.isLoading) {
+    if (
+      this.state.isLoading_WhoISentMailto ||
+      this.state.isLoading_WhoSentMeMail
+    ) {
       return <ActivityIndicator />;
     }
 

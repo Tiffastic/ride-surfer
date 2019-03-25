@@ -46,7 +46,7 @@ module.exports = {
     // where (userIdSender == userId AND userIdRecipient == recipientId)
     // OR(userIdSender == recipientId AND userIdRecipient == userId)
     // order by createdAt DESC
-    // limit 15 -- some random number
+    // limit 100 -- some random number
     //
 
     var me = req.query.meId;
@@ -67,7 +67,7 @@ module.exports = {
         })
       ),
 
-      limit: 15,
+      limit: 100,
       order: [["createdAt", "DESC"]]
     })
       .then(array => {
@@ -112,7 +112,7 @@ module.exports = {
         // getting the unique partners and their messages
         array.forEach(item => {
           if (chatRecipients.size < 11) {
-            // random number, limiting chats
+            // random number, to limit the display of recent people who chatted with you
             chatRecipients.add(item.userIdRecipient);
             if (!dictMessages.hasOwnProperty(item.userIdRecipient)) {
               dictMessages[item.userIdRecipient] = item.message;
@@ -217,7 +217,7 @@ module.exports = {
         // getting the unique partners and their messages
         array.forEach(item => {
           if (chatSenders.size < 11) {
-            // random number, limiting chats
+            // random number, limiting the display of people who chatted with you
             chatSenders.add(item.userIdSender);
             if (!dictMessages.hasOwnProperty(item.userIdSender)) {
               dictMessages[item.userIdSender] = item.message;
