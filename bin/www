@@ -8,6 +8,25 @@ app.set('port', port);
 
 const server = http.createServer(app);
 
+
+// setting up web socket / socket.io for MessageChat feature:
+const io = require('socket.io').listen(server);
+
+io.on("connection", socket => {
+//  console.log("Socket Io: user connected");
+
+  // listen for chat event
+  socket.on("chat", msgInfo => {
+	 // console.log(msgInfo);
+	  io.emit("chat", msgInfo);
+  });
+
+
+});
+
+
+
+
 models.sequelize.sync()
 	.then(function() {
 	server.listen(port, () => console.log(`Example app listening on port ${port}!`));

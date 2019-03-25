@@ -10,6 +10,8 @@ const biosController = require("../controllers").bios;
 const journeyRidesPhotosController = require("../controllers")
   .journeyRidesPhotos;
 
+const messagechatController = require("../controllers").messagechats;
+
 module.exports = app => {
   //Using CORS, without this, Swagger  does not work with local host
   app.use(function(req, res, next) {
@@ -112,5 +114,27 @@ module.exports = app => {
   app.get(
     "/myPassengersPhotos/:userId",
     journeyRidesPhotosController.getMyPassengersPhotos
+  );
+
+  app.get(
+    "/getChatRecipientInfo",
+    messagechatController.getChatPartnerInfo_ByEmail
+  );
+
+  app.post("/saveChat", messagechatController.saveChat);
+
+  app.get(
+    "/getOurMostRecentChats",
+    messagechatController.getOurMostRecentChats
+  );
+
+  app.get(
+    "/getWhoSentMeMail",
+    messagechatController.getMyRecentChatPartners_WhoSentMeMail
+  );
+
+  app.get(
+    "/getWhoISentMailTo",
+    messagechatController.getMyRecentChatPartners_WhoISentMailTo
   );
 };

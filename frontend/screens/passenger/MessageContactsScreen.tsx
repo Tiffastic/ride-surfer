@@ -1,22 +1,17 @@
 import React from "react";
 import {
-  Image,
   StyleSheet,
   Text,
   View,
-  TouchableHighlight,
-  FlatList,
   Button,
   ScrollView,
-  ActivityIndicator,
-  TouchableOpacity
+  ActivityIndicator
 } from "react-native";
-import { Location } from "expo";
-import Colors from "../../constants/Colors";
+
 import { fetchAPI } from "../../network/Backend";
 import UserSession from "../../network/UserSession";
 
-const defaultPic = require("../../assets/images/default-profile.png");
+import PreviousMessage from "../../components/PreviousChat";
 
 export default class MessageContactsScreen extends React.Component<{
   navigation: any;
@@ -26,18 +21,176 @@ export default class MessageContactsScreen extends React.Component<{
   };
   constructor(props: any) {
     super(props);
+    this.getUserInfo.bind(this);
+    this.sortMostRecentChats.bind(this);
+    this.getMyRecentChats.bind(this);
+    this.bootstrap.bind(this);
+
+    this.bootstrap();
   }
 
   state: any = {
-    isLoading: false
+    isLoading: true,
+    userId: "",
+    userImage: "",
+    recentPreviousChats: []
   };
+
+  bootstrap = async () => {
+    await this.getUserInfo(); // IMPORTANT, NEED userId first before we can move on
+    await this.getMyRecentChats();
+    await this.sortMostRecentChats();
+
+    this.setState({ isLoading: false });
+  };
+
+  sortMostRecentChats = async () => {
+    // this.setState({ recentPreviousChats: this.state.recentPreviousChats });
+    console.log(
+      "LENGTH OF RECENTPREVIOUSCHATS = ",
+      this.state.recentPreviousChats.length
+    );
+
+    // sort the chats, make the highest chat date first in the array
+    this.state.recentPreviousChats.sort(function(a: any, b: any) {
+      return new Date(b.date) - new Date(a.date); // this works
+    });
+
+    // put the most recent chats from my chat partners in the dictionary
+    // use set to make sure I sure only the most recent chat from my chat partner
+
+    var dict: any = [];
+    const partnersId = new Set();
+    this.state.recentPreviousChats.map((chat: any) => {
+      // make sure that only the most recent chats from my chat partners are stored
+      if (!partnersId.has(chat.userId)) {
+        partnersId.add(chat.userId);
+        dict.push(chat);
+      }
+    });
+
+    this.setState({ recentPreviousChats: dict });
+  };
+
+  getMyRecentChats = async () => {
+    await fetchAPI("/getWhoISentMailTo?meId=" + this.state.userId)
+      .then(response => response.json())
+      .then(responseJson => {
+        for (let key in responseJson.chatRecipients) {
+          this.state.recentPreviousChats.push(responseJson.chatRecipients[key]);
+        }
+      })
+
+      .catch(err => console.log(err));
+
+    await fetchAPI("/getWhoSentMeMail?meId=" + this.state.userId)
+      .then(response => response.json())
+      .then(responseJson => {
+        for (let key in responseJson.chatSenders) {
+          this.state.recentPreviousChats.push(responseJson.chatSenders[key]);
+        }
+      })
+
+      .catch(err => console.log(err));
+  };
+
+  formatDate(chatDate: Date) {
+    var monthNames = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec"
+    ];
+
+    return (
+      monthNames[chatDate.getMonth()] +
+      " " +
+      chatDate.getDate() +
+      ", " +
+      chatDate.getFullYear()
+    );
+  }
+  getUserInfo = async () => {
+    // when User logs in, their image is stored in Async Storage
+    /*
+    AsyncStorage.getItem("userImage").then(item => {
+      this.setState({ userPhoto: item });
+    });
+    */
+
+    let userDetails = await UserSession.get();
+    if (userDetails == null) return;
+
+    this.setState({ userId: userDetails.id });
+
+    console.log(
+      "getUserInfo In MessageConversations, userId = " + this.state.userId
+    );
+
+    await fetchAPI("/getUserImage/" + this.state.userId)
+      .then(response => response.json())
+      .then(response => {
+        this.setState({ userImage: response.userImage });
+        //  AsyncStorage.setItem("userImage", response.userImage); // save user image in async storage
+        // console.log("GET USER PHOTO, userImage = ", response.userImage);
+      })
+      .catch(error => {
+        console.log("ERROR GET USER Photo = ", error);
+      });
+  };
+
   render() {
     if (this.state.isLoading) {
       return <ActivityIndicator />;
     }
+
+    // create an array of previous chat messages
+    var myPreviousMessages: any = [];
+
+    this.state.recentPreviousChats.map((chat: any) => {
+      myPreviousMessages.push(
+        <View key={chat.userId}>
+          <PreviousMessage
+            message={chat.chatMessage}
+            recipientImage={chat.userImage}
+            firstName={chat.firstName}
+            lastName={chat.lastName}
+            date={this.formatDate(new Date(chat.date))}
+            recipientId={chat.userId}
+            recipientEmail={chat.email}
+            senderImage={this.state.userImage}
+            navigation={this.props.navigation}
+          />
+        </View>
+      );
+    });
+
     return (
       <View style={styles.container}>
-        <Text>Messages</Text>
+        <View style={{ alignItems: "center" }}>
+          <Text>My Surf Messages</Text>
+        </View>
+
+        <ScrollView showsVerticalScrollIndicator={false}>
+          {myPreviousMessages}
+        </ScrollView>
+
+        <Button
+          title="New Chat"
+          onPress={() => {
+            this.props.navigation.navigate("MessageNewChatSearch", {
+              userImage: this.state.userImage
+            });
+          }}
+        />
       </View>
     );
   }
@@ -47,35 +200,5 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "rgb(255, 255, 255)"
-  },
-
-  messageButton: {
-    margin: 12,
-    borderBottomColor: "rgba(206, 206, 206, 1)",
-    borderBottomWidth: 1,
-    alignSelf: "stretch",
-    justifyContent: "center",
-    padding: 10,
-    paddingRight: 40,
-    backgroundColor: "rgba(255, 255, 255, .8)"
-  },
-
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    margin: 10
-  },
-
-  imageHolder: {
-    marginLeft: 10
-  },
-
-  name: {
-    fontSize: 33
-  },
-
-  searchResultsList: {
-    marginTop: 10,
-    marginBottom: 10
   }
 });

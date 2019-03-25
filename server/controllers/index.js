@@ -7,6 +7,7 @@ const passengerRides = require("./passengerRides");
 const calculateRatings = require("./calculateRatings");
 const bios = require("./bios");
 const journeyRidesPhotos = require("./journeyRidePhotos");
+const messagechats = require("./messagechat");
 
 module.exports = {
   users,
@@ -17,5 +18,6 @@ module.exports = {
   passengerRides,
   calculateRatings,
   bios,
-  journeyRidesPhotos
+  journeyRidesPhotos,
+  messagechats
 };

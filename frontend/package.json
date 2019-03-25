@@ -46,6 +46,7 @@
     "react": "16.5.0",
     "react-devtools": "^3.6.1",
     "react-native": "https://github.com/expo/react-native/archive/sdk-32.0.0.tar.gz",
+    "react-native-keyboard-aware-scroll-view": "^0.8.0",
     "react-native-maps": "^0.22.1",
     "react-native-modal-datetime-picker": "^6.1.0",
     "react-native-star-rating": "^1.1.0",
@@ -53,6 +54,7 @@
     "react-native-typescript-transformer": "^1.2.10",
     "react-navigation": "^3.0.9",
     "react-navigation-header-buttons": "^2.1.1",
+    "socket.io-client": "^2.2.0",
     "ts-jest": "^23.10.5",
     "typescript": "^3.1.6"
   },

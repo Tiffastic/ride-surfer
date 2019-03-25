@@ -6,7 +6,8 @@ import {
   Text,
   Button,
   Image,
-  TouchableHighlight
+  TouchableHighlight,
+  AsyncStorage
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { createStackNavigator } from "react-navigation";
@@ -83,8 +84,12 @@ class ProfileScreen extends React.Component<{
     if (userDetails == null) throw ":(";
     this.setState({ user: userDetails });
 
-    this.getUserPhoto();
+    AsyncStorage.getItem("userImage").then(item => {
+      this.setState({ userPhoto: item });
+    });
+
     this.getRatings();
+    this.getUserPhoto();
   };
 
   state = {
@@ -154,16 +159,24 @@ class ProfileScreen extends React.Component<{
     this.getAvgCleanlinessRating();
   }
 
-  getUserPhoto() {
+  getUserPhoto = async () => {
+    // when User logs in, their image is stored in Async Storage
+    /*
+    AsyncStorage.getItem("userImage").then(item => {
+      this.setState({ userPhoto: item });
+    });
+    */
+
     fetchAPI("/getUserImage/" + this.state.user.id)
       .then(response => response.json())
       .then(response => {
         this.setState({ userPhoto: response.userImage });
+        AsyncStorage.setItem("userImage", response.userImage); // save user image in async storage
       })
       .catch(error => {
         console.log(error);
       });
-  }
+  };
 
   uploadUserPhoto = async () => {
     // get permission from user to access their mobile photos
@@ -186,6 +199,9 @@ class ProfileScreen extends React.Component<{
         this.setState({
           userPhoto: imageData
         });
+
+        // store user picture in Async Storage
+        AsyncStorage.setItem("userImage", imageData);
 
         // send photo to server
 

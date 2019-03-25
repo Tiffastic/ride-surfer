@@ -25,7 +25,7 @@ module.exports = {
       .then(userBio => {
         res.status(200).json({ userImage: userBio.image });
       })
-      .catch(error => console.log(error));
+      .catch(error => res.status(400).json({ message: error }));
   },
 
   createBio(req, res) {
