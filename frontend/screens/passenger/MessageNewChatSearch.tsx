@@ -32,12 +32,9 @@ export default class MessageContactsScreen extends React.Component<{
 
   submitChatMessage() {
     fetchAPI("/getChatRecipientInfo?email=" + this.state.recipientEmail)
-      .then(response => {
-        this.state.status = response.status;
-        return response.json();
-      })
-      .then(responseJson => {
-        if (this.state.status === 200) {
+      .then(async response => {
+        let responseJson = await response.json();
+        if (response.status === 200) {
           this.props.navigation.navigate("MessageConversations", {
             recipientId: responseJson.recipientId,
             recipientFirstName: responseJson.recipientFirstName,
@@ -52,11 +49,12 @@ export default class MessageContactsScreen extends React.Component<{
           this.setState({ error: responseJson.message });
         }
       })
-
       .catch(error => {
         console.log(error);
+        this.setState({ error: error });
       });
   }
+
   render() {
     let showErr = this.state.error ? (
       <Text style={{ color: "red" }}>{this.state.error}</Text>

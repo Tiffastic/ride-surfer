@@ -12,6 +12,7 @@ import { fetchAPI } from "../../network/Backend";
 import UserSession from "../../network/UserSession";
 
 import PreviousMessage from "../../components/PreviousChat";
+import { resolve } from "url";
 
 export default class MessageContactsScreen extends React.Component<{
   navigation: any;
@@ -42,10 +43,10 @@ export default class MessageContactsScreen extends React.Component<{
     this.getMyRecentChats();
   };
 
-  sortMostRecentChats = async () => {
+  sortMostRecentChats(chats: []) {
     // sort the chats, make the highest chat date first in the array
     // in case the person sent mail to me AND I sent mail to the person, then get the most recent chat from either of us
-    this.state.recentPreviousChats.sort(function(a: any, b: any) {
+    chats.sort(function(a: any, b: any) {
       return new Date(b.date) - new Date(a.date); // this works
     });
 
@@ -54,7 +55,7 @@ export default class MessageContactsScreen extends React.Component<{
 
     var dict: any = [];
     const partnersId = new Set();
-    this.state.recentPreviousChats.map((chat: any) => {
+    chats.map((chat: any) => {
       // make sure that only the most recent chats from my chat partners are stored
       if (!partnersId.has(chat.userId)) {
         partnersId.add(chat.userId);
@@ -62,41 +63,59 @@ export default class MessageContactsScreen extends React.Component<{
       }
     });
 
-    this.setState({ recentPreviousChats: dict });
-  };
+    // this.setState({ recentPreviousChats: dict });
+    return dict;
+  }
 
   getMyRecentChats = async () => {
-    // get chats from who I recently sent mail to
-    fetchAPI("/getWhoISentMailTo?meId=" + this.state.userId)
-      .then(response => response.json())
-      .then(responseJson => {
-        for (let key in responseJson.chatRecipients) {
-          this.state.recentPreviousChats.push(responseJson.chatRecipients[key]);
-        }
-      })
-      .then(() => {
-        this.sortMostRecentChats();
-      })
-      .then(() => {
-        this.setState({ isLoading_WhoISentMailto: false });
-      })
-      .catch(err => console.log(err));
+    let chats: any = [];
 
-    // get chats from people who sent mail to me
-    fetchAPI("/getWhoSentMeMail?meId=" + this.state.userId)
-      .then(response => response.json())
-      .then(responseJson => {
-        for (let key in responseJson.chatSenders) {
-          this.state.recentPreviousChats.push(responseJson.chatSenders[key]);
-        }
-      })
+    var whoISentMailToAPI = new Promise((resolve, reject) => {
+      // get chats from who I recently sent mail to
+      fetchAPI("/getWhoISentMailTo?meId=" + this.state.userId)
+        .then(response => response.json())
+        .then(responseJson => {
+          for (let key in responseJson.chatRecipients) {
+            chats.push(responseJson.chatRecipients[key]);
+          }
+
+          resolve("Success!");
+        })
+        .catch(err => {
+          console.log(err), reject("Failure");
+        });
+    });
+
+    var whoSentMeMailAPI = new Promise((resolve, reject) => {
+      // get chats from people who sent mail to me
+      fetchAPI("/getWhoSentMeMail?meId=" + this.state.userId)
+        .then(response => response.json())
+        .then(responseJson => {
+          for (let key in responseJson.chatSenders) {
+            chats.push(responseJson.chatSenders[key]);
+          }
+
+          resolve("Success!");
+        })
+        .catch(err => {
+          console.log(err);
+          reject("Failure");
+        });
+    });
+
+    // Learn about Promise.all:  https://davidwalsh.name/promises
+    Promise.all([whoISentMailToAPI, whoSentMeMailAPI])
       .then(() => {
-        this.sortMostRecentChats();
+        let sortedChats = this.sortMostRecentChats(chats);
+
+        this.setState({ recentPreviousChats: sortedChats }, () => {
+          this.setState({ isLoading_WhoISentMailto: false });
+          this.setState({ isLoading_WhoSentMeMail: false });
+        });
       })
-      .then(() => {
-        this.setState({ isLoading_WhoSentMeMail: false });
-      })
-      .catch(err => console.log(err));
+      .catch(err => {
+        console.log(err);
+      });
   };
 
   formatDate(chatDate: Date) {

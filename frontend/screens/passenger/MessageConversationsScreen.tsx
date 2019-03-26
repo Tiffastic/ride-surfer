@@ -60,8 +60,11 @@ export default class MessageConversationsScreen extends React.Component<{
       .then(response => response.json())
       .then(responseJson => {
         var chats = responseJson.ourChats;
+
+        var chatMessages: any = [];
+
         chats.forEach((item: any) => {
-          this.state.recentMessages.push(
+          chatMessages.push(
             <ChatMessage
               message={item.message}
               image={
@@ -76,7 +79,7 @@ export default class MessageConversationsScreen extends React.Component<{
           );
         });
 
-        this.setState({ recentMessages: this.state.recentMessages });
+        this.setState({ recentMessages: chatMessages });
       });
   };
 
