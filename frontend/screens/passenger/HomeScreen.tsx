@@ -47,16 +47,22 @@ class HomeScreen extends React.Component<{ navigation: any }> {
   state = {
     mode: "Passenger" as "Passenger" | "Driver"
   };
-  private passengerConfirm = (origin: any, destination: any) => {
+  private passengerConfirm = (
+    origin: any,
+    destination: any,
+    arrivalAt: Date
+  ) => {
     this.props.navigation.push("DriverPicker", {
       origin: origin,
-      destination: destination
+      destination: destination,
+      arrivalAt: arrivalAt
     });
   };
 
   private driverConfirm = async (
     origin: { latitude: number; longitude: number },
-    destination: { latitude: number; longitude: number }
+    destination: { latitude: number; longitude: number },
+    arrivalAt: Date
   ) => {
     this.setState({ isLoading: true });
 
@@ -73,6 +79,7 @@ class HomeScreen extends React.Component<{ navigation: any }> {
         userId: userDetails.id,
         origin: [origin.latitude, origin.longitude],
         destination: [destination.latitude, destination.longitude],
+        arrivalAt: arrivalAt,
         isDriver: true
       })
     })

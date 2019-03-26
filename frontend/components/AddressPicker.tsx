@@ -3,6 +3,8 @@ import {
   TextInput,
   StyleSheet,
   Button,
+  Text,
+  TouchableOpacity,
   View,
   Alert,
   Dimensions
@@ -13,10 +15,10 @@ import Colors from "../constants/Colors";
 import HeaderButtons, { HeaderButton } from "react-navigation-header-buttons";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { fetchAPI } from "../network/Backend";
-
 import { Permissions, Location } from "expo";
 import MapView, { Marker, Polyline } from "react-native-maps";
 import { geocodeAsync } from "expo-location";
+import DateTimePicker from "react-native-modal-datetime-picker";
 
 const { width, height } = Dimensions.get("window");
 
@@ -35,12 +37,15 @@ export type state = {
   errorMessage: string;
   drivingRoute: any;
   status: any;
+  isDateTimePickerVisible: boolean;
+  arrivalAt: Date;
 };
 
 export type Props = {
   onConfirm: (
     origin: { latitude: number; longitude: number },
-    destination: { latitude: number; longitude: number }
+    destination: { latitude: number; longitude: number },
+    arrivalAt: Date
   ) => void;
 };
 
@@ -56,7 +61,9 @@ export default class AddressPicker extends React.Component<Props, state> {
       destinationLocation: null,
       errorMessage: "",
       drivingRoute: [],
-      status: ""
+      status: "",
+      isDateTimePickerVisible: false,
+      arrivalAt: new Date()
     };
   }
 
@@ -301,19 +308,22 @@ export default class AddressPicker extends React.Component<Props, state> {
             onChangeText={text =>
               this.setState({ destinationLocationInput: text })
             }
+            onSubmitEditing={this.search}
           />
         </View>
-        {/* TODO: add this back in */}
-        {/* <View style={{ flexDirection: "row" }}>
-          <TextInput
-            placeholder="Arrive Time"
-            style={styles.queryBox}
-            value={this.state.destinationLocationInput}
-            onChangeText={text =>
-              this.setState({ destinationLocationInput: text })
-            }
-          />
-        </View> */}
+        <DateTimePicker
+          mode="datetime"
+          date={this.state.arrivalAt}
+          onConfirm={(time: Date) => {
+            this.setState({ isDateTimePickerVisible: false });
+            this.setState({ arrivalAt: time });
+            // console.log("A date has been picked: ", time.toLocaleString());
+          }}
+          onCancel={() => {
+            this.setState({ isDateTimePickerVisible: false });
+          }}
+          isVisible={this.state.isDateTimePickerVisible}
+        />
         <View
           style={{
             flexDirection: "row",
@@ -327,9 +337,8 @@ export default class AddressPicker extends React.Component<Props, state> {
         >
           <View>
             <Button
-              title="Search"
-              onPress={this.search}
-              color={Colors.primary}
+              title="Arrival By Time?"
+              onPress={() => this.setState({ isDateTimePickerVisible: true })}
             />
           </View>
           <View>
@@ -343,7 +352,8 @@ export default class AddressPicker extends React.Component<Props, state> {
                 }
                 this.props.onConfirm(
                   this.state.startLocation,
-                  this.state.destinationLocation
+                  this.state.destinationLocation,
+                  this.state.arrivalAt
                 );
               }}
             />
