@@ -9,7 +9,8 @@ import {
   ListRenderItemInfo,
   ActivityIndicator,
   Image,
-  Dimensions
+  Dimensions,
+  TouchableOpacity
 } from "react-native";
 import { ListRenderItem } from "react-native";
 import MapView, { Marker } from "react-native-maps";
@@ -27,7 +28,7 @@ const defaultProfilePic = require("../../assets/images/default-profile.png");
 
 let round = (number: number) => Math.round(number * 10) / 10;
 
-class DriverItem extends React.Component<{ driver: any }> {
+class DriverItem extends React.Component<{ driver: any; navigation: any }> {
   state = {
     overallRatings: null as number | null,
     userPhoto: null
@@ -63,17 +64,25 @@ class DriverItem extends React.Component<{ driver: any }> {
       });
   }
 
+  private viewProfile = () => {
+    this.props.navigation.push("GenericProfile", {
+      user: this.props.driver.journey.User
+    });
+  };
+
   render() {
     return (
       <View style={{ flexDirection: "row", alignItems: "center" }}>
-        <Image
-          source={
-            this.state.userPhoto !== null
-              ? { uri: this.state.userPhoto }
-              : defaultProfilePic
-          }
-          style={{ width: 50, height: 50 }}
-        />
+        <TouchableOpacity onPress={() => this.viewProfile()}>
+          <Image
+            source={
+              this.state.userPhoto !== null
+                ? { uri: this.state.userPhoto }
+                : defaultProfilePic
+            }
+            style={{ width: 50, height: 50 }}
+          />
+        </TouchableOpacity>
         <Text style={styles.searchResultsName}>
           {this.props.driver.journey.User.firstName}
         </Text>
@@ -173,7 +182,7 @@ export default class DriverPickerScreen extends React.Component<{
               onShowUnderlay={separators.highlight}
               onHideUnderlay={separators.unhighlight}
             >
-              <DriverItem driver={item} />
+              <DriverItem navigation={this.props.navigation} driver={item} />
             </TouchableHighlight>
           )}
         />

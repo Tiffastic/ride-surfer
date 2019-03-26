@@ -9,7 +9,8 @@ import {
   Dimensions,
   View,
   Alert,
-  Image
+  Image,
+  TouchableOpacity
 } from "react-native";
 
 import MapView, { Polyline, Marker } from "react-native-maps";
@@ -149,14 +150,16 @@ export default class DriverDetailsScreen extends React.Component<{
         </MapView>
         <View style={{ flex: 1 }}>
           <View style={{ flexDirection: "row" }}>
-            <Image
-              style={{ width: 50, height: 50 }}
-              source={
-                this.state.driverProfilePic !== null
-                  ? { uri: this.state.driverProfilePic }
-                  : defaultProfilePic
-              }
-            />
+            <TouchableOpacity onPress={this.viewProfile}>
+              <Image
+                style={{ width: 50, height: 50 }}
+                source={
+                  this.state.driverProfilePic !== null
+                    ? { uri: this.state.driverProfilePic }
+                    : defaultProfilePic
+                }
+              />
+            </TouchableOpacity>
             <Text
               onPress={this.viewProfile}
               style={{ fontSize: 25, margin: 5 }}
