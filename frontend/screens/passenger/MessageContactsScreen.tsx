@@ -12,7 +12,6 @@ import { fetchAPI } from "../../network/Backend";
 import UserSession from "../../network/UserSession";
 
 import PreviousMessage from "../../components/PreviousChat";
-import { resolve } from "url";
 
 export default class MessageContactsScreen extends React.Component<{
   navigation: any;
@@ -23,16 +22,15 @@ export default class MessageContactsScreen extends React.Component<{
   constructor(props: any) {
     super(props);
     this.getUserInfo.bind(this);
-    this.sortMostRecentChats.bind(this);
-    this.getMyRecentChats.bind(this);
+
+    this.getMyRecentChatSessions.bind(this);
     this.bootstrap.bind(this);
 
     this.bootstrap();
   }
 
   state: any = {
-    isLoading_WhoSentMeMail: true,
-    isLoading_WhoISentMailto: true,
+    isLoading_GetMyRecentChatSessions: true,
     userId: "",
     userImage: "",
     recentPreviousChats: []
@@ -40,83 +38,23 @@ export default class MessageContactsScreen extends React.Component<{
 
   bootstrap = async () => {
     await this.getUserInfo(); // IMPORTANT, NEED userId first before we can move on
-    this.getMyRecentChats();
+    // this.getMyRecentChats();
+    this.getMyRecentChatSessions();
   };
 
-  sortMostRecentChats(chats: []) {
-    // sort the chats, make the highest chat date first in the array
-    // in case the person sent mail to me AND I sent mail to the person, then get the most recent chat from either of us
-    chats.sort(function(a: any, b: any) {
-      return new Date(b.date) - new Date(a.date); // this works
-    });
-
-    // put the most recent chats from my chat partners in the dictionary
-    // use set to make sure I sure only the most recent chat from my chat partner
-
-    var dict: any = [];
-    const partnersId = new Set();
-    chats.map((chat: any) => {
-      // make sure that only the most recent chats from my chat partners are stored
-      if (!partnersId.has(chat.userId)) {
-        partnersId.add(chat.userId);
-        dict.push(chat);
-      }
-    });
-
-    // this.setState({ recentPreviousChats: dict });
-    return dict;
-  }
-
-  getMyRecentChats = async () => {
-    let chats: any = [];
-
-    var whoISentMailToAPI = new Promise((resolve, reject) => {
-      // get chats from who I recently sent mail to
-      fetchAPI("/getWhoISentMailTo?meId=" + this.state.userId)
-        .then(response => response.json())
-        .then(responseJson => {
-          for (let key in responseJson.chatRecipients) {
-            chats.push(responseJson.chatRecipients[key]);
-          }
-
-          resolve("Success!");
-        })
-        .catch(err => {
-          console.log(err), reject("Failure");
+  getMyRecentChatSessions() {
+    fetchAPI("/getLatestChatSessionMessages?meId=" + this.state.userId)
+      .then(response => response.json())
+      .then(responseJson => {
+        responseJson.myRecentChats.sort(function(a: any, b: any) {
+          return new Date(b.date) - new Date(a.date); // this works
         });
-    });
-
-    var whoSentMeMailAPI = new Promise((resolve, reject) => {
-      // get chats from people who sent mail to me
-      fetchAPI("/getWhoSentMeMail?meId=" + this.state.userId)
-        .then(response => response.json())
-        .then(responseJson => {
-          for (let key in responseJson.chatSenders) {
-            chats.push(responseJson.chatSenders[key]);
-          }
-
-          resolve("Success!");
-        })
-        .catch(err => {
-          console.log(err);
-          reject("Failure");
+        this.setState({
+          recentPreviousChats: responseJson.myRecentChats,
+          isLoading_GetMyRecentChatSessions: false
         });
-    });
-
-    // Learn about Promise.all:  https://davidwalsh.name/promises
-    Promise.all([whoISentMailToAPI, whoSentMeMailAPI])
-      .then(() => {
-        let sortedChats = this.sortMostRecentChats(chats);
-
-        this.setState({ recentPreviousChats: sortedChats }, () => {
-          this.setState({ isLoading_WhoISentMailto: false });
-          this.setState({ isLoading_WhoSentMeMail: false });
-        });
-      })
-      .catch(err => {
-        console.log(err);
       });
-  };
+  }
 
   formatDate(chatDate: Date) {
     var monthNames = [
@@ -144,11 +82,6 @@ export default class MessageContactsScreen extends React.Component<{
   }
   getUserInfo = async () => {
     // when User logs in, their image is stored in Async Storage
-    /*
-    AsyncStorage.getItem("userImage").then(item => {
-      this.setState({ userPhoto: item });
-    });
-    */
 
     let userDetails = await UserSession.get();
     if (userDetails == null) return;
@@ -166,10 +99,7 @@ export default class MessageContactsScreen extends React.Component<{
   };
 
   render() {
-    if (
-      this.state.isLoading_WhoISentMailto ||
-      this.state.isLoading_WhoSentMeMail
-    ) {
+    if (this.state.isLoading_GetMyRecentChatSessions) {
       return <ActivityIndicator />;
     }
 
@@ -180,12 +110,13 @@ export default class MessageContactsScreen extends React.Component<{
       myPreviousMessages.push(
         <View key={chat.userId}>
           <PreviousMessage
+            chatId={chat.chatId}
             message={chat.chatMessage}
             recipientImage={chat.userImage}
             firstName={chat.firstName}
             lastName={chat.lastName}
             date={this.formatDate(new Date(chat.date))}
-            recipientId={chat.userId}
+            recipientId={chat.partnerId}
             recipientEmail={chat.email}
             senderImage={this.state.userImage}
             navigation={this.props.navigation}
@@ -208,7 +139,8 @@ export default class MessageContactsScreen extends React.Component<{
           title="New Chat"
           onPress={() => {
             this.props.navigation.navigate("MessageNewChatSearch", {
-              userImage: this.state.userImage
+              userImage: this.state.userImage,
+              senderId: this.state.userId
             });
           }}
         />

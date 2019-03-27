@@ -11,7 +11,7 @@ export default function ChatMessage(props: {
     <View
       style={{
         alignItems: props.role === "sender" ? "flex-start" : "flex-end",
-        padding: 10
+        padding: 15
       }}
     >
       <Image

@@ -30,7 +30,7 @@ module.exports = {
 
   createBio(req, res) {
     Bios.create(req.body, { fields: Object.keys(req.body) })
-      .then(user => res.status(201).json(user))
+      .then(bio => res.status(201).json(bio))
       .catch(error => res.status(400).json(error));
   }
 };

@@ -17,10 +17,14 @@ io.on("connection", socket => {
 
   // listen for chat event
   socket.on("chat", msgInfo => {
-	 console.log(msgInfo);
+//	 console.log(msgInfo);
 	  io.emit("chat", msgInfo);
   });
 
+// listen for typing event
+socket.on("typing", msgInfo => {
+	io.emit("typing", msgInfo);
+})
 
 });
 

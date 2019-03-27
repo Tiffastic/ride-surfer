@@ -15,7 +15,8 @@ function continueChat(
   lastName: string,
   recipientImage: any,
   email: string,
-  senderImage: any
+  senderImage: any,
+  chatId: number
 ) {
   navigation.navigate("MessageConversations", {
     recipientId: id,
@@ -23,11 +24,13 @@ function continueChat(
     recipientLastName: lastName,
     recipientImage: recipientImage,
     recipientEmail: email,
-    userImage: senderImage
+    userImage: senderImage,
+    chatId: chatId
   });
 }
 
 export default function PreviousChat(props: {
+  chatId: number;
   message: string;
   recipientImage: any;
   firstName: string;
@@ -50,7 +53,8 @@ export default function PreviousChat(props: {
           props.lastName,
           props.recipientImage,
           props.recipientEmail,
-          props.senderImage
+          props.senderImage,
+          props.chatId
         );
       }}
     >
@@ -64,7 +68,7 @@ export default function PreviousChat(props: {
           }
         />
 
-        <View>
+        <View style={{ paddingLeft: 5 }}>
           <Text>
             {props.firstName + " " + props.lastName} {"  "}
             {props.date}

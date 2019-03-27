@@ -31,11 +31,12 @@ export default class MessageConversationsScreen extends React.Component<{
   }
 
   state: any = {
-    userId: -1,
+    userId: null,
     textMessage: "",
     recentMessages: [],
     socket: null,
-    userImage: null
+    userImage: null, // the sender's image
+    senderIsTyping: false
   };
 
   getUserDetails = async () => {
@@ -53,7 +54,7 @@ export default class MessageConversationsScreen extends React.Component<{
     // retrieve recent chats from you and me saved in the database
 
     fetchAPI(
-      `/getOurMostRecentChats?meId=${
+      `/getOurChatSessionConversations?meId=${
         this.state.userId
       }&youId=${this.props.navigation.getParam("recipientId")}`
     )
@@ -90,6 +91,12 @@ export default class MessageConversationsScreen extends React.Component<{
     await this.getOurMostRecentChats();
   };
 
+  emitIsTypingMessage(textMessage: string) {
+    this.state.socket.emit("typing", {
+      userIdRecipient: this.props.navigation.getParam("recipientId"),
+      senderIsTyping: textMessage !== "" ? true : false
+    });
+  }
   submitChatMessage() {
     // after the user submits a chat message, tell the websocket and then save the chat in the database.
 
@@ -119,20 +126,23 @@ export default class MessageConversationsScreen extends React.Component<{
       });
 
       // store message into database
-      fetchAPI("/saveChat", {
+
+      fetchAPI("/saveChatSessionMessage", {
         method: "POST",
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          userIdSender: this.state.userId,
-          userIdRecipient: this.props.navigation.getParam("recipientId"),
-          message: myMessage
+          chatId: this.props.navigation.getParam("chatId"),
+          message: myMessage,
+          senderId: this.state.userId,
+          youId: this.props.navigation.getParam("recipientId")
         })
-      }).catch(error => console.log(error));
+      }).catch(error => console.log(error)); // TO DO: should tell the user that their chat didn't send
     }
   }
+
   componentDidMount() {
     // connecting to websocket -- look in bin/www
     this.state.socket = io(API_URL);
@@ -152,8 +162,15 @@ export default class MessageConversationsScreen extends React.Component<{
                 image={msgInfo.senderImage}
                 role="recipient"
               />
-            ]
+            ],
+            senderIsTyping: false
           });
+        }
+      });
+
+      this.state.socket.on("typing", (msgInfo: any) => {
+        if (msgInfo.userIdRecipient === this.state.userId) {
+          this.setState({ senderIsTyping: msgInfo.senderIsTyping });
         }
       });
     }
@@ -187,6 +204,11 @@ export default class MessageConversationsScreen extends React.Component<{
             </Text>
 
             <Text>{this.props.navigation.getParam("recipientEmail")} </Text>
+            {this.state.senderIsTyping ? (
+              <Text style={{ color: "purple" }}>...is typing</Text>
+            ) : (
+              <Text />
+            )}
           </View>
 
           <ScrollView showsVerticalScrollIndicator={false}>
@@ -196,10 +218,14 @@ export default class MessageConversationsScreen extends React.Component<{
           </ScrollView>
 
           <TextInput
+            style={{ padding: 15 }}
             placeholder="Message..."
             value={this.state.textMessage}
             onChangeText={textMessage => {
               this.setState({ textMessage });
+
+              // emit out signal that person is typing
+              this.emitIsTypingMessage(textMessage);
             }}
             onSubmitEditing={() => {
               this.submitChatMessage();

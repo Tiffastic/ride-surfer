@@ -6,7 +6,8 @@ import {
   Button,
   StyleSheet,
   ActivityIndicator,
-  KeyboardAvoidingView
+  KeyboardAvoidingView,
+  TouchableOpacity
 } from "react-native";
 
 import { fetchAPI } from "../../network/Backend";
@@ -27,11 +28,16 @@ export default class MessageContactsScreen extends React.Component<{
     recipientEmail: "",
     status: 0,
     error: "",
-    recipientImage: ""
+    recipientImage: "",
+    pressedSearch: false
   };
 
   submitChatMessage() {
-    fetchAPI("/getChatRecipientInfo?email=" + this.state.recipientEmail)
+    fetchAPI(
+      `/getChatSessionInfo?email=${
+        this.state.recipientEmail
+      }&meId=${this.props.navigation.getParam("senderId")}`
+    )
       .then(async response => {
         let responseJson = await response.json();
         if (response.status === 200) {
@@ -41,17 +47,18 @@ export default class MessageContactsScreen extends React.Component<{
             recipientLastName: responseJson.recipientLastName,
             recipientImage: responseJson.recipientImage,
             recipientEmail: this.state.recipientEmail,
+            chatId: responseJson.chatId,
             userImage: this.props.navigation.getParam("userImage")
           });
 
           this.setState({ recipientEmail: "" });
         } else {
-          this.setState({ error: responseJson.message });
+          this.setState({ error: responseJson.message, pressedSearch: false });
         }
       })
       .catch(error => {
         console.log(error);
-        this.setState({ error: error });
+        this.setState({ error: error, pressedSearch: false });
       });
   }
 
@@ -62,37 +69,49 @@ export default class MessageContactsScreen extends React.Component<{
       <View />
     );
 
+    let showSearch = this.state.pressedSearch ? (
+      <ActivityIndicator />
+    ) : (
+      <Button
+        title="Start New Chat"
+        onPress={() => {
+          // get picture and recipient's user id from backend
+          // pass that info to MessageConversationsScreen
+          this.setState({ pressedSearch: true }, () => {
+            this.submitChatMessage();
+          });
+        }}
+      />
+    );
+
     if (this.state.isLoading) {
       return <ActivityIndicator />;
     }
     return (
-      <View style={styles.container}>
-        <KeyboardAvoidingView
-          style={styles.container}
-          keyboardVerticalOffset={100}
-          behavior="padding"
-          enabled
-        >
+      <KeyboardAvoidingView
+        style={styles.container}
+        keyboardVerticalOffset={100}
+        behavior="padding"
+        enabled
+      >
+        <View style={{ alignContent: "center" }}>
           {showErr}
+
           <TextInput
+            style={{ alignSelf: "center" }}
             value={this.state.recipientEmail}
             placeholder="RideSurfer@Email.com"
             onSubmitEditing={() => {
               this.submitChatMessage();
             }}
-            onChangeText={typed => this.setState({ recipientEmail: typed })}
+            onChangeText={typed =>
+              this.setState({ recipientEmail: typed.trim() })
+            }
           />
 
-          <Button
-            title="Start New Chat"
-            onPress={() => {
-              // get picture and recipient's user id from backend
-              // pass that info to MessageConversationsScreen
-              this.submitChatMessage();
-            }}
-          />
-        </KeyboardAvoidingView>
-      </View>
+          {showSearch}
+        </View>
+      </KeyboardAvoidingView>
     );
   }
 }

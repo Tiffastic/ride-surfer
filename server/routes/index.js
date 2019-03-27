@@ -117,24 +117,22 @@ module.exports = app => {
   );
 
   app.get(
-    "/getChatRecipientInfo",
-    messagechatController.getChatPartnerInfo_ByEmail
+    "/getChatSessionInfo",
+    messagechatController.getChatSessionInfo_ByEmail
   );
 
-  app.post("/saveChat", messagechatController.saveChat);
-
-  app.get(
-    "/getOurMostRecentChats",
-    messagechatController.getOurMostRecentChats
-  );
-
-  app.get(
-    "/getWhoSentMeMail",
-    messagechatController.getMyRecentChatPartners_WhoSentMeMail
+  app.post(
+    "/saveChatSessionMessage",
+    messagechatController.saveChatSessionMessage
   );
 
   app.get(
-    "/getWhoISentMailTo",
-    messagechatController.getMyRecentChatPartners_WhoISentMailTo
+    "/getLatestChatSessionMessages",
+    messagechatController.getLatestChatSessionMessages
+  );
+
+  app.get(
+    "/getOurChatSessionConversations",
+    messagechatController.getOurChatSessionConversations
   );
 };
