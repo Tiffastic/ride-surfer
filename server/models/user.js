@@ -74,6 +74,16 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.TEXT,
         unique: true,
         allowNull: true
+      },
+      home: {
+        type: DataTypes.TEXT,
+        unique: true,
+        allowNull: true
+      },
+      work: {
+        type: DataTypes.TEXT,
+        unique: true,
+        allowNull: true
       }
     },
     {}

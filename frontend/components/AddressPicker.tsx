@@ -15,6 +15,8 @@ import Colors from "../constants/Colors";
 import HeaderButtons, { HeaderButton } from "react-navigation-header-buttons";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { fetchAPI } from "../network/Backend";
+import UserSession from "../network/UserSession";
+
 import { Permissions, Location } from "expo";
 import MapView, { Marker, Polyline } from "react-native-maps";
 import { geocodeAsync } from "expo-location";
@@ -52,7 +54,6 @@ export type Props = {
 export default class AddressPicker extends React.Component<Props, state> {
   constructor(props: any) {
     super(props);
-
     this.state = {
       isLoading: true,
       startLocationInput: "",
@@ -117,11 +118,67 @@ export default class AddressPicker extends React.Component<Props, state> {
     } else {
       this.geocodeStartLocation().then(() =>
         this.geocodeDestinationLocation().then(() =>
-          this.getDrivingRoute().then(() => this.fetchMarkerData())
+          this.getDrivingRoute().then(() => {
+            this.fetchMarkerData();
+          })
         )
       );
     }
   };
+
+  private setHomeOrWork(destinationLocationInput: string) {
+    Alert.alert(
+      "",
+      "Would you like to save this address as a home or work address?",
+      [
+        {
+          text: "No thanks",
+          onPress: () => console.log("Ask me later pressed")
+        },
+        {
+          text: "Home",
+          onPress: async () => {
+            var userDetails = await UserSession.get();
+            if (userDetails === null) return;
+
+            await fetchAPI("/users/" + userDetails.id, {
+              method: "PUT",
+              headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({
+                home: destinationLocationInput
+              })
+            }).then(response => {});
+            userDetails.home = destinationLocationInput;
+            await UserSession.set(userDetails);
+          }
+        },
+        {
+          text: "Work",
+          onPress: async () => {
+            var userDetails = await UserSession.get();
+            if (userDetails === null) return;
+
+            await fetchAPI("/users/" + userDetails.id, {
+              method: "PUT",
+              headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({
+                work: destinationLocationInput
+              })
+            }).then(response => {});
+            userDetails.work = destinationLocationInput;
+            await UserSession.set(userDetails);
+          }
+        }
+      ],
+      { cancelable: false }
+    );
+  }
 
   private geocodeStartLocation = async () => {
     if (this.state.startLocationInput !== "Current Location") {
@@ -193,6 +250,9 @@ export default class AddressPicker extends React.Component<Props, state> {
       .catch(error => {
         console.log(error);
       });
+
+    //ask if they want to save this location?
+    this.setHomeOrWork(this.state.destinationLocationInput);
   };
 
   fetchMarkerData() {
@@ -260,6 +320,18 @@ export default class AddressPicker extends React.Component<Props, state> {
     };
   }
 
+  private async HomeWorkFavPress(type: string) {
+    var userDetails = await UserSession.get();
+    if (userDetails === null) return;
+
+    if (type === "Home") {
+      this.setState({ destinationLocationInput: userDetails.home });
+    } else if (type === "Work") {
+      this.setState({ destinationLocationInput: userDetails.work });
+    }
+    return;
+  }
+
   render() {
     let region = {
       latitude: this.state.startLocation.latitude,
@@ -303,6 +375,8 @@ export default class AddressPicker extends React.Component<Props, state> {
           </HeaderButtons>
           <TextInput
             placeholder="Where to?"
+            // autoComplete= "street-address"
+            // textContentType="streetAddressLine1"
             style={styles.queryBox}
             value={this.state.destinationLocationInput}
             onChangeText={text =>
@@ -310,6 +384,8 @@ export default class AddressPicker extends React.Component<Props, state> {
             }
             onSubmitEditing={this.search}
           />
+          <Button title="Home" onPress={() => this.HomeWorkFavPress("Home")} />
+          <Button title="Work" onPress={() => this.HomeWorkFavPress("Work")} />
         </View>
         <DateTimePicker
           mode="datetime"
@@ -419,7 +495,9 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     marginLeft: 15,
     marginRight: 15,
-    fontSize: 24
+    fontSize: 24,
+    width: width / 2.3,
+    maxWidth: width / 2.3
   },
   searchResultsList: {
     marginTop: 10,
