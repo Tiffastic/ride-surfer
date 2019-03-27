@@ -46,11 +46,8 @@ export default class MessageContactsScreen extends React.Component<{
     fetchAPI("/getLatestChatSessionMessages?meId=" + this.state.userId)
       .then(response => response.json())
       .then(responseJson => {
-        responseJson.myRecentChats.sort(function(a: any, b: any) {
-          return new Date(b.date) - new Date(a.date); // this works
-        });
         this.setState({
-          recentPreviousChats: responseJson.myRecentChats,
+          recentPreviousChats: responseJson.myRecentChats.reverse(),
           isLoading_GetMyRecentChatSessions: false
         });
       });
