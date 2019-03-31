@@ -113,31 +113,31 @@ export function setDark(bool: boolean) {
         backgroundColor: "black"
       },
       wrapper: {
-        padding: 1
+        padding: 10
       },
       titleText: {
-        fontSize: 8,
+        fontSize: 48,
         fontWeight: "bold",
         color: Colors.darkShades
       },
       paragraphText: {
-        fontSize: 0
+        fontSize: 20
       },
       button: {
         backgroundColor: Colors.primary
       },
       infoText: {
-        fontSize: 4
+        fontSize: 24
       },
       textInput: {
-        fontSize: 4,
+        fontSize: 24,
         marginVertical: 10,
         color: Colors.lightShades,
         borderBottomColor: Colors.lightShades,
         borderBottomWidth: 2
       },
       buttonView: {
-        fontSize: 4,
+        fontSize: 24,
         marginVertical: 5
       },
       queryBox: {
