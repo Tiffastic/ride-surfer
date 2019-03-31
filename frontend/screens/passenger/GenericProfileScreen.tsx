@@ -9,6 +9,7 @@ import {
 } from "react-native";
 
 import { fetchAPI } from "../../network/Backend";
+import { Styles } from "../../constants/Styles";
 
 export default class GenericProfileScreen extends React.Component<{
   navigation: any;

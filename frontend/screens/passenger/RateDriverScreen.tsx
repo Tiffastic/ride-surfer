@@ -11,7 +11,7 @@ import {
   Platform
 } from "react-native";
 
-import Styles from "../../constants/Styles";
+import { Styles } from "../../constants/Styles";
 import Colors from "../../constants/Colors";
 
 import { fetchAPI } from "../../network/Backend";

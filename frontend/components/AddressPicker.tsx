@@ -438,7 +438,7 @@ export default class AddressPicker extends React.Component<Props, state> {
         <MapView
           style={{ flex: 1 }}
           provider="google"
-          region={region}
+          // region={region}
           onPress={this.onMapPress}
         >
           <Marker coordinate={this.state.startLocation} />

@@ -8,6 +8,7 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import UserSession from "../../network/UserSession";
 import { fetchAPI } from "../../network/Backend";
 import AddressPicker from "../../components/AddressPicker";
+import { Styles } from "../../constants/Styles";
 
 import DriverPickerScreen from "./DriverPickerScreen";
 import DriverDetailsScreen from "./DriverDetailsScreen";

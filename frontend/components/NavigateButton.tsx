@@ -2,7 +2,7 @@ import React from "react";
 import { Button, Linking, View } from "react-native";
 
 import Colors from "../constants/Colors";
-import Styles from "../constants/Styles";
+import { Styles } from "../constants/Styles";
 
 // https://developers.google.com/maps/documentation/urls/guide#directions-action
 

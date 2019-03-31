@@ -16,7 +16,7 @@ import Colors from "../../constants/Colors";
 import Icon from "react-native-vector-icons/FontAwesome";
 import UserSession from "../../network/UserSession";
 import { fetchAPI } from "../../network/Backend";
-import Styles from "../../constants/Styles";
+import { Styles } from "../../constants/Styles";
 import UpdateProfileScreen from "./UpdateProfileScreen";
 import { ImagePicker, Permissions, Constants } from "expo";
 

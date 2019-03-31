@@ -10,7 +10,7 @@ import {
   Platform
 } from "react-native";
 
-import Styles from "../../constants/Styles";
+import { Styles } from "../../constants/Styles";
 
 import UserSession from "../../network/UserSession";
 import { fetchAPI } from "../../network/Backend";

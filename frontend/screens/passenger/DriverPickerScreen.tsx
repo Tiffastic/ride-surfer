@@ -14,7 +14,7 @@ import {
 } from "react-native";
 import { ListRenderItem } from "react-native";
 import MapView, { Marker } from "react-native-maps";
-import Styles from "../../constants/Styles";
+import { Styles } from "../../constants/Styles";
 import { fetchAPI } from "../../network/Backend";
 import { number, string } from "prop-types";
 

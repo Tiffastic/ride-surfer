@@ -15,7 +15,7 @@ import UserSession from "../../network/UserSession";
 import Icon from "react-native-vector-icons/FontAwesome";
 
 import Colors from "../../constants/Colors";
-import Styles from "../../constants/Styles";
+import { Styles } from "../../constants/Styles";
 
 import { Constants, Permissions, Location, TaskManager } from "expo";
 import MapView, { Marker } from "react-native-maps";

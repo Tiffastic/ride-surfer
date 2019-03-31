@@ -3,6 +3,7 @@ import { Text, View, TextInput } from "react-native";
 import { Permissions, Notifications } from "expo";
 import UserSession from "../../network/UserSession";
 import { fetchAPI } from "../../network/Backend";
+import { Styles } from "../../constants/Styles";
 
 export default class PushNotificationRegisterScreen extends React.Component<{
   navigation: any;

@@ -13,7 +13,7 @@ import {
 } from "react-native";
 
 import Colors from "../../constants/Colors";
-import Styles from "../../constants/Styles";
+import { Styles } from "../../constants/Styles";
 import { fetchAPI } from "../../network/Backend";
 
 import UserSession from "../../network/UserSession";

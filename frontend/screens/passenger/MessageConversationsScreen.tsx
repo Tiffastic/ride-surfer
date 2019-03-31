@@ -10,6 +10,8 @@ import {
   ScrollView,
   ActivityIndicator
 } from "react-native";
+import Colors from "../../constants/Colors";
+import { Styles } from "../../constants/Styles";
 
 import ChatMessage from "../../components/ChatMessage";
 

@@ -29,6 +29,7 @@ import { number, string } from "prop-types";
 import { fetchAPI } from "../../network/Backend";
 import UserSession from "../../network/UserSession";
 import { State } from "react-native-gesture-handler";
+import { Styles } from "../../constants/Styles";
 
 export default class DriverDetailsScreen extends React.Component<{
   navigation: any;

@@ -20,6 +20,8 @@ import { fetchAPI } from "../../network/Backend";
 import UserSession from "../../network/UserSession";
 import MyRidesDetailsScreen from "./MyRidesDetailsScreen";
 import GenericProfileScreen from "./GenericProfileScreen";
+import { Styles } from "../../constants/Styles";
+
 const defaultPic = require("../../assets/images/default-profile.png");
 
 const IoniconsHeaderButton = (passMeFurther: any) => (

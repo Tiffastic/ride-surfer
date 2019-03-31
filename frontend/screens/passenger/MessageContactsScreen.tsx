@@ -7,7 +7,8 @@ import {
   ScrollView,
   ActivityIndicator
 } from "react-native";
-
+import { Location } from "expo";
+import { Styles } from "../../constants/Styles";
 import { fetchAPI } from "../../network/Backend";
 import UserSession from "../../network/UserSession";
 
