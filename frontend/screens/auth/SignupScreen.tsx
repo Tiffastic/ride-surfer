@@ -239,16 +239,3 @@ export default class SignupScreen extends React.Component<{ navigation: any }> {
     });
   }
 }
-
-const styles = StyleSheet.create({
-  textInput: {
-    borderColor: "#c3c3c3",
-    backgroundColor: "white",
-    borderWidth: 1,
-    marginTop: 10,
-    marginBottom: 10,
-    marginLeft: 15,
-    marginRight: 15,
-    fontSize: 36
-  }
-});

@@ -130,7 +130,7 @@ export default class MessageContactsScreen extends React.Component<{
     });
 
     return (
-      <View style={styles.container}>
+      <View style={Styles.container}>
         <View style={{ alignItems: "center" }}>
           <Text>My Surf Messages</Text>
         </View>

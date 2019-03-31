@@ -2,12 +2,7 @@ import React from "react";
 import { StyleSheet, View, Button, Text } from "react-native";
 import { createStackNavigator } from "react-navigation";
 
-import {
-  Styles,
-  setDark,
-  LightStyles,
-  DarkStyles
-} from "../../constants/Styles";
+import { Styles, setDark } from "../../constants/Styles";
 import Colors from "../../constants/Colors";
 
 import UserSession from "../../network/UserSession";
@@ -22,12 +17,7 @@ export default class AuthLandingScreen extends React.Component<
   constructor(props: AuthLandingScreenProps) {
     super(props);
     this._bootstrapAsync();
-    setDark(false);
   }
-
-  state = {
-    styles: LightStyles
-  };
 
   // Fetch the token from storage then navigate to our appropriate place
   _bootstrapAsync = async () => {
@@ -39,7 +29,7 @@ export default class AuthLandingScreen extends React.Component<
 
   render() {
     return (
-      <View style={[Styles.wrapper, this.state.styles.container]}>
+      <View style={[Styles.wrapper, Styles.container]}>
         <View style={styles.title}>
           <Text style={[Styles.titleText]}>Ride Surfer</Text>
         </View>
@@ -62,11 +52,17 @@ export default class AuthLandingScreen extends React.Component<
 
           <Button
             title="Dark Mode"
-            onPress={() => this.setState({ styles: DarkStyles })}
+            onPress={() => {
+              this.setState({});
+              setDark(true);
+            }}
           />
           <Button
             title="fart Mode"
-            onPress={() => this.setState({ styles: LightStyles })}
+            onPress={() => {
+              this.setState({});
+              setDark(false);
+            }}
           />
         </View>
       </View>

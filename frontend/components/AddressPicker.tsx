@@ -16,6 +16,7 @@ import HeaderButtons, { HeaderButton } from "react-navigation-header-buttons";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { fetchAPI } from "../network/Backend";
 import UserSession from "../network/UserSession";
+import { Styles } from "../constants/Styles";
 
 import { Permissions, Location } from "expo";
 import MapView, { Marker, Polyline } from "react-native-maps";
@@ -347,7 +348,7 @@ export default class AddressPicker extends React.Component<Props, state> {
     }
 
     return (
-      <View style={styles.container}>
+      <View style={Styles.container}>
         <View style={{ flexDirection: "row" }}>
           <HeaderButtons HeaderButtonComponent={IoniconsHeaderButton}>
             <HeaderButton
@@ -359,7 +360,7 @@ export default class AddressPicker extends React.Component<Props, state> {
           </HeaderButtons>
           <TextInput
             placeholder="Starting location?"
-            style={styles.queryBox}
+            style={Styles.queryBox}
             value={this.state.startLocationInput}
             onChangeText={text => this.setState({ startLocationInput: text })}
           />
@@ -377,7 +378,7 @@ export default class AddressPicker extends React.Component<Props, state> {
             placeholder="Where to?"
             // autoComplete= "street-address"
             // textContentType="streetAddressLine1"
-            style={styles.queryBox}
+            style={Styles.queryBox}
             value={this.state.destinationLocationInput}
             onChangeText={text =>
               this.setState({ destinationLocationInput: text })
@@ -485,7 +486,7 @@ const IoniconsHeaderButton = (passMeFurther: any) => (
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "transparent"
+    backgroundColor: "black"
   },
   queryBox: {
     borderColor: "#c3c3c3",

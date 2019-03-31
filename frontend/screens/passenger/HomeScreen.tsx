@@ -19,6 +19,7 @@ import RideInProgressScreen from "./RideInProgress";
 import PushNotificationsRegisterScreen from "../auth/PushNotificationsRegisterScreen";
 import GenericProfileScreen from "./GenericProfileScreen";
 import MessageNewChatSearchScreen from "./MessageNewChatSearch";
+import UserSettingsScreen from "../../screens/passenger/UserSettingsScreen";
 
 const IoniconsHeaderButton = (passMeFurther: any) => (
   // the `passMeFurther` variable here contains props from <Item .../> as well as <HeaderButtons ... />
@@ -190,7 +191,8 @@ export default createStackNavigator(
     RateDriver: RateDriverScreen,
     PushNotificationsRegister: PushNotificationsRegisterScreen,
     GenericProfile: GenericProfileScreen,
-    MessageNewChatSearch: MessageNewChatSearchScreen
+    MessageNewChatSearch: MessageNewChatSearchScreen,
+    UserSettings: UserSettingsScreen
   },
   {
     //StackNavigatorConfig (Changes the bar itself and not the items inside it)

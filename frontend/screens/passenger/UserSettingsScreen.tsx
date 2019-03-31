@@ -10,13 +10,13 @@ import {
   Platform
 } from "react-native";
 
-import { Styles, isDark, setDark } from "../../constants/Styles";
+import { Styles, setDark } from "../../constants/Styles";
 
 if (Platform.OS === "android") {
   var headerMode: any = null; // the default headerMode is undefined, and for iOS, undefined shows header
 }
 
-export default class UpdateProfileScreen extends React.Component<{
+export default class SettingsScreen extends React.Component<{
   navigation: any;
 }> {
   static navigationOptions = {
@@ -57,22 +57,26 @@ export default class UpdateProfileScreen extends React.Component<{
         enabled
       >
         <ScrollView style={[Styles.wrapper, Styles.container]}>
-          <Button title="Update" onPress={this.updateMyProfile.bind(this)} />
+          <Button
+            title="Update"
+            onPress={() => this.props.navigation.push("MessageContacts")}
+          />
         </ScrollView>
+        <Button
+          title="Dark Mode"
+          onPress={() => {
+            this.setState({});
+            setDark(true);
+          }}
+        />
+        <Button
+          title="fart Mode"
+          onPress={() => {
+            this.setState({});
+            setDark(false);
+          }}
+        />
       </KeyboardAvoidingView>
     );
   }
 }
-
-const styles = StyleSheet.create({
-  textInput: {
-    borderColor: "#c3c3c3",
-    backgroundColor: "white",
-    borderWidth: 1,
-    marginTop: 10,
-    marginBottom: 10,
-    marginLeft: 15,
-    marginRight: 15,
-    fontSize: 36
-  }
-});
