@@ -8,7 +8,11 @@ import {
   ActivityIndicator
 } from "react-native";
 import { Location } from "expo";
-import { Styles } from "../../constants/Styles";
+import {
+  Styles,
+  addStylesListener,
+  clearStylesListener
+} from "../../constants/Styles";
 import { fetchAPI } from "../../network/Backend";
 import UserSession from "../../network/UserSession";
 
@@ -36,7 +40,15 @@ export default class MessageContactsScreen extends React.Component<{
     userImage: "",
     recentPreviousChats: []
   };
+  componentWillMount() {
+    addStylesListener(this.onStylesChange);
+  }
 
+  componentWillUnmount() {
+    clearStylesListener(this.onStylesChange);
+  }
+
+  private onStylesChange = () => this.forceUpdate();
   bootstrap = async () => {
     await this.getUserInfo(); // IMPORTANT, NEED userId first before we can move on
 

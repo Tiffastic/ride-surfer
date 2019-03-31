@@ -16,7 +16,11 @@ import Colors from "../../constants/Colors";
 import Icon from "react-native-vector-icons/FontAwesome";
 import UserSession from "../../network/UserSession";
 import { fetchAPI } from "../../network/Backend";
-import { Styles } from "../../constants/Styles";
+import {
+  Styles,
+  addStylesListener,
+  clearStylesListener
+} from "../../constants/Styles";
 import UpdateProfileScreen from "./UpdateProfileScreen";
 import { ImagePicker, Permissions, Constants } from "expo";
 
@@ -77,6 +81,16 @@ class ProfileScreen extends React.Component<{
     super(props);
     this._bootstrapAsync();
   }
+
+  componentWillMount() {
+    addStylesListener(this.onStylesChange);
+  }
+
+  componentWillUnmount() {
+    clearStylesListener(this.onStylesChange);
+  }
+
+  private onStylesChange = () => this.forceUpdate();
 
   // Fetch the token from storage then navigate to our appropriate place
   _bootstrapAsync = async () => {
@@ -223,7 +237,7 @@ class ProfileScreen extends React.Component<{
     let round = (number: number) => Math.round(number * 10) / 10;
 
     return (
-      <View style={styles.container}>
+      <View style={Styles.container}>
         <View style={{ flexDirection: "row" }}>
           <TouchableHighlight
             style={{
