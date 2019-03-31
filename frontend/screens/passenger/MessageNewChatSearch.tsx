@@ -104,8 +104,8 @@ export default class MessageContactsScreen extends React.Component<{
             onSubmitEditing={() => {
               this.submitChatMessage();
             }}
-            onChangeText={typed =>
-              this.setState({ recipientEmail: typed.trim() })
+            onChangeText={
+              typed => this.setState({ recipientEmail: typed.trim() }) // trim the email so that there is no trailing white space
             }
           />
 

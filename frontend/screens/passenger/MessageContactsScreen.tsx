@@ -47,7 +47,7 @@ export default class MessageContactsScreen extends React.Component<{
       .then(response => response.json())
       .then(responseJson => {
         this.setState({
-          recentPreviousChats: responseJson.myRecentChats.reverse(),
+          recentPreviousChats: responseJson.myRecentChats.reverse(), // show latest message first
           isLoading_GetMyRecentChatSessions: false
         });
       });

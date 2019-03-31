@@ -7,4 +7,5 @@ export function fetchAPI(path: string, info?: RequestInit) {
   return fetch(API_URL + path, info);
 }
 
+// for the MessageChat feature
 export { API_URL };

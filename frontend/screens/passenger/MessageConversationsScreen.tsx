@@ -12,6 +12,7 @@ import {
 
 import ChatMessage from "../../components/ChatMessage";
 
+// web socket to communicate with server and server can send out signals to other phones
 const io = require("socket.io-client");
 
 import UserSession from "../../network/UserSession";

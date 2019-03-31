@@ -23,7 +23,7 @@ io.on("connection", socket => {
 
 // listen for typing event
 socket.on("typing", msgInfo => {
-	io.emit("typing", msgInfo);
+	io.emit("typing", msgInfo);  // lets other clients know that sender is typing
 })
 
 });
