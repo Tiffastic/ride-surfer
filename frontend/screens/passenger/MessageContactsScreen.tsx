@@ -40,6 +40,7 @@ export default class MessageContactsScreen extends React.Component<{
     userImage: "",
     recentPreviousChats: []
   };
+
   componentWillMount() {
     addStylesListener(this.onStylesChange);
   }
@@ -47,8 +48,8 @@ export default class MessageContactsScreen extends React.Component<{
   componentWillUnmount() {
     clearStylesListener(this.onStylesChange);
   }
-
   private onStylesChange = () => this.forceUpdate();
+
   bootstrap = async () => {
     await this.getUserInfo(); // IMPORTANT, NEED userId first before we can move on
 

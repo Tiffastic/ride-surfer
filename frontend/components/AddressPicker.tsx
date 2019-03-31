@@ -16,7 +16,11 @@ import HeaderButtons, { HeaderButton } from "react-navigation-header-buttons";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { fetchAPI } from "../network/Backend";
 import UserSession from "../network/UserSession";
-import { Styles } from "../constants/Styles";
+import {
+  Styles,
+  addStylesListener,
+  clearStylesListener
+} from "../constants/Styles";
 
 import { Permissions, Location } from "expo";
 import MapView, { Marker, Polyline } from "react-native-maps";
@@ -68,6 +72,18 @@ export default class AddressPicker extends React.Component<Props, state> {
       arrivalAt: new Date()
     };
   }
+
+  //mod block
+  componentWillMount() {
+    addStylesListener(this.onStylesChange);
+  }
+
+  componentWillUnmount() {
+    clearStylesListener(this.onStylesChange);
+  }
+
+  private onStylesChange = () => this.forceUpdate();
+  //or a hcak block above
 
   componentDidMount() {
     this.fetchCurrentLocation(position => {

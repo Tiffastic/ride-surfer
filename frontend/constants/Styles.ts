@@ -49,7 +49,15 @@ export let Styles: any = StyleSheet.create({
     maxWidth: width / 2.3
   }
 });
+let listeners = new Set<(newStyles: any) => void>();
 
+export function addStylesListener(listener: (newStyles: any) => void) {
+  listeners.add(listener);
+}
+
+export function clearStylesListener(listener: (newStyles: any) => void) {
+  listeners.delete(listener);
+}
 export function setDark(bool: boolean) {
   if (bool === false) {
     Styles = StyleSheet.create({
@@ -146,14 +154,9 @@ export function setDark(bool: boolean) {
       }
     });
   }
-}
 
-let listeners = new Set<(newStyles: any) => void>();
-
-export function addStylesListener(listener: (newStyles: any) => void) {
-  listeners.add(listener);
-}
-
-export function clearStylesListener(listener: (newStyles: any) => void) {
-  listeners.delete(listener);
+  // rerender all the components
+  for (let listener of listeners) {
+    listener(Styles);
+  }
 }
