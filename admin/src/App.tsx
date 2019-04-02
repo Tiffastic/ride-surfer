@@ -3,6 +3,7 @@ import mapboxgl from "mapbox-gl";
 
 import { fetchAPI } from "./Backend";
 import logo from "./logo.svg";
+import defaultProfile from "./default-profile.png";
 // import "./App.css";
 
 interface Page {
@@ -16,6 +17,67 @@ const pages: Page[] = [
 ];
 
 const saltLakeCenter = [40.7487805, -111.8718196].reverse() as [number, number];
+
+class ProfilePic extends React.Component<{
+  width?: number;
+  height?: number;
+  userId: number;
+}> {
+  state = {
+    userImage: null as null | string
+  };
+
+  componentWillMount() {
+    fetchAPI("/getUserImage/" + this.props.userId)
+      .then(resp => resp.json())
+      .then(json => {
+        this.setState({
+          userImage: json.userImage as string
+        });
+      });
+  }
+
+  render() {
+    return (
+      <img
+        src={
+          this.state.userImage === null ? defaultProfile : this.state.userImage
+        }
+        width={this.props.width === undefined ? 75 : this.props.width}
+        height={this.props.height === undefined ? 75 : this.props.height}
+      />
+    );
+  }
+}
+
+class UserNametag extends React.Component<{ userId: number }> {
+  state = {
+    user: null as null | any
+  };
+
+  componentWillMount() {
+    fetchAPI("/users/" + this.props.userId)
+      .then(resp => resp.json())
+      .then(json => {
+        this.setState({
+          user: json
+        });
+      });
+  }
+
+  render() {
+    if (this.state.user === null) {
+      return <span>...</span>;
+    }
+
+    return (
+      <span>
+        <ProfilePic userId={this.props.userId} width={25} height={25} />{" "}
+        {this.state.user.firstName}
+      </span>
+    );
+  }
+}
 
 class JourneyMap extends React.Component<{
   id: number;
@@ -126,8 +188,10 @@ class Journey extends React.Component<{ journey: any }, { expanded: boolean }> {
       <li key={this.props.journey.id}>
         <p>
           Id: {this.props.journey.id} -{" "}
+          <UserNametag userId={this.props.journey.userId} /> -{" "}
           {this.props.journey.isDriver ? "Driver" : "Passenger"}
         </p>
+        {this.props.journey.isDriver && false && <UserNametag userId={99999} />}
         <p>
           Created At: {new Date(this.props.journey.createdAt).toLocaleString()}
         </p>
@@ -198,6 +262,9 @@ class Users extends React.Component {
   private renderUser = (user: any) => {
     return (
       <div>
+        <p>
+          <ProfilePic userId={user.id} />
+        </p>
         <p>
           Name: {user.firstName} {user.lastName}
         </p>
