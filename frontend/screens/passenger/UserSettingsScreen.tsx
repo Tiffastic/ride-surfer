@@ -27,19 +27,7 @@ export default class SettingsScreen extends React.Component<{
     super(props);
   }
 
-  state: any = {
-    first_name: "",
-    last_name: "",
-    email: "",
-    password: "",
-    car_make: "",
-    car_model: "",
-    car_year: "",
-    car_plate: "",
-    error: "",
-    userId: 0,
-    vehicles: [] // an array of vehicles queried from the User model
-  };
+  state: any = {};
 
   updateMyProfile() {
     // update user
@@ -56,12 +44,7 @@ export default class SettingsScreen extends React.Component<{
         keyboardVerticalOffset={22}
         enabled
       >
-        <ScrollView style={[Styles.wrapper, Styles.container]}>
-          <Button
-            title="Update"
-            onPress={() => this.props.navigation.push("MessageContacts")}
-          />
-        </ScrollView>
+        <ScrollView style={[Styles.wrapper, Styles.container]} />
         <Button
           title="Dark Mode"
           onPress={() => {
