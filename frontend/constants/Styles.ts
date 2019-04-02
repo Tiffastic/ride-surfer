@@ -100,6 +100,7 @@ export function setDark(bool: boolean) {
       queryBox: {
         borderColor: "#c3c3c3",
         backgroundColor: "white",
+        color: "white",
         borderWidth: 1,
         marginTop: 10,
         marginBottom: 10,
@@ -148,6 +149,7 @@ export function setDark(bool: boolean) {
       queryBox: {
         borderColor: "#c3c3c3",
         backgroundColor: "black",
+        color: "white",
         borderWidth: 1,
         marginTop: 10,
         marginBottom: 10,

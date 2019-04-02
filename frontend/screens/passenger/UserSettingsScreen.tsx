@@ -53,7 +53,7 @@ export default class SettingsScreen extends React.Component<{
           }}
         />
         <Button
-          title="fart Mode"
+          title="Light Mode"
           onPress={() => {
             this.setState({});
             setDark(false);
