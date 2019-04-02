@@ -1,8 +1,6 @@
 import React from "react";
 import { StyleSheet, View, Button, Text } from "react-native";
 import { createStackNavigator } from "react-navigation";
-
-import { Styles, setDark } from "../../constants/Styles";
 import Colors from "../../constants/Colors";
 
 import UserSession from "../../network/UserSession";
@@ -49,21 +47,6 @@ export default class AuthLandingScreen extends React.Component<
               onPress={() => this.props.navigation.navigate("Signup")}
             />
           </View>
-
-          <Button
-            title="Dark Mode"
-            onPress={() => {
-              this.setState({});
-              setDark(true);
-            }}
-          />
-          <Button
-            title="fart Mode"
-            onPress={() => {
-              this.setState({});
-              setDark(false);
-            }}
-          />
         </View>
       </View>
     );
