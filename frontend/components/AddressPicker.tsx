@@ -452,7 +452,7 @@ export default class AddressPicker extends React.Component<Props, state> {
         <MapView
           style={{ flex: 1 }}
           provider="google"
-          // region={region}
+          region={region} //this line relates to the map = 0 error
           onPress={this.onMapPress}
         >
           <Marker coordinate={this.state.startLocation} />
