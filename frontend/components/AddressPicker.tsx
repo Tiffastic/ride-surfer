@@ -73,14 +73,13 @@ export default class AddressPicker extends React.Component<Props, state> {
     };
   }
 
-  //mod block
   componentWillMount() {
-    addStylesListener(() => this.forceUpdate());
+    addStylesListener(this.onStylesChange);
   }
   componentWillUnmount() {
-    clearStylesListener(() => this.forceUpdate());
+    clearStylesListener(this.onStylesChange);
   }
-  //or a hcak block above
+  private onStylesChange = () => this.forceUpdate();
 
   componentDidMount() {
     this.fetchCurrentLocation(position => {

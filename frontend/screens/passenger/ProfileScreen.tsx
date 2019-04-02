@@ -85,11 +85,9 @@ class ProfileScreen extends React.Component<{
   componentWillMount() {
     addStylesListener(this.onStylesChange);
   }
-
   componentWillUnmount() {
     clearStylesListener(this.onStylesChange);
   }
-
   private onStylesChange = () => this.forceUpdate();
 
   // Fetch the token from storage then navigate to our appropriate place
