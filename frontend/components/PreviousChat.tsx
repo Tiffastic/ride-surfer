@@ -6,6 +6,12 @@ import {
   TouchableHighlight,
   StyleSheet
 } from "react-native";
+import {
+  Styles,
+  addStylesListener,
+  clearStylesListener
+} from "../constants/Styles";
+
 const defaultPic = require("../assets/images/default-profile.png");
 
 function continueChat(

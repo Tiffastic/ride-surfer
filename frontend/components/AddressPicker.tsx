@@ -75,14 +75,11 @@ export default class AddressPicker extends React.Component<Props, state> {
 
   //mod block
   componentWillMount() {
-    addStylesListener(this.onStylesChange);
+    addStylesListener(() => this.forceUpdate());
   }
-
   componentWillUnmount() {
-    clearStylesListener(this.onStylesChange);
+    clearStylesListener(() => this.forceUpdate());
   }
-
-  private onStylesChange = () => this.forceUpdate();
   //or a hcak block above
 
   componentDidMount() {
@@ -499,37 +496,25 @@ const IoniconsHeaderButton = (passMeFurther: any) => (
   />
 );
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "black"
-  },
-  queryBox: {
-    borderColor: "#c3c3c3",
-    backgroundColor: "white",
-    borderWidth: 1,
-    marginTop: 10,
-    marginBottom: 10,
-    marginLeft: 15,
-    marginRight: 15,
-    fontSize: 24,
-    width: width / 2.3,
-    maxWidth: width / 2.3
-  },
-  searchResultsList: {
-    marginTop: 10,
-    marginBottom: 10,
-    backgroundColor: "white"
-  },
-  searchResultsItem: {
-    borderColor: "#c3c3c3",
-    borderBottomWidth: 1
-  },
-  searchResultsName: {
-    fontSize: 20
-  },
-  searchResultsAddress: {
-    fontSize: 20,
-    color: "grey"
-  }
-});
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     backgroundColor: "black"
+//   },
+//   searchResultsList: {
+//     marginTop: 10,
+//     marginBottom: 10,
+//     backgroundColor: "white"
+//   },
+//   searchResultsItem: {
+//     borderColor: "#c3c3c3",
+//     borderBottomWidth: 1
+//   },
+//   searchResultsName: {
+//     fontSize: 20
+//   },
+//   searchResultsAddress: {
+//     fontSize: 20,
+//     color: "grey"
+//   }
+// });

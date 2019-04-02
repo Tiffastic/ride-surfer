@@ -49,6 +49,7 @@ export let Styles: any = StyleSheet.create({
     maxWidth: width / 2.3
   }
 });
+
 let listeners = new Set<(newStyles: any) => void>();
 
 export function addStylesListener(listener: (newStyles: any) => void) {
@@ -56,9 +57,12 @@ export function addStylesListener(listener: (newStyles: any) => void) {
 }
 
 export function clearStylesListener(listener: (newStyles: any) => void) {
-  listeners.delete(listener);
+  if (!listeners.delete(listener)) {
+    throw Error("couldn't delete listener!");
+  }
 }
 export function setDark(bool: boolean) {
+  // this is the light mode
   if (bool === false) {
     Styles = StyleSheet.create({
       container: {
@@ -106,6 +110,7 @@ export function setDark(bool: boolean) {
         maxWidth: width / 2.3
       }
     });
+    //this is the dark mode
   } else {
     Styles = StyleSheet.create({
       container: {
@@ -118,7 +123,7 @@ export function setDark(bool: boolean) {
       titleText: {
         fontSize: 48,
         fontWeight: "bold",
-        color: Colors.darkShades
+        color: Colors.lightShades
       },
       paragraphText: {
         fontSize: 20
