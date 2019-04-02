@@ -1,6 +1,6 @@
 import React from "react";
 import { StyleSheet, View, Button, Text } from "react-native";
-import { createStackNavigator } from "react-navigation";
+import { Styles } from "../../constants/Styles";
 import Colors from "../../constants/Colors";
 
 import UserSession from "../../network/UserSession";
