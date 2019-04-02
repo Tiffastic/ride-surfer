@@ -91,7 +91,7 @@ export default class MessageContactsScreen extends React.Component<{
 
     this.setState({ userId: userDetails.id });
 
-    await fetchAPI("/getUserImage/" + this.state.userId)
+    fetchAPI("/getUserImage/" + this.state.userId)
       .then(response => response.json())
       .then(response => {
         this.setState({ userImage: response.userImage });
