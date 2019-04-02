@@ -12,6 +12,10 @@ const server = http.createServer(app);
 // setting up web socket / socket.io for MessageChat feature:
 const io = require('socket.io').listen(server);
 
+//https://stackoverflow.com/questions/32134623/socket-io-determine-if-a-user-is-online-or-offline
+var onlineUsers = {};
+var onlineSockets = {};
+
 io.on("connection", socket => {
 //  console.log("Socket Io: user connected");
 
@@ -19,12 +23,55 @@ io.on("connection", socket => {
   socket.on("chat", msgInfo => {
 //	 console.log(msgInfo);
 	  io.emit("chat", msgInfo);
+
+	  console.log("www message: ", msgInfo.message);
+
+	  // when emitting chat message 
+      // send whether recipient ID is in the online dictionary
+	  
+	  
+	 
+  });
+
+  // listen for is recipient offline event
+  socket.on("recipientPresence", msgInfo => {
+	   io.emit("recipientPresence", {senderId: msgInfo.userIdSender, recipientId: msgInfo.userIdRecipient, pushNotification: onlineUsers.hasOwnProperty(msgInfo.userIdRecipient)? "" : msgInfo.message , recipientOnline: onlineUsers.hasOwnProperty(msgInfo.userIdRecipient)});
   });
 
 // listen for typing event
 socket.on("typing", msgInfo => {
 	io.emit("typing", msgInfo);  // lets other clients know that sender is typing
-})
+});
+
+
+ //ps2500 lighy gray red
+
+// listen for login
+// save userId in dictionary
+
+socket.on("login", msgInfo => {
+	//console.log("login msgInfo = ", msgInfo);
+	//console.log("login, socket.id = ", socket.id);
+	//console.log("login, msgInfo.userId = ", msgInfo.userId);
+  
+  onlineUsers[msgInfo.userId] = socket.id;
+  onlineSockets[socket.id] = msgInfo.userId;
+  console.log("user id connected: ", msgInfo.userId);
+});
+
+// listen for disconnect
+// take userId out of dictionary
+
+
+socket.on("disconnect", () => {
+
+   var userId = onlineSockets[socket.id];
+   console.log("user id disconnected: ", userId);
+
+   delete onlineSockets[socket.id];
+   delete onlineUsers[userId];
+});
+
 
 });
 

@@ -38,14 +38,20 @@ export default class MessageContactsScreen extends React.Component<{
 
   bootstrap = async () => {
     await this.getUserInfo(); // IMPORTANT, NEED userId first before we can move on
-    // this.getMyRecentChats();
+
     this.getMyRecentChatSessions();
   };
 
   getMyRecentChatSessions() {
-    fetchAPI("/getLatestChatSessionMessages?meId=" + this.state.userId)
+    //fetchAPI("/getLatestChatSessionMessages?meId=" + this.state.userId)
+    fetchAPI("/getLatestChatSessionMessagesRawQuery?meId=" + this.state.userId)
       .then(response => response.json())
       .then(responseJson => {
+        /*
+        responseJson.myRecentChats.sort((a: any, b: any) => {
+          return new Date(b.date) - new Date(a.date);
+        });
+        */
         this.setState({
           recentPreviousChats: responseJson.myRecentChats, // show latest message first
           isLoading_GetMyRecentChatSessions: false

@@ -79,10 +79,14 @@ module.exports = app => {
       .catch(error => res.status(400).json(error));
   });
 
+  /*
   app.get(
     "/ridePushNotificationRequest",
     pushNotificationController.notifyDriver
   );
+  */
+
+  app.get("/pushNotificationMessage", pushNotificationController.notifyUser);
 
   app.get(
     "/usersOverallRating/:id",
@@ -132,7 +136,17 @@ module.exports = app => {
   );
 
   app.get(
+    "/getLatestChatSessionMessagesRawQuery",
+    messagechatController.getLatestChatSessionMessages_RawQuery
+  );
+
+  app.get(
     "/getOurChatSessionConversations",
     messagechatController.getOurChatSessionConversations
+  );
+
+  app.post(
+    "/sendChatMessageByRecipientId",
+    messagechatController.sendChatMessage_ByRecipientId
   );
 };

@@ -151,6 +151,31 @@ module.exports = {
       .catch(error => res.status(400).json(error));
   },
 
+  getLatestChatSessionMessages_RawQuery(req, res) {
+    if (!req.query.meId.match(/^\d+$/)) {
+      // to prevent SQL inject attack, check that req.query.meId is a number and nothing else
+      res.status(400).json({ message: "id is not a valid integer" });
+    }
+    model.sequelize
+      .query(
+        'SELECT "recipientId" AS "partnerId", "firstName", "lastName", email, image AS "userImage", MyChats."chatId", message AS "chatMessage", Chats."createdAt" AS date' +
+          ' FROM public."MyChats" AS MyChats' +
+          ' INNER JOIN public."Users" AS Users ON MyChats."recipientId" = Users.id' +
+          ' INNER JOIN public."Bios" AS Bios ON MyChats."recipientId" = Bios."userId"' +
+          ' INNER JOIN (SELECT rank() OVER (PARTITION BY "chatId" ORDER BY "createdAt" DESC) AS rank, "chatId", "createdAt", message FROM public."Chats") AS Chats ON MyChats."chatId" = Chats."chatId"' +
+          ' WHERE MyChats."senderId" = ' +
+          req.query.meId +
+          " AND Chats.rank = 1" +
+          " ORDER By date DESC;",
+
+        { type: model.sequelize.QueryTypes.SELECT }
+      )
+      .then(array => {
+        res.status(200).json({ myRecentChats: array });
+      })
+      .catch(err => res.status(400).json({ message: err }));
+  },
+
   getLatestChatSessionMessages(req, res) {
     // from MyChats
     // where senderId = meId
@@ -167,7 +192,8 @@ module.exports = {
       where: {
         senderId: req.query.meId
       },
-      limit: 10 // limit the number of previous chats
+      limit: 10, // limit the number of previous chats
+      order: [["createdAt", "DESC"]] // get the latest previous chats
     }).then(array => {
       let myRecentChats = [];
       var countRows = 0;
@@ -260,7 +286,8 @@ module.exports = {
       Chats.findAll({
         where: {
           chatId: row.chatId
-        }
+        },
+        order: [["createdAt", "ASC"]]
       })
         .then(array => {
           ourChats = [];
@@ -268,7 +295,8 @@ module.exports = {
           array.forEach(item => {
             ourChats.push({
               userIdSender: item.senderId,
-              message: item.message
+              message: item.message,
+              date: item.createdAt
             });
             /*
             userIdSender: item.userIdSender,
@@ -281,5 +309,86 @@ module.exports = {
         })
         .catch(err => res.status(400).json({ message: err }));
     });
+  },
+
+  sendChatMessage_ByRecipientId(req, res) {
+    var chatIdPromise = new Promise((resolve, reject) => {
+      let chatId;
+
+      MyChats.findOne({
+        where: {
+          senderId: req.body.meId,
+          recipientId: req.body.youId
+        }
+      })
+        .then(result => {
+          if (!result) {
+            // This might be a brand new chat between you and me, so we might need to insert in a row into MyChats
+            // in order to insert in a row, we need a chatId
+
+            model.sequelize
+              .query(
+                'SELECT "chatId" FROM public."Chats" ORDER BY "chatId" DESC LIMIT 1',
+                { type: model.sequelize.QueryTypes.SELECT }
+              )
+              .then(function(data) {
+                if (data.length === 0) {
+                  // nothing in the chats table yet
+                  chatId = 1;
+                } else {
+                  // console.log("DATA TO GET HIGHEST CHAT ID ", data);
+                  chatId = data[0].chatId + 1;
+                }
+              })
+              .then(() => {
+                // create a new chat between you and me
+                MyChats.create({
+                  senderId: req.body.meId,
+                  recipientId: req.body.youId,
+                  chatId: chatId
+                }).then(() => {
+                  if (req.body.meId !== req.body.youId) {
+                    MyChats.create({
+                      senderId: req.body.youId,
+                      recipientId: req.body.meId,
+                      chatId: chatId
+                    }).then(() => {
+                      resolve({ chatId: chatId });
+                    });
+                  } else {
+                    resolve({ chatId: chatId });
+                  }
+                });
+              });
+          } else {
+            chatId = result.chatId;
+            resolve({ chatId: chatId });
+          }
+        })
+        .catch(err => {
+          console.log(err);
+          reject(err);
+        });
+    });
+
+    Promise.all([chatIdPromise])
+      .then(resolve => {
+        Chats.create({
+          chatId: resolve[0].chatId,
+          message: req.body.message,
+          senderId: req.body.meId
+        }).catch(error => {
+          console.log("ERROR CREATING CHAT ", error);
+        });
+
+        res.status(200).json({
+          chatSent: req.body.message,
+          senderId: req.body.meId,
+          recipientId: req.body.youId,
+          chatId: resolve[0].chatId
+        });
+      })
+
+      .catch(error => res.status(400).json({ message: error }));
   }
 };

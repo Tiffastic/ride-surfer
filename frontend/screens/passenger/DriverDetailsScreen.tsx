@@ -216,14 +216,29 @@ export default class DriverDetailsScreen extends React.Component<{
   onRequest = async () => {
     this.setState({ isLoading: true });
 
-    //Send a push notification to driver that passenger wants a ride
-    fetchAPI(
-      "/ridePushNotificationRequest?driverId=" +
-        this.state.driverJourney.User.id
-    );
-
     let userDetails = await UserSession.get();
     if (userDetails == null) return;
+
+    //Send a push notification to driver that passenger wants a ride
+    fetchAPI(
+      `/pushNotificationMessage?userId=${
+        this.state.driverJourney.User.id
+      }&message=${"May I surf a ride?"}`
+    );
+
+    // send message to driver asking for a ride
+    fetchAPI("/sendChatMessageByRecipientId", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        message: "May I surf a ride?",
+        meId: userDetails.id,
+        youId: this.state.driverJourney.User.id
+      })
+    }).catch(error => console.log(error)); // TO DO: should tell the user that their chat didn't send
 
     fetchAPI("/journeys/", {
       method: "POST",

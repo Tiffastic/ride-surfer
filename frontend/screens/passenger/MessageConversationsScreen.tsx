@@ -7,7 +7,8 @@ import {
   TextInput,
   Button,
   KeyboardAvoidingView,
-  ScrollView
+  ScrollView,
+  ActivityIndicator
 } from "react-native";
 
 import ChatMessage from "../../components/ChatMessage";
@@ -28,6 +29,7 @@ export default class MessageConversationsScreen extends React.Component<{
 
   constructor(props: any) {
     super(props);
+
     this.bootstrap();
   }
 
@@ -37,7 +39,10 @@ export default class MessageConversationsScreen extends React.Component<{
     recentMessages: [],
     socket: null,
     userImage: null, // the sender's image
-    senderIsTyping: false
+    senderIsTyping: false,
+    isLoadingConversations: true,
+
+    currentChatDate: ""
   };
 
   getUserDetails = async () => {
@@ -64,8 +69,9 @@ export default class MessageConversationsScreen extends React.Component<{
         var chats = responseJson.ourChats;
 
         var chatMessages: any = [];
+        var messageDate = "";
 
-        chats.forEach((item: any) => {
+        chats.map((item: any, i: number) => {
           chatMessages.push(
             <ChatMessage
               message={item.message}
@@ -77,19 +83,81 @@ export default class MessageConversationsScreen extends React.Component<{
               role={
                 item.userIdSender === this.state.userId ? "sender" : "recipient"
               }
+              date={this.formatDate(new Date(item.date))}
+              dateHasChanged={
+                messageDate === ""
+                  ? true
+                  : this.formatDate(new Date(messageDate)) !==
+                    this.formatDate(new Date(item.date))
+              }
             />
           );
+
+          if (messageDate === "") {
+            messageDate = item.date;
+          } else if (
+            this.formatDate(new Date(messageDate)) !==
+            this.formatDate(new Date(item.date))
+          ) {
+            messageDate = item.date;
+          }
         });
 
-        this.setState({ recentMessages: chatMessages });
+        this.setState({
+          recentMessages: chatMessages,
+          currentChatDate: this.formatDate(new Date(messageDate))
+        });
       });
   };
 
+  // IMPORTANT: assuming that input string is a formatted date string
+  currentDateChanged(messageDate: string) {
+    if (this.state.currentChatDate !== messageDate) {
+      this.setState({
+        currentChatDate: messageDate
+      });
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  formatDate(chatDate: Date) {
+    var monthNames = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec"
+    ];
+
+    return (
+      monthNames[chatDate.getMonth()] +
+      " " +
+      chatDate.getDate() +
+      ", " +
+      chatDate.getFullYear()
+    );
+  }
+
   bootstrap = async () => {
     await this.getUserDetails();
+
     await this.getUserPhoto();
 
     await this.getOurMostRecentChats();
+
+    // connecting to websocket -- look in bin/www
+    this.state.socket = io(API_URL);
+    this.state.socket.emit("login", { userId: this.state.userId });
+    this.setState({ isLoadingConversations: false });
   };
 
   emitIsTypingMessage(textMessage: string) {
@@ -103,16 +171,26 @@ export default class MessageConversationsScreen extends React.Component<{
 
     if (this.state.socket !== null && this.state.textMessage !== "") {
       var myMessage = this.state.textMessage;
+      var today = new Date();
+      var todayFormatDate = this.formatDate(today);
 
       // sending "chat" signal to websocket, thus announcing to websocket that we've sent a message
+
       this.state.socket.emit("chat", {
         userIdSender: this.state.userId,
         senderImage: this.state.userImage,
         userIdRecipient: this.props.navigation.getParam("recipientId"),
-        message: myMessage
+        message: myMessage,
+        date: todayFormatDate
       });
 
+      this.state.socket.emit("recipientPresence", {
+        userIdSender: this.state.userId,
+        userIdRecipient: this.props.navigation.getParam("recipientId"),
+        message: myMessage
+      });
       // add our recent chat to the list of chats viewable on the screen
+
       this.setState({
         recentMessages: [
           ...this.state.recentMessages,
@@ -120,6 +198,8 @@ export default class MessageConversationsScreen extends React.Component<{
             message={this.state.textMessage}
             image={this.state.userImage}
             role="sender"
+            date={todayFormatDate}
+            dateHasChanged={this.currentDateChanged(todayFormatDate)}
           />
         ],
 
@@ -146,13 +226,16 @@ export default class MessageConversationsScreen extends React.Component<{
 
   componentDidMount() {
     // connecting to websocket -- look in bin/www
+
     this.state.socket = io(API_URL);
 
     if (this.state.socket !== null) {
+      this.state.socket.emit("login", { userId: this.state.userId });
       // listening for websocket to emit "chat" signal  -- look in bin/wwww
       this.state.socket.on("chat", (msgInfo: any) => {
         // we've received a chat message from some phone
         if (msgInfo.userIdRecipient === this.state.userId) {
+          var formatMsgDate = this.formatDate(new Date(msgInfo.date));
           // if we are the recipient of this message, then display this message to us
           // this may not be the most secure way, but it works for now
           this.setState({
@@ -162,6 +245,8 @@ export default class MessageConversationsScreen extends React.Component<{
                 message={msgInfo.message}
                 image={msgInfo.senderImage}
                 role="recipient"
+                date={formatMsgDate}
+                dateHasChanged={this.currentDateChanged(formatMsgDate)}
               />
             ],
             senderIsTyping: false
@@ -174,10 +259,29 @@ export default class MessageConversationsScreen extends React.Component<{
           this.setState({ senderIsTyping: msgInfo.senderIsTyping });
         }
       });
+
+      this.state.socket.on("recipientPresence", (msgInfo: any) => {
+        // if I am the sender of the chat message
+        if (msgInfo.senderId === this.state.userId) {
+          // check to see if my recipient is online
+          if (!msgInfo.recipientOnline) {
+            // send push notification to offline recipient
+            //Send a push notification offline recipient
+            fetchAPI(
+              `/pushNotificationMessage?userId=${msgInfo.recipientId}&message=${
+                msgInfo.pushNotification
+              }`
+            );
+          }
+        }
+      });
     }
   }
   render() {
-    //console.log(this.props.navigation.getParam("recipientImage"));
+    if (this.state.isLoadingConversations) {
+      return <ActivityIndicator />;
+    }
+
     return (
       <View style={styles.container}>
         <KeyboardAvoidingView
@@ -213,9 +317,7 @@ export default class MessageConversationsScreen extends React.Component<{
           </View>
 
           <ScrollView showsVerticalScrollIndicator={false}>
-            {this.state.recentMessages.map((msgInfo: any, i: number) => (
-              <View key={i}>{msgInfo}</View>
-            ))}
+            {this.state.recentMessages}
           </ScrollView>
 
           <TextInput
