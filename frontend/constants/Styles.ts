@@ -69,6 +69,11 @@ export function setDark(bool: boolean) {
         flex: 1,
         backgroundColor: "white"
       },
+      containerProfile: {
+        flex: 1,
+        backgroundColor: "white",
+        alignItems: "center"
+      },
       wrapper: {
         padding: 10
       },
@@ -117,6 +122,11 @@ export function setDark(bool: boolean) {
       container: {
         flex: 1,
         backgroundColor: "black"
+      },
+      containerProfile: {
+        flex: 1,
+        backgroundColor: "black",
+        alignItems: "center"
       },
       wrapper: {
         padding: 10

@@ -237,7 +237,7 @@ class ProfileScreen extends React.Component<{
     let round = (number: number) => Math.round(number * 10) / 10;
 
     return (
-      <View style={Styles.container}>
+      <View style={Styles.containerProfile}>
         <View style={{ flexDirection: "row" }}>
           <TouchableHighlight
             style={{
