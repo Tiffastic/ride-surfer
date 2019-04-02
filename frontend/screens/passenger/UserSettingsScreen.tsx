@@ -29,13 +29,6 @@ export default class SettingsScreen extends React.Component<{
 
   state: any = {};
 
-  updateMyProfile() {
-    // update user
-    setDark(true);
-    console.log("setDark ran i guess...");
-    this.state.error = "fluf";
-  }
-
   render() {
     return (
       <KeyboardAvoidingView
