@@ -219,19 +219,27 @@ class App extends React.Component {
 
   render() {
     return (
-      <div className="App">
+      <div className="container">
         <header className="App-header">
-          <nav>
+          <h1>Ride Surfer - Admin Dashboard</h1>
+          <ul className="nav nav-tabs">
             {pages.map(page => (
-              <a key={page.name} onClick={e => this.setState({ page: page })}>
-                {page.name}
-              </a>
+              <li className="nav-item" key={page.name}>
+                <a
+                  className={
+                    "nav-link " + (page === this.state.page ? " active" : "")
+                  }
+                  onClick={e => this.setState({ page: page })}
+                >
+                  {page.name}
+                </a>
+              </li>
             ))}
-          </nav>
-          <main>
-            {this.state.page ? this.state.page.render() : "No page selected"}
-          </main>
+          </ul>
         </header>
+        <main>
+          {this.state.page ? this.state.page.render() : "No page selected"}
+        </main>
       </div>
     );
   }
