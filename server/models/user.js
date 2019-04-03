@@ -84,6 +84,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.TEXT,
         unique: true,
         allowNull: true
+      },
+      facebookLink: {
+        type: DataTypes.TEXT,
+        allowNull: true
       }
     },
     {}
