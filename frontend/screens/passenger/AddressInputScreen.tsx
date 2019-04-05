@@ -112,60 +112,6 @@ export default class AddressInputScreen extends React.Component<Props, state> {
     }
   };
 
-  private setHomeOrWork(destinationLocationInput: string) {
-    Alert.alert(
-      "",
-      "Would you like to save this address as a home or work address?",
-      [
-        {
-          text: "No thanks",
-          onPress: () => console.log("Ask me later pressed")
-        },
-        {
-          text: "Home",
-          onPress: async () => {
-            var userDetails = await UserSession.get();
-            if (userDetails === null) return;
-
-            await fetchAPI("/users/" + userDetails.id, {
-              method: "PUT",
-              headers: {
-                Accept: "application/json",
-                "Content-Type": "application/json"
-              },
-              body: JSON.stringify({
-                home: destinationLocationInput
-              })
-            }).then(response => {});
-            userDetails.home = destinationLocationInput;
-            await UserSession.set(userDetails);
-          }
-        },
-        {
-          text: "Work",
-          onPress: async () => {
-            var userDetails = await UserSession.get();
-            if (userDetails === null) return;
-
-            await fetchAPI("/users/" + userDetails.id, {
-              method: "PUT",
-              headers: {
-                Accept: "application/json",
-                "Content-Type": "application/json"
-              },
-              body: JSON.stringify({
-                work: destinationLocationInput
-              })
-            }).then(response => {});
-            userDetails.work = destinationLocationInput;
-            await UserSession.set(userDetails);
-          }
-        }
-      ],
-      { cancelable: false }
-    );
-  }
-
   private geocodeLocationInput = async (searchString: string) => {
     if (searchString !== "Current Location") {
       await Location.geocodeAsync(searchString).then(response => {
