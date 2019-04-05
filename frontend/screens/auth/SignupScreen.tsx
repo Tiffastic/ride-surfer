@@ -62,8 +62,7 @@ export default class SignupScreen extends React.Component<{ navigation: any }> {
           autoFocus={true}
           onChangeText={data => this.setState({ first_name: data.trim() })}
           onEndEditing={() => {
-            this.setState({ first_name: this.state.first_name.trim() });
-            this.forceUpdate();
+            // this.setState({ first_name: this.state.first_name.trim() });
             console.log("is this even working?", this.state.first_name);
           }}
         />
@@ -71,7 +70,7 @@ export default class SignupScreen extends React.Component<{ navigation: any }> {
         <TextInput
           style={Styles.textInput}
           placeholder="Last Name*"
-          onChangeText={data => this.setState({ last_name: data })}
+          onChangeText={data => this.setState({ last_name: data.trim() })}
         />
 
         <TextInput
@@ -79,14 +78,14 @@ export default class SignupScreen extends React.Component<{ navigation: any }> {
           placeholder="Email*"
           keyboardType="email-address"
           autoCapitalize="none"
-          onChangeText={data => this.setState({ email: data })}
+          onChangeText={data => this.setState({ email: data.trim() })}
         />
 
         <TextInput
           style={Styles.textInput}
           placeholder="Password*"
           secureTextEntry={true}
-          onChangeText={data => this.setState({ password: data })}
+          onChangeText={data => this.setState({ password: data.trim() })}
         />
         <Button
           color={Colors.primary}
@@ -130,10 +129,10 @@ export default class SignupScreen extends React.Component<{ navigation: any }> {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        firstName: this.state.first_name.trim(),
-        lastName: this.state.last_name.trim(),
-        email: this.state.email.trim(),
-        password: this.state.password.trim()
+        firstName: this.state.first_name,
+        lastName: this.state.last_name,
+        email: this.state.email,
+        password: this.state.password
       })
     })
       .then(response => {
