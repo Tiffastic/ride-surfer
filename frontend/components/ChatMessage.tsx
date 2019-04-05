@@ -16,7 +16,7 @@ export default function ChatMessage(props: {
       </View>
       <View
         style={{
-          alignItems: props.role === "sender" ? "flex-start" : "flex-end",
+          alignItems: props.role === "sender" ? "flex-end" : "flex-start",
           paddingLeft: 20,
           paddingRight: 20
         }}
@@ -25,6 +25,7 @@ export default function ChatMessage(props: {
           style={{ height: 50, width: 50, borderRadius: 50 }}
           source={props.image === null ? defaultPic : { uri: props.image }}
         />
+
         <Text style={{ color: props.role === "sender" ? "blue" : "green" }}>
           {props.message}
         </Text>

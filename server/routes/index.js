@@ -44,6 +44,7 @@ module.exports = app => {
 
   app.get("/vehicles/", vehiclesController.retrieveAll);
   app.get("/vehicles/:id", vehiclesController.retrieve);
+  app.get("/getUserVehicles", vehiclesController.getUserVehicles);
   app.post("/vehicles", vehiclesController.create);
   app.put("/vehicles/:id", vehiclesController.update);
   app.delete("/vehicles/:id", vehiclesController.destroy);

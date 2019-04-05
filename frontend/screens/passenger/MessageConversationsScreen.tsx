@@ -8,7 +8,10 @@ import {
   Button,
   KeyboardAvoidingView,
   ScrollView,
-  ActivityIndicator
+  ActivityIndicator,
+  Keyboard,
+  TouchableHighlight,
+  TouchableOpacity
 } from "react-native";
 import Colors from "../../constants/Colors";
 import { Styles } from "../../constants/Styles";
@@ -44,7 +47,10 @@ export default class MessageConversationsScreen extends React.Component<{
     senderIsTyping: false,
     isLoadingConversations: true,
 
-    currentChatDate: ""
+    currentChatDate: "",
+
+    keyboardAppeared: false,
+    keyboardDisappeared: true
   };
 
   getUserDetails = async () => {
@@ -226,7 +232,36 @@ export default class MessageConversationsScreen extends React.Component<{
     }
   }
 
+  componentWillUnmount() {
+    // this works
+    this.keyboardDidShowListener.remove();
+    this.keyboardDidHideListener.remove();
+  }
+
+  _keyboardDidShow = () => {
+    this.setState({ keyboardAppeared: true, keyboardDisappeared: false });
+  };
+
+  _keyboardDidHide = () => {
+    this.setState({ keyboardAppeared: false, keyboardDisappeared: true });
+  };
+
   componentDidMount() {
+    //https://facebook.github.io/react-native/docs/keyboard
+    //keyboard events
+
+    // this works
+    this.keyboardDidShowListener = Keyboard.addListener(
+      "keyboardDidShow",
+      this._keyboardDidShow
+    );
+
+    // this works
+    this.keyboardDidHideListener = Keyboard.addListener(
+      "keyboardDidHide",
+      this._keyboardDidHide
+    );
+
     // connecting to websocket -- look in bin/www
 
     this.state.socket = io(API_URL);
@@ -279,10 +314,30 @@ export default class MessageConversationsScreen extends React.Component<{
       });
     }
   }
+
+  private viewProfile = () => {
+    var userId = this.props.navigation.getParam("recipientId");
+    fetchAPI("/getUserVehicles?userId=" + userId)
+      .then(response => response.json())
+      .then(responseJson => {
+        this.props.navigation.push("GenericProfile", {
+          user: {
+            id: userId,
+            firstName: this.props.navigation.getParam("recipientFirstName"),
+            lastName: this.props.navigation.getParam("recipientLastName"),
+            vehicles: responseJson.vehicles
+          }
+        });
+      });
+  };
+
   render() {
     if (this.state.isLoadingConversations) {
       return <ActivityIndicator />;
     }
+
+    // scroll to bottom of messages
+    // https://stackoverflow.com/questions/29310553/is-it-possible-to-keep-a-scrollview-scrolled-to-the-bottom
 
     return (
       <View style={styles.container}>
@@ -293,17 +348,19 @@ export default class MessageConversationsScreen extends React.Component<{
           enabled
         >
           <View style={{ alignItems: "center" }}>
-            <Image
-              style={{ height: 150, width: 150, borderRadius: 75 }}
-              resizeMode="center"
-              source={
-                this.props.navigation.getParam("recipientImage") !== null
-                  ? {
-                      uri: this.props.navigation.getParam("recipientImage")
-                    }
-                  : defaultPic
-              }
-            />
+            <TouchableHighlight onPress={this.viewProfile}>
+              <Image
+                style={{ height: 150, width: 150, borderRadius: 75 }}
+                resizeMode="center"
+                source={
+                  this.props.navigation.getParam("recipientImage") !== null
+                    ? {
+                        uri: this.props.navigation.getParam("recipientImage")
+                      }
+                    : defaultPic
+                }
+              />
+            </TouchableHighlight>
 
             <Text>
               {this.props.navigation.getParam("recipientFirstName")}{" "}
@@ -318,9 +375,29 @@ export default class MessageConversationsScreen extends React.Component<{
             )}
           </View>
 
-          <ScrollView showsVerticalScrollIndicator={false}>
-            {this.state.recentMessages}
-          </ScrollView>
+          {this.state.keyboardAppeared && (
+            <ScrollView
+              showsVerticalScrollIndicator={false}
+              ref={ref => (this.scrollView = ref)}
+              onContentSizeChange={(contentWidth, contentHeight) => {
+                this.scrollView.scrollToEnd({ animated: false });
+              }}
+            >
+              {this.state.recentMessages}
+            </ScrollView>
+          )}
+
+          {this.state.keyboardDisappeared && (
+            <ScrollView
+              showsVerticalScrollIndicator={false}
+              ref={ref => (this.scrollView = ref)}
+              onContentSizeChange={(contentWidth, contentHeight) => {
+                this.scrollView.scrollToEnd({ animated: true, duration: 5000 });
+              }}
+            >
+              {this.state.recentMessages}
+            </ScrollView>
+          )}
 
           <TextInput
             style={{ padding: 15 }}
