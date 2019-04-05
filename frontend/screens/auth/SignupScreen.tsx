@@ -60,16 +60,15 @@ export default class SignupScreen extends React.Component<{ navigation: any }> {
           style={Styles.textInput}
           placeholder="First Name*"
           autoFocus={true}
+          returnKeyType="done"
           onChangeText={data => this.setState({ first_name: data.trim() })}
-          onEndEditing={() => {
-            // this.setState({ first_name: this.state.first_name.trim() });
-            console.log("is this even working?", this.state.first_name);
-          }}
+          onEndEditing={() => {}}
         />
 
         <TextInput
           style={Styles.textInput}
           placeholder="Last Name*"
+          returnKeyType="done"
           onChangeText={data => this.setState({ last_name: data.trim() })}
         />
 
@@ -78,12 +77,14 @@ export default class SignupScreen extends React.Component<{ navigation: any }> {
           placeholder="Email*"
           keyboardType="email-address"
           autoCapitalize="none"
+          returnKeyType="done"
           onChangeText={data => this.setState({ email: data.trim() })}
         />
 
         <TextInput
           style={Styles.textInput}
           placeholder="Password*"
+          returnKeyType="done"
           secureTextEntry={true}
           onChangeText={data => this.setState({ password: data.trim() })}
         />
