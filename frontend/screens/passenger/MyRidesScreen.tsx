@@ -57,7 +57,8 @@ class MyRidesScreen extends React.Component<{
     drivingRides: [],
     passengerRides: [],
     driversPhotos: {},
-    passengersPhotos: {}
+    passengersPhotos: {},
+    meId: 0
   };
 
   fetchRides = async () => {
@@ -68,6 +69,10 @@ class MyRidesScreen extends React.Component<{
       this.getMyPassengersPhotos()
     ]);
     this.setState({ isLoading: false });
+
+    let userDetails = await UserSession.get();
+    if (userDetails == null) return;
+    this.setState({ meId: userDetails.id });
   };
 
   fetchDrivingRides = async () => {
@@ -152,7 +157,8 @@ class MyRidesScreen extends React.Component<{
         ridePartner: ridePartner,
         ridePartnerJourney: ridePartnerJourney,
         type: type,
-        rideDetails: item
+        rideDetails: item,
+        meId: this.state.meId
       });
     });
   };

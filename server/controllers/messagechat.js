@@ -390,5 +390,22 @@ module.exports = {
       })
 
       .catch(error => res.status(400).json({ message: error }));
+  },
+
+  getOurChatId(req, res) {
+    MyChats.findOne({
+      where: {
+        senderId: req.query.meId,
+        recipientId: req.query.youId
+      }
+    })
+      .then(result => {
+        if (!result) {
+          res.status(404).json({ message: "No such chats between you and me" });
+        } else {
+          res.status(200).json({ chatId: result.chatId });
+        }
+      })
+      .catch(err => res.status(400).json({ error: err }));
   }
 };

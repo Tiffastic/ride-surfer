@@ -6,7 +6,8 @@ import {
   Text,
   FlatList,
   TouchableHighlight,
-  Button
+  Button,
+  AsyncStorage
 } from "react-native";
 import Colors from "../../constants/Colors";
 import { Styles } from "../../constants/Styles";
@@ -35,6 +36,7 @@ export default class MyRidesDetailsScreen extends React.Component<{
   constructor(props: any) {
     super(props);
     this.getUserPhoto();
+    this.getMyPhoto();
   }
 
   getUserPhoto = async () => {
@@ -48,13 +50,22 @@ export default class MyRidesDetailsScreen extends React.Component<{
       });
   };
 
+  getMyPhoto = async () => {
+    fetchAPI("/getUserImage/" + this.state.meId)
+      .then(response => response.json())
+      .then(responseJson => this.setState({ myPhoto: responseJson.userImage }))
+      .catch(error => console.log(error));
+  };
+
   state = {
     destination: this.props.navigation.getParam("destination"),
     ridePartner: this.props.navigation.getParam("ridePartner"),
     rideDetails: this.props.navigation.getParam("rideDetails"),
     ridePartnerJourney: this.props.navigation.getParam("ridePartnerJourney"),
     type: this.props.navigation.getParam("type"),
-    userPhoto: null
+    userPhoto: null,
+    meId: this.props.navigation.getParam("meId"),
+    myPhoto: null
   };
 
   startRide = () => {
@@ -106,6 +117,33 @@ export default class MyRidesDetailsScreen extends React.Component<{
             </TouchableHighlight>
           )}
         />
+        <Button
+          title="Message"
+          onPress={() => {
+            fetchAPI(
+              `/getOurChatId?meId=${this.state.meId}&youId=${
+                this.state.ridePartner.id
+              }`
+            )
+              .then(response => response.json())
+
+              .then(responseJson => {
+                this.props.navigation.navigate("MessageConversations", {
+                  recipientImage:
+                    this.state.userPhoto !== null ? this.state.userPhoto : null,
+                  recipientId: this.state.ridePartner.id,
+                  recipientFirstName: this.state.ridePartner.firstName,
+                  recipientLastName: this.state.ridePartner.lastName,
+                  recipientEmail: this.state.ridePartner.email,
+                  chatId: responseJson.chatId,
+                  userImage: this.state.myPhoto
+                });
+
+                // this.setState({ mePhoto: result });
+              });
+          }}
+        />
+
         <Button
           title="Start"
           onPress={this.startRide}

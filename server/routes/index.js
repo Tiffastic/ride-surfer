@@ -146,6 +146,8 @@ module.exports = app => {
     messagechatController.getOurChatSessionConversations
   );
 
+  app.get("/getOurChatId", messagechatController.getOurChatId);
+
   app.post(
     "/sendChatMessageByRecipientId",
     messagechatController.sendChatMessage_ByRecipientId
