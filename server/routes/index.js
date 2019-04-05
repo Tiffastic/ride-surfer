@@ -148,6 +148,11 @@ module.exports = app => {
 
   app.get("/getOurChatId", messagechatController.getOurChatId);
 
+  app.get(
+    "/getChatIdAndRecipientPhoto",
+    messagechatController.getChatIdAndRecipientPhoto
+  );
+
   app.post(
     "/sendChatMessageByRecipientId",
     messagechatController.sendChatMessage_ByRecipientId

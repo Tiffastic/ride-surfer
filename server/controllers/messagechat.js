@@ -407,5 +407,49 @@ module.exports = {
         }
       })
       .catch(err => res.status(400).json({ error: err }));
+  },
+
+  getChatIdAndRecipientPhoto(req, res) {
+    let hasChatId = false;
+    let hasImage = false;
+    let chatId;
+    let image;
+
+    MyChats.findOne({
+      where: {
+        senderId: req.query.meId,
+        recipientId: req.query.youId
+      }
+    })
+      .then(result => {
+        if (!result) {
+          res.status(404).json({ message: "No such chats between you and me" });
+        } else {
+          // res.status(200).json({ chatId: result.chatId });
+          chatId = result.chatId;
+          hasChatId = true;
+
+          if (hasChatId && hasImage) {
+            res.status(200).json({ chatId: chatId, userImage: image });
+          }
+        }
+      })
+
+      .catch(err => res.status(400).json({ error: err }));
+
+    Bios.findOne({ where: { userId: req.query.youId } })
+      .then(row => {
+        if (!row) {
+          res.status(404).json({ message: "No bio of you" });
+        } else {
+          image = row.image;
+          hasImage = true;
+
+          if (hasChatId && hasImage) {
+            res.status(200).json({ chatId: chatId, userImage: image });
+          }
+        }
+      })
+      .catch(err => res.status(400).json({ error: err }));
   }
 };
