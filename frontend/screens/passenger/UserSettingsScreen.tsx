@@ -9,25 +9,38 @@ import {
   Button,
   Platform,
   ActivityIndicator,
-  TouchableHighlight
+  TouchableHighlight,
+  Switch
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 
-import { Styles, setDark } from "../../constants/Styles";
+import { Styles, setDark, getDark } from "../../constants/Styles";
 import Colors from "../../constants/Colors";
 import UserSession from "../../network/UserSession";
 import RSIcon from "../../components/RSIcon";
 import { fetchAPI } from "../../network/Backend";
 
-if (Platform.OS === "android") {
-  var headerMode: any = null; // the default headerMode is undefined, and for iOS, undefined shows header
-}
-
 export default class SettingsScreen extends React.Component<{
   navigation: any;
 }> {
-  static navigationOptions = {
-    header: headerMode
+  static navigationOptions = ({ navigation }: any) => {
+    return {
+      headerTitle: "Settings",
+      headerRight: <View />,
+      headerLeft: (
+        <RSIcon
+          title="Drawer"
+          name="ios-menu"
+          onPress={() => navigation.openDrawer()}
+        />
+      ),
+      headerTitleStyle: {
+        textAlign: "center",
+        fontWeight: "bold",
+        height: 45,
+        flex: 1
+      }
+    };
   };
 
   constructor(props: any) {
@@ -52,7 +65,8 @@ export default class SettingsScreen extends React.Component<{
 
   state = {
     home: null as null | string, // null when loading, empty string if unset
-    work: null as null | string
+    work: null as null | string,
+    isDarkMode: getDark()
   };
 
   private saveUserValue = async (data: any) => {
@@ -117,6 +131,7 @@ export default class SettingsScreen extends React.Component<{
         keyboardVerticalOffset={22}
         enabled
       >
+        <Text style={{ fontSize: 24 }}>Locations</Text>
         <PresetEditor
           icon="ios-home"
           name="Home"
@@ -129,21 +144,18 @@ export default class SettingsScreen extends React.Component<{
           value={this.state.work}
           onEdit={this.editWork}
         />
-        <ScrollView style={[Styles.wrapper, Styles.container]} />
-        <Button
-          title="Dark Mode"
-          onPress={() => {
-            this.setState({});
-            setDark(true);
-          }}
-        />
-        <Button
-          title="Light Mode"
-          onPress={() => {
-            this.setState({});
-            setDark(false);
-          }}
-        />
+        <Text style={{ fontSize: 24 }}>Experimental</Text>
+        <View style={{ flexDirection: "row" }}>
+          <Switch
+            trackColor={{ true: Colors.primary, false: Colors.lightShades }}
+            value={this.state.isDarkMode}
+            onValueChange={value => {
+              setDark(value);
+              this.setState({ isDarkMode: value });
+            }}
+          />
+          <Text>Dark Mode</Text>
+        </View>
       </KeyboardAvoidingView>
     );
   }

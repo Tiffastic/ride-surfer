@@ -137,3 +137,7 @@ export function setDark(bool: boolean) {
     listener(Styles);
   }
 }
+
+export function getDark() {
+  return Styles === DarkStyle;
+}

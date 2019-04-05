@@ -7,8 +7,9 @@ import Colors from "../constants/Colors";
 export default function RSIcon(props: {
   name: string;
   title: string;
-  size: number;
+  size?: number;
   color?: string;
+  onPress?: () => void;
 }) {
   return (
     <HeaderButtons HeaderButtonComponent={IoniconsHeaderButton(props.color)}>
@@ -16,6 +17,7 @@ export default function RSIcon(props: {
         title={props.title}
         iconName={props.name}
         iconSize={props.size}
+        onPress={props.onPress}
       />
     </HeaderButtons>
   );
