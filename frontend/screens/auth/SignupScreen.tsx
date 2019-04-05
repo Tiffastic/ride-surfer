@@ -59,7 +59,13 @@ export default class SignupScreen extends React.Component<{ navigation: any }> {
         <TextInput
           style={Styles.textInput}
           placeholder="First Name*"
-          onChangeText={data => this.setState({ first_name: data })}
+          autoFocus={true}
+          onChangeText={data => this.setState({ first_name: data.trim() })}
+          onEndEditing={() => {
+            this.setState({ first_name: this.state.first_name.trim() });
+            this.forceUpdate();
+            console.log("is this even working?", this.state.first_name);
+          }}
         />
 
         <TextInput
@@ -71,6 +77,8 @@ export default class SignupScreen extends React.Component<{ navigation: any }> {
         <TextInput
           style={Styles.textInput}
           placeholder="Email*"
+          keyboardType="email-address"
+          autoCapitalize="none"
           onChangeText={data => this.setState({ email: data })}
         />
 
@@ -122,10 +130,10 @@ export default class SignupScreen extends React.Component<{ navigation: any }> {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        firstName: this.state.first_name,
-        lastName: this.state.last_name,
-        email: this.state.email,
-        password: this.state.password
+        firstName: this.state.first_name.trim(),
+        lastName: this.state.last_name.trim(),
+        email: this.state.email.trim(),
+        password: this.state.password.trim()
       })
     })
       .then(response => {
