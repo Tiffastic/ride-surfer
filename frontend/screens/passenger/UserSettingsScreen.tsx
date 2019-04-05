@@ -87,6 +87,7 @@ export default class SettingsScreen extends React.Component<{
 
   private editHome = () => {
     this.props.navigation.push("AddressInput", {
+      title: "Set Home",
       withWorkHome: false,
       onConfirm: async (location: string, locationCoords: any) => {
         this.setState({
@@ -106,6 +107,7 @@ export default class SettingsScreen extends React.Component<{
 
   private editWork = () => {
     this.props.navigation.push("AddressInput", {
+      title: "Set Work",
       withWorkHome: false,
       onConfirm: async (location: string, locationCoords: any) => {
         this.setState({

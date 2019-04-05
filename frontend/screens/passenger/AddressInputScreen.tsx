@@ -68,6 +68,19 @@ export default class AddressInputScreen extends React.Component<Props, state> {
     };
   }
 
+  static navigationOptions = ({ navigation }: any) => {
+    return {
+      headerTitle: navigation.getParam("title"),
+      headerRight: <View />,
+      headerTitleStyle: {
+        textAlign: "center",
+        fontWeight: "bold",
+        // height: 45,
+        flex: 1
+      }
+    };
+  };
+
   onConfirm = this.props.navigation.getParam("onConfirm");
   withCurrentLocation = this.props.navigation.getParam(
     "withCurrentLocation",

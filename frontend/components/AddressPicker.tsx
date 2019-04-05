@@ -226,6 +226,7 @@ export default class AddressPicker extends React.Component<Props, state> {
             placeholder="Starting location?"
             onFocus={() =>
               this.props.navigation.push("AddressInput", {
+                title: "Starting Location",
                 onConfirm: (
                   location: string,
                   locationCoords: { latitude: number; longitude: number }
@@ -250,6 +251,7 @@ export default class AddressPicker extends React.Component<Props, state> {
             // textContentType="streetAddressLine1"
             onFocus={() =>
               this.props.navigation.push("AddressInput", {
+                title: "Destination",
                 withCurrentLocation: false, // who would ever want to go to their current location?
                 onConfirm: (
                   location: string,
