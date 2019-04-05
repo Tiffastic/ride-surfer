@@ -322,13 +322,6 @@ class ProfileScreen extends React.Component<{
         </View>
 
         <Button
-          title="Register For Push Notification"
-          onPress={() =>
-            this.props.navigation.navigate("PushNotificationsRegister")
-          }
-        />
-
-        <Button
           title="Log Out"
           onPress={this._logOut}
           color={Colors.darkAccent}
