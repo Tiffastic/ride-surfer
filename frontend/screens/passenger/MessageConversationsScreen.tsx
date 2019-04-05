@@ -315,6 +315,7 @@ export default class MessageConversationsScreen extends React.Component<{
     }
   }
 
+  // allow sender to view recipient's profile page
   private viewProfile = () => {
     var userId = this.props.navigation.getParam("recipientId");
     fetchAPI("/getUserVehicles?userId=" + userId)
