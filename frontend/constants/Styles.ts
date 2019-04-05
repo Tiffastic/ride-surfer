@@ -46,13 +46,14 @@ let LightStyle: any = StyleSheet.create({
     backgroundColor: "white",
     color: "black",
     borderWidth: 1,
-    marginTop: 10,
-    marginBottom: 10,
+    marginTop: 5,
+    marginBottom: 5,
     marginLeft: 15,
     marginRight: 15,
+    padding: 5,
     fontSize: 24,
-    width: width / 2.3,
-    maxWidth: width / 2.3
+    width: width - 30
+    // maxWidth: width / 2.3
   }
 });
 
@@ -99,13 +100,14 @@ let DarkStyle: any = StyleSheet.create({
     backgroundColor: "black",
     color: "white",
     borderWidth: 1,
-    marginTop: 10,
-    marginBottom: 10,
+    marginTop: 5,
+    marginBottom: 5,
     marginLeft: 15,
     marginRight: 15,
+    padding: 5,
     fontSize: 24,
-    width: width / 2.3,
-    maxWidth: width / 2.3
+    width: width - 30
+    // maxWidth: width / 2.3
   }
 });
 
