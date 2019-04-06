@@ -220,11 +220,12 @@ export default class DriverDetailsScreen extends React.Component<{
     let userDetails = await UserSession.get();
     if (userDetails == null) return;
 
+    var message = "From " + userDetails.firstName + ": May I surf a ride?";
     //Send a push notification to driver that passenger wants a ride
     fetchAPI(
       `/pushNotificationMessage?userId=${
         this.state.driverJourney.User.id
-      }&message=${"May I surf a ride?"}`
+      }&message=${message}`
     );
 
     // send message to driver asking for a ride
