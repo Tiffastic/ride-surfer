@@ -34,8 +34,6 @@ export default class MessageConversationsScreen extends React.Component<{
 
   constructor(props: any) {
     super(props);
-
-    this.bootstrap();
   }
 
   state: any = {
@@ -50,7 +48,8 @@ export default class MessageConversationsScreen extends React.Component<{
     currentChatDate: "",
 
     keyboardAppeared: false,
-    keyboardDisappeared: true
+    keyboardDisappeared: true,
+    chatMessageNum: 0
   };
 
   getUserDetails = async () => {
@@ -82,6 +81,7 @@ export default class MessageConversationsScreen extends React.Component<{
         chats.map((item: any, i: number) => {
           chatMessages.push(
             <ChatMessage
+              key={i.toString()}
               message={item.message}
               image={
                 item.userIdSender === this.state.userId
@@ -92,7 +92,7 @@ export default class MessageConversationsScreen extends React.Component<{
                 item.userIdSender === this.state.userId ? "sender" : "recipient"
               }
               date={this.formatDate(new Date(item.date))}
-              dateHasChanged={
+              showDate={
                 messageDate === ""
                   ? true
                   : this.formatDate(new Date(messageDate)) !==
@@ -113,7 +113,8 @@ export default class MessageConversationsScreen extends React.Component<{
 
         this.setState({
           recentMessages: chatMessages,
-          currentChatDate: this.formatDate(new Date(messageDate))
+          currentChatDate: this.formatDate(new Date(messageDate)),
+          chatMessageNum: chatMessages.length
         });
       });
   };
@@ -199,19 +200,22 @@ export default class MessageConversationsScreen extends React.Component<{
       });
       // add our recent chat to the list of chats viewable on the screen
 
+      var messageNum = this.state.chatMessageNum + 1;
       this.setState({
         recentMessages: [
           ...this.state.recentMessages,
           <ChatMessage
+            key={messageNum.toString()}
             message={this.state.textMessage}
             image={this.state.userImage}
             role="sender"
             date={todayFormatDate}
-            dateHasChanged={this.currentDateChanged(todayFormatDate)}
+            showDate={this.currentDateChanged(todayFormatDate)}
           />
         ],
 
-        textMessage: ""
+        textMessage: "",
+        chatMessageNum: messageNum
       });
 
       // store message into database
@@ -249,6 +253,7 @@ export default class MessageConversationsScreen extends React.Component<{
   componentDidMount() {
     //https://facebook.github.io/react-native/docs/keyboard
     //keyboard events
+    this.bootstrap();
 
     // this works
     this.keyboardDidShowListener = Keyboard.addListener(
@@ -275,18 +280,21 @@ export default class MessageConversationsScreen extends React.Component<{
           var formatMsgDate = this.formatDate(new Date(msgInfo.date));
           // if we are the recipient of this message, then display this message to us
           // this may not be the most secure way, but it works for now
+          var messageNum = this.state.chatMessageNum + 1;
           this.setState({
             recentMessages: [
               ...this.state.recentMessages,
               <ChatMessage
+                key={messageNum.toString()}
                 message={msgInfo.message}
                 image={msgInfo.senderImage}
                 role="recipient"
                 date={formatMsgDate}
-                dateHasChanged={this.currentDateChanged(formatMsgDate)}
+                showDate={this.currentDateChanged(formatMsgDate)}
               />
             ],
-            senderIsTyping: false
+            senderIsTyping: false,
+            chatMessageNum: messageNum
           });
         }
       });
@@ -348,27 +356,30 @@ export default class MessageConversationsScreen extends React.Component<{
           behavior="padding"
           enabled
         >
-          <View style={{ alignItems: "center" }}>
+          <View>
             <TouchableHighlight onPress={this.viewProfile}>
-              <Image
-                style={{ height: 150, width: 150, borderRadius: 75 }}
-                resizeMode="center"
-                source={
-                  this.props.navigation.getParam("recipientImage") !== null
-                    ? {
-                        uri: this.props.navigation.getParam("recipientImage")
-                      }
-                    : defaultPic
-                }
-              />
+              <View style={{ alignItems: "center" }}>
+                <Image
+                  style={{ height: 150, width: 150, borderRadius: 150 }}
+                  source={
+                    this.props.navigation.getParam("recipientImage") !== null
+                      ? {
+                          uri: this.props.navigation.getParam("recipientImage")
+                        }
+                      : defaultPic
+                  }
+                />
+
+                <Text style={{ color: "blue" }}>
+                  {this.props.navigation.getParam("recipientFirstName")}{" "}
+                  {this.props.navigation.getParam("recipientLastName")}{" "}
+                </Text>
+
+                <Text style={{ color: "blue" }}>
+                  {this.props.navigation.getParam("recipientEmail")}{" "}
+                </Text>
+              </View>
             </TouchableHighlight>
-
-            <Text>
-              {this.props.navigation.getParam("recipientFirstName")}{" "}
-              {this.props.navigation.getParam("recipientLastName")}{" "}
-            </Text>
-
-            <Text>{this.props.navigation.getParam("recipientEmail")} </Text>
             {this.state.senderIsTyping ? (
               <Text style={{ color: "purple" }}>...is typing</Text>
             ) : (

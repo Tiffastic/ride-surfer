@@ -46,6 +46,7 @@ export default function PreviousChat(props: {
   recipientEmail: string;
   senderImage: any;
   navigation: any;
+  messageColor: string;
 }) {
   return (
     <TouchableHighlight
@@ -76,11 +77,15 @@ export default function PreviousChat(props: {
 
         <View style={{ paddingLeft: 5 }}>
           <Text>
-            {props.firstName + " " + props.lastName} {"  "}
+            <Text style={{ fontWeight: "bold" }}>
+              {props.firstName + " " + props.lastName} {"  "}
+            </Text>
             {props.date}
           </Text>
 
-          <Text>{props.message}</Text>
+          <Text style={{ color: props.messageColor, fontStyle: "italic" }}>
+            {props.message}
+          </Text>
         </View>
       </View>
     </TouchableHighlight>

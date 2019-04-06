@@ -30,8 +30,6 @@ export default class MessageContactsScreen extends React.Component<{
 
     this.getMyRecentChatSessions.bind(this);
     this.bootstrap.bind(this);
-
-    this.bootstrap();
   }
 
   state: any = {
@@ -48,7 +46,12 @@ export default class MessageContactsScreen extends React.Component<{
   componentWillUnmount() {
     clearStylesListener(this.onStylesChange);
   }
+
   private onStylesChange = () => this.forceUpdate();
+
+  componentDidMount() {
+    this.bootstrap();
+  }
 
   bootstrap = async () => {
     await this.getUserInfo(); // IMPORTANT, NEED userId first before we can move on
@@ -123,9 +126,9 @@ export default class MessageContactsScreen extends React.Component<{
     // create an array of previous chat messages
     var myPreviousMessages: any = [];
 
-    this.state.recentPreviousChats.map((chat: any) => {
+    this.state.recentPreviousChats.map((chat: any, i: number) => {
       myPreviousMessages.push(
-        <View key={chat.userId}>
+        <View key={i.toString()}>
           <PreviousMessage
             chatId={chat.chatId}
             message={chat.chatMessage}
@@ -137,6 +140,9 @@ export default class MessageContactsScreen extends React.Component<{
             recipientEmail={chat.email}
             senderImage={this.state.userImage}
             navigation={this.props.navigation}
+            messageColor={
+              chat.senderId == this.state.userId ? "rgb(208, 85, 88)" : "green"
+            }
           />
         </View>
       );
@@ -145,7 +151,7 @@ export default class MessageContactsScreen extends React.Component<{
     return (
       <View style={Styles.container}>
         <View style={{ alignItems: "center" }}>
-          <Text>My Surf Messages</Text>
+          <Text style={{ fontStyle: "italic" }}>My Surf Messages</Text>
         </View>
 
         <ScrollView showsVerticalScrollIndicator={false}>

@@ -158,11 +158,11 @@ module.exports = {
     }
     model.sequelize
       .query(
-        'SELECT "recipientId" AS "partnerId", "firstName", "lastName", email, image AS "userImage", MyChats."chatId", message AS "chatMessage", Chats."createdAt" AS date' +
+        'SELECT "recipientId" AS "partnerId", "firstName", "lastName", email, image AS "userImage", MyChats."chatId", message AS "chatMessage", Chats."createdAt" AS date, Chats."senderId"' +
           ' FROM public."MyChats" AS MyChats' +
           ' INNER JOIN public."Users" AS Users ON MyChats."recipientId" = Users.id' +
           ' INNER JOIN public."Bios" AS Bios ON MyChats."recipientId" = Bios."userId"' +
-          ' INNER JOIN (SELECT rank() OVER (PARTITION BY "chatId" ORDER BY "createdAt" DESC) AS rank, "chatId", "createdAt", message FROM public."Chats") AS Chats ON MyChats."chatId" = Chats."chatId"' +
+          ' INNER JOIN (SELECT rank() OVER (PARTITION BY "chatId" ORDER BY "createdAt" DESC) AS rank, "chatId", "createdAt", message, "senderId" FROM public."Chats") AS Chats ON MyChats."chatId" = Chats."chatId"' +
           ' WHERE MyChats."senderId" = ' +
           req.query.meId +
           " AND Chats.rank = 1" +
