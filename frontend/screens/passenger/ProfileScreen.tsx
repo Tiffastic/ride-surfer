@@ -79,6 +79,9 @@ class ProfileScreen extends React.Component<{
 
   constructor(props: any) {
     super(props);
+  }
+
+  componentDidMount() {
     this._bootstrapAsync();
   }
 
@@ -190,6 +193,69 @@ class ProfileScreen extends React.Component<{
       });
   };
 
+  takeUserPhoto = async () => {
+    const { status: cameraPerm } = await Permissions.askAsync(
+      Permissions.CAMERA
+    );
+
+    const { status: cameraRollPerm } = await Permissions.askAsync(
+      Permissions.CAMERA_ROLL
+    );
+
+    // only if user allows permission to camera AND camera roll
+
+    if (cameraPerm === "granted" && cameraRollPerm === "granted") {
+      let photo = await ImagePicker.launchCameraAsync({
+        allowsEditing: true,
+        aspect: [2, 2],
+        base64: true // there is a base64 property in ImagePicker, so I don't know why this is underlined red.  But it works.
+      });
+
+      this.savePhotoInDatabase(photo);
+    }
+  };
+
+  uploadUserPhoto = async () => {
+    // get permission from user to access their mobile photos
+    const { status: cameraRollPerm } = await Permissions.askAsync(
+      Permissions.CAMERA_ROLL
+    );
+
+    // if user gives permission, then pull up the user's photo gallery and store that photo's uri in the state
+    if (cameraRollPerm === "granted") {
+      let photo = await ImagePicker.launchImageLibraryAsync({
+        allowsEditing: true,
+        aspect: [2, 2],
+        mediaTypes: "Images",
+        base64: true // there is a base64 property in ImagePicker, so I don't know why this is underlined red.  But it works.
+      });
+
+      this.savePhotoInDatabase(photo);
+    } // end of in permission granted if statement
+  };
+
+  savePhotoInDatabase = async (photo: any) => {
+    if (!photo.cancelled) {
+      var imageData = "data:image/jpeg;base64," + photo.base64;
+
+      AsyncStorage.setItem("userImage", imageData); // save user image in async storage
+
+      this.setState({
+        userPhoto: imageData
+      });
+
+      // send photo to server
+      await fetchAPI("/updateBios/" + this.state.user.id, {
+        method: "PUT",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ image: imageData })
+      });
+    }
+  };
+  /*
   uploadUserPhoto = async () => {
     // get permission from user to access their mobile photos
     const { status: cameraRollPerm } = await Permissions.askAsync(
@@ -229,6 +295,7 @@ class ProfileScreen extends React.Component<{
     } // end of in permission granted if statement
   };
 
+  */
   render() {
     let name = this.state.user.firstName + " " + this.state.user.lastName;
 
@@ -322,10 +389,10 @@ class ProfileScreen extends React.Component<{
         </View>
 
         <Button
-          title="Register For Push Notification"
-          onPress={() =>
-            this.props.navigation.navigate("PushNotificationsRegister")
-          }
+          title="Take picture"
+          onPress={() => {
+            this.takeUserPhoto();
+          }}
         />
 
         <Button
