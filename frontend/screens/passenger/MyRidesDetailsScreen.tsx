@@ -51,14 +51,36 @@ export default class MyRidesDetailsScreen extends React.Component<{
       });
   };
 
-  /*
-  getMyPhoto = async () => {
-    fetchAPI("/getUserImage/" + this.state.meId)
-      .then(response => response.json())
-      .then(responseJson => this.setState({ myPhoto: responseJson.userImage }))
-      .catch(error => console.log(error));
-  };
-  */
+  startChatMessage() {
+    this.setState({ chatMessagePressed: true }, () => {
+      fetchAPI(
+        `/getChatIdAndRecipientPhoto?meId=${this.state.meId}&youId=${
+          this.state.ridePartner.id
+        }`
+      )
+        .then(response => response.json())
+
+        .then(responseJson => {
+          this.props.navigation.navigate("MessageConversations", {
+            recipientImage:
+              this.state.userPhoto !== null ? this.state.userPhoto : null,
+            recipientId: this.state.ridePartner.id,
+            recipientFirstName: this.state.ridePartner.firstName,
+            recipientLastName: this.state.ridePartner.lastName,
+            recipientEmail: this.state.ridePartner.email,
+            chatId: responseJson.chatId,
+            userImage: responseJson.userImage
+          });
+
+          // this.setState({ mePhoto: result });
+        })
+        .then(() => this.setState({ chatMessagePressed: false }))
+        .catch(err => {
+          alert("cannot send message: " + err);
+          this.setState({ chatMessagePressed: false });
+        });
+    });
+  }
 
   state = {
     destination: this.props.navigation.getParam("destination"),
@@ -122,43 +144,21 @@ export default class MyRidesDetailsScreen extends React.Component<{
           )}
         />
 
-        {this.state.chatMessagePressed && <ActivityIndicator />}
+        {this.state.chatMessagePressed && (
+          <View style={{ marginLeft: 10, marginRight: 10, marginBottom: 10 }}>
+            <ActivityIndicator />
+          </View>
+        )}
         {!this.state.chatMessagePressed && (
-          <Button
-            title="Message"
-            onPress={() => {
-              this.setState({ chatMessagePressed: true }, () => {
-                fetchAPI(
-                  `/getChatIdAndRecipientPhoto?meId=${this.state.meId}&youId=${
-                    this.state.ridePartner.id
-                  }`
-                )
-                  .then(response => response.json())
-
-                  .then(responseJson => {
-                    this.props.navigation.navigate("MessageConversations", {
-                      recipientImage:
-                        this.state.userPhoto !== null
-                          ? this.state.userPhoto
-                          : null,
-                      recipientId: this.state.ridePartner.id,
-                      recipientFirstName: this.state.ridePartner.firstName,
-                      recipientLastName: this.state.ridePartner.lastName,
-                      recipientEmail: this.state.ridePartner.email,
-                      chatId: responseJson.chatId,
-                      userImage: responseJson.userImage
-                    });
-
-                    // this.setState({ mePhoto: result });
-                  })
-                  .then(() => this.setState({ chatMessagePressed: false }))
-                  .catch(err => {
-                    alert("cannot send message: " + err);
-                    this.setState({ chatMessagePressed: false });
-                  });
-              });
-            }}
-          />
+          <View style={{ marginLeft: 10, marginRight: 10, marginBottom: 10 }}>
+            <Button
+              title="Message"
+              color="rgb(36, 167, 217)"
+              onPress={() => {
+                this.startChatMessage();
+              }}
+            />
+          </View>
         )}
 
         <Button
