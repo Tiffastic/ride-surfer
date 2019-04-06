@@ -404,7 +404,7 @@ export default class MessageConversationsScreen extends React.Component<{
               showsVerticalScrollIndicator={false}
               ref={ref => (this.scrollView = ref)}
               onContentSizeChange={(contentWidth, contentHeight) => {
-                this.scrollView.scrollToEnd({ animated: true, duration: 5000 });
+                this.scrollView.scrollToEnd({ animated: false });
               }}
             >
               {this.state.recentMessages}
@@ -428,6 +428,7 @@ export default class MessageConversationsScreen extends React.Component<{
 
           <Button
             title="Send"
+            color="rgb(36, 167, 217)"
             onPress={() => {
               this.submitChatMessage();
             }}
