@@ -142,38 +142,6 @@ export default class MessageContactsScreen extends React.Component<{
   }
 
   render() {
-    /*
-    if (this.state.isLoading_GetMyRecentChatSessions) {
-      return <ActivityIndicator />;
-    }
-*/
-    // create an array of previous chat messages
-
-    /*
-    var myPreviousMessages: any = [];
-
-    this.state.recentPreviousChats.map((chat: any, i: number) => {
-      myPreviousMessages.push(
-        <View key={i.toString()}>
-          <PreviousMessage
-            chatId={chat.chatId}
-            message={chat.chatMessage}
-            recipientImage={chat.userImage}
-            firstName={chat.firstName}
-            lastName={chat.lastName}
-            date={this.formatDate(new Date(chat.date))}
-            recipientId={chat.partnerId}
-            recipientEmail={chat.email}
-            senderImage={this.state.userImage}
-            navigation={this.props.navigation}
-            messageColor={
-              chat.senderId == this.state.userId ? "rgb(208, 85, 88)" : "green"
-            }
-          />
-        </View>
-      );
-    });
-*/
     return (
       <View style={Styles.container}>
         <View style={{ alignItems: "center" }}>
