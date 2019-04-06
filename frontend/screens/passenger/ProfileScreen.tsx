@@ -255,47 +255,7 @@ class ProfileScreen extends React.Component<{
       });
     }
   };
-  /*
-  uploadUserPhoto = async () => {
-    // get permission from user to access their mobile photos
-    const { status: cameraRollPerm } = await Permissions.askAsync(
-      Permissions.CAMERA_ROLL
-    );
 
-    // if user gives permission, then pull up the user's photo gallery and store that photo's uri in the state
-    if (cameraRollPerm === "granted") {
-      let result = await ImagePicker.launchImageLibraryAsync({
-        allowsEditing: true,
-        aspect: [2, 2],
-        mediaTypes: "Images",
-        base64: true // there is a base64 property in ImagePicker, so I don't know why this is underlined red.  But it works.
-      });
-
-      if (!result.cancelled) {
-        // this.setState({ userPhoto: result.uri });
-        var imageData = "data:image/jpeg;base64," + result.base64;
-        this.setState({
-          userPhoto: imageData
-        });
-
-        // store user picture in Async Storage
-        AsyncStorage.setItem("userImage", imageData);
-
-        // send photo to server
-
-        fetchAPI("/updateBios/" + this.state.user.id, {
-          method: "PUT",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ image: imageData })
-        });
-      }
-    } // end of in permission granted if statement
-  };
-
-  */
   render() {
     let name = this.state.user.firstName + " " + this.state.user.lastName;
 
