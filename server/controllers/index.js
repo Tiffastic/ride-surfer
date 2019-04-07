@@ -8,6 +8,7 @@ const calculateRatings = require("./calculateRatings");
 const bios = require("./bios");
 const journeyRidesPhotos = require("./journeyRidePhotos");
 const messagechats = require("./messagechat");
+const forgotPassword = require("./forgotPassword");
 
 module.exports = {
   users,
@@ -19,5 +20,6 @@ module.exports = {
   calculateRatings,
   bios,
   journeyRidesPhotos,
-  messagechats
+  messagechats,
+  forgotPassword
 };

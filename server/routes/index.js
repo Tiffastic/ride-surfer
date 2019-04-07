@@ -9,6 +9,7 @@ const calculateRatingsController = require("../controllers").calculateRatings;
 const biosController = require("../controllers").bios;
 const journeyRidesPhotosController = require("../controllers")
   .journeyRidesPhotos;
+const forgotPasswordController = require("../controllers").forgotPassword;
 
 const messagechatController = require("../controllers").messagechats;
 
@@ -159,5 +160,15 @@ module.exports = app => {
   app.post(
     "/sendChatMessageByRecipientId",
     messagechatController.sendChatMessage_ByRecipientId
+  );
+
+  app.get(
+    "/sendPasswordResetLink",
+    forgotPasswordController.sendPasswordResetLink
+  );
+
+  app.get(
+    "/verifiedResetPasswordLink",
+    forgotPasswordController.verifiedResetPasswordLink
   );
 };

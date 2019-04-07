@@ -79,12 +79,23 @@ export default class LoginScreen extends React.Component<{ navigation: any }> {
               />
             </View>
           ) : (
-            <View style={Styles.buttonView}>
-              <Button
-                color={Colors.primary}
-                title="Login"
-                onPress={this._logIn}
-              />
+            <View>
+              <View style={Styles.buttonView}>
+                <Button
+                  color={Colors.primary}
+                  title="Login"
+                  onPress={this._logIn}
+                />
+              </View>
+
+              <Text
+                style={{ color: "blue", textAlign: "left" }}
+                onPress={() => {
+                  this.props.navigation.navigate("ForgotPassword");
+                }}
+              >
+                Forgot password
+              </Text>
             </View>
           )}
         </View>
