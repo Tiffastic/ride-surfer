@@ -20,7 +20,6 @@ module.exports = {
 
     // check to see that email exists in the Users table:
     User.findOne({ where: { email: userEmail } }).then(result => {
-      console.log("SEND PASSWORD RESET LINK: ', result");
       if (!result) {
         res.status(404).json({ message: "Email not found" });
       } else {
@@ -36,8 +35,6 @@ module.exports = {
           );
         }
 
-        console.log("AUTO-GENERATED PASSWORD: ", randomPassword);
-
         // store the randomly generated password and email in the ForgottenPasswords table
 
         // if the user has reset the password once already but never clicked on the verify link sent to their email
@@ -46,7 +43,6 @@ module.exports = {
         })
           .then(result => {
             if (result) {
-              console.log("EMAIL ALREADY IN FORGOTTEN PASSWORDS TABLE");
               result.destroy();
             }
           })
@@ -59,15 +55,10 @@ module.exports = {
           password: randomPassword
         })
           .then(result => {
-            console.log("FORGOTTEN PASSWORD CREATED Result ", result);
-
             // email the user a reset password link to verify that they want to reset their password.
             // if they don't click this link, then their old password still works.
 
             var resetLink = `${hostURL}/verifiedResetPasswordLink?email=${userEmail}&resetPassword=${randomPassword}`;
-
-            console.log("RESET LINK: ", resetLink);
-            // req.query.url + /endpoint?email=""&resetpassword=""
 
             var transporter = nodemailer.createTransport({
               service: "outlook",
@@ -110,9 +101,6 @@ module.exports = {
 
     const resetPassword = req.query.resetPassword;
     const userEmail = req.query.email;
-
-    console.log("VERIFIED EMAIL: ", userEmail);
-    console.log("RESET PASSWORD = ", resetPassword);
 
     ForgottenPasswords.findOne({
       where: {
