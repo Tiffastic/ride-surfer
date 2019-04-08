@@ -202,24 +202,6 @@ export default class RideInProgress extends React.Component<{
             title="Finish"
             onPress={() => {
               // record ride-sharing miles for both passengers and drivers
-
-              /*
-              console.log(
-                "RIDE IN PROGRESS FINISHED: ",
-                this.state.rideDetails
-              );
-              */
-
-              // Ride finish, so mark it as finished in the RideSharingMiles table
-              console.log(
-                "ride details driver journey id = ",
-                this.state.rideDetails.driverJourneyId
-              );
-              console.log(
-                "ride details passenger journey id = ",
-                this.state.rideDetails.passengerJourneyId
-              );
-              console.log("me id = ", this.state.myId);
               fetchAPI(
                 `/finishRideSharingMiles?meId=${
                   this.state.myId
@@ -233,7 +215,7 @@ export default class RideInProgress extends React.Component<{
                 if (response.status === 200) {
                   var responseJson = await response.json();
                   alert(
-                    `Congrats!\n\nCO2 saved: ${responseJson.co2} on ${
+                    `Congrats!\n\nCO2 saved: ${responseJson.co2} kg on ${
                       responseJson.miles
                     } miles`
                   );

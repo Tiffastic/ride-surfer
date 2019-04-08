@@ -165,6 +165,10 @@ module.exports = app => {
     rideSharingMilesController.storeRideRequest
   );
 
+  app.post(
+    "/storeOurRidesIntoRideSharingMiles",
+    rideSharingMilesController.storeBothOurRides
+  );
   app.get(
     "/calculateStatsFromSurfMiles",
     myStatsController.calculateStatsFromSurfMiles

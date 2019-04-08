@@ -9,6 +9,60 @@ module.exports = {
       .catch(error => res.status(400).json(error));
   },
 
+  storeBothOurRides(req, res) {
+    var meId = req.body.meId;
+    var youId = req.body.youId;
+    var passengerJourneyId = req.body.passengerJourneyId;
+    var driverJourneyId = req.body.driverJourneyId;
+    var miles = req.body.miles;
+
+    //
+    //  "passengerJourneyId", "driverJourneyId", "userId", miles,
+
+    var createdMyRow = false;
+    var createdYourRow = false;
+
+    RideSharingMiles.create({
+      passengerJourneyId: passengerJourneyId,
+      driverJourneyId: driverJourneyId,
+      userId: meId,
+      miles: miles
+    })
+      .then(result => {
+        createdMyRow = true;
+        if (createdMyRow && createdYourRow) {
+          res.status(201).json({
+            meId: meId,
+            youId: youId,
+            passengerJourneyId: passengerJourneyId,
+            driverJourneyId: driverJourneyId,
+            miles: miles
+          });
+        }
+      })
+      .catch(error => res.status(400).json(error));
+
+    RideSharingMiles.create({
+      passengerJourneyId: passengerJourneyId,
+      driverJourneyId: driverJourneyId,
+      userId: youId,
+      miles: miles
+    })
+      .then(result => {
+        createdYourRow = true;
+        if (createdMyRow && createdYourRow) {
+          res.status(201).json({
+            meId: meId,
+            youId: youId,
+            passengerJourneyId: passengerJourneyId,
+            driverJourneyId: driverJourneyId,
+            miles: miles
+          });
+        }
+      })
+      .catch(error => res.status(400).json(error));
+  },
+
   finishRide(req, res) {
     var meId = req.query.meId;
     var passengerJourneyId = req.query.passengerJourneyId;
