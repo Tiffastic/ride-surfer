@@ -1,5 +1,7 @@
 import React from "react";
 import mapboxgl from "mapbox-gl";
+mapboxgl.accessToken =
+  "pk.eyJ1IjoiZXRoYW5yYW4iLCJhIjoiY2pya3V6MGwyMDF1NzQzbXRnMHl3cGN5aiJ9.Y-iyykoUZuKEG7OyfRZDQw";
 
 import { fetchAPI } from "./Backend";
 import logo from "./logo.svg";
@@ -13,7 +15,8 @@ interface Page {
 
 const pages: Page[] = [
   { name: "Users", render: () => <Users /> },
-  { name: "Journeys", render: () => <Journeys /> }
+  { name: "Journeys", render: () => <Journeys /> },
+  { name: "Active Rides", render: () => <ActiveRides /> }
 ];
 
 const saltLakeCenter = [40.7487805, -111.8718196].reverse() as [number, number];
@@ -71,7 +74,9 @@ class UserNametag extends React.Component<{ userId: number }> {
     }
 
     return (
-      <span>
+      <span
+        style={{ border: "1px solid #c3c3c3", borderRadius: 3, padding: 4 }}
+      >
         <ProfilePic userId={this.props.userId} width={25} height={25} />{" "}
         {this.state.user.firstName}
       </span>
@@ -86,8 +91,6 @@ class JourneyMap extends React.Component<{
   path: any | null;
 }> {
   componentDidMount() {
-    mapboxgl.accessToken =
-      "pk.eyJ1IjoiZXRoYW5yYW4iLCJhIjoiY2pya3V6MGwyMDF1NzQzbXRnMHl3cGN5aiJ9.Y-iyykoUZuKEG7OyfRZDQw";
     var map = new mapboxgl.Map({
       container: this.domId(),
       style: "mapbox://styles/mapbox/outdoors-v11",
@@ -215,6 +218,196 @@ class Journey extends React.Component<{ journey: any }, { expanded: boolean }> {
   }
 }
 
+class ActiveRides extends React.Component {
+  state = {
+    rides: [],
+    selectedRide: null,
+    loading: true
+  };
+
+  componentWillMount() {
+    Promise.all([
+      fetchAPI("/journeys")
+        .then(response => response.json())
+        .then(json => {
+          json.forEach((j: any) => {
+            if (j.currentLocation !== null) {
+              j.currentLocation.coordinates.reverse(); // in-place
+            }
+          });
+          return json;
+        }),
+      fetchAPI("/passengerRides").then(response => response.json())
+    ]).then(([journeys, rides]: [any, any]) => {
+      let activeRides = rides
+        .filter((r: any) => r.driverAccepted)
+        .map((r: any) => {
+          return {
+            ...r,
+            passengerJourney: journeys.find(
+              (j: any) => j.id === r.passengerJourneyId
+            ),
+            driverJourney: journeys.find((j: any) => j.id === r.driverJourneyId)
+          };
+        });
+      this.setState({
+        rides: activeRides,
+        selectedRide: activeRides.length > 0 ? activeRides[0] : null,
+        loading: false
+      });
+    });
+  }
+
+  private selectRide = (ride: any) => {
+    this.setState({ selectedRide: ride });
+  };
+
+  private renderRide = (ride: any, i: number) => {
+    let selected = ride === this.state.selectedRide;
+
+    return (
+      <li
+        className={"rideListItem" + (selected ? " selected" : "")}
+        key={ride.id}
+        onClick={() => this.selectRide(ride)}
+      >
+        <p>
+          <UserNametag userId={ride.passengerJourney.userId} /> riding with{" "}
+          <UserNametag userId={ride.driverJourney.userId} />
+        </p>
+      </li>
+    );
+  };
+
+  renderSidebar() {
+    if (this.state.loading) {
+      return <div style={{ width: 250 }}>Loading . . . </div>;
+    }
+    return (
+      <div style={{ width: 250 }}>
+        <p>{this.state.rides.length} active rides</p>
+        <ul>{this.state.rides.map(this.renderRide)}</ul>
+      </div>
+    );
+  }
+
+  render() {
+    return (
+      <section style={{ display: "flex", flex: 1 }}>
+        {this.renderSidebar()}
+        <RideMap ride={this.state.selectedRide} />
+      </section>
+    );
+  }
+}
+
+class RideMap extends React.Component<{ ride: any | null }> {
+  map = null as null | any;
+
+  passengerMarker = null;
+  driverMarker = null;
+
+  componentDidMount() {
+    console.log("map mount");
+
+    this.map = new mapboxgl.Map({
+      container: "active-rides-map",
+      style: "mapbox://styles/mapbox/outdoors-v11",
+      center: saltLakeCenter,
+      zoom: 12
+    });
+
+    this.updateMarkers();
+  }
+
+  private updateMarkers() {
+    const updateMarker = (
+      marker: any,
+      coordinates: [number, number] | null,
+      userId: null
+    ) => {
+      if (marker === null) {
+        let el = document.createElement("img");
+        el.id = "marker";
+        el.width = 30;
+        el.height = 30;
+
+        marker = new mapboxgl.Marker(el, {
+          draggable: true
+        });
+
+        // function onDragEnd() {
+        //   var lngLat = marker.getLngLat();
+        //   coordinates.style.display = "block";
+        //   coordinates.innerHTML =
+        //     "Longitude: " + lngLat.lng + "<br />Latitude: " + lngLat.lat;
+        // }
+
+        // marker.on("dragend", onDragEnd);
+        el.addEventListener("click", () => {
+          console.log("clicked: ", coordinates);
+        });
+      }
+
+      if (coordinates !== null) {
+        marker.setLngLat(coordinates).addTo(this.map);
+        fetchAPI("/getUserImage/" + userId)
+          .then(resp => resp.json())
+          .then(json => {
+            if (json.userImage === null) {
+              marker.getElement().src = defaultProfile;
+            } else {
+              marker.getElement().src = json.userImage;
+            }
+          });
+      } else {
+        marker.remove();
+      }
+
+      return marker;
+    };
+
+    let passengerLocation = null;
+    let passengerId = null;
+    if (
+      this.props.ride !== null &&
+      this.props.ride.passengerJourney.currentLocation !== null
+    ) {
+      passengerLocation = this.props.ride.passengerJourney.currentLocation
+        .coordinates;
+      passengerId = this.props.ride.passengerJourney.userId;
+    }
+    let driverLocation = null;
+    let driverId = null;
+    if (
+      this.props.ride !== null &&
+      this.props.ride.driverJourney.currentLocation !== null
+    ) {
+      driverLocation = this.props.ride.driverJourney.currentLocation
+        .coordinates;
+      driverId = this.props.ride.driverJourney.userId;
+    }
+
+    this.passengerMarker = updateMarker(
+      this.passengerMarker,
+      passengerLocation,
+      passengerId
+    );
+    this.driverMarker = updateMarker(
+      this.driverMarker,
+      driverLocation,
+      driverId
+    );
+  }
+
+  render() {
+    if (this.map !== null) {
+      this.updateMarkers();
+    }
+    return <div style={{ flex: 1 }} id="active-rides-map" />;
+  }
+}
+
 class Journeys extends React.Component {
   state = {
     journeys: [],
@@ -281,12 +474,15 @@ class Users extends React.Component {
 
 class App extends React.Component {
   state = {
-    page: pages.find(p => p.name === "Journeys")
+    page: pages.find(p => p.name === "Active Rides")
   };
 
   render() {
     return (
-      <div className="container">
+      <div
+        className="container-fluid"
+        style={{ height: "100vh", display: "flex", flexDirection: "column" }}
+      >
         <header className="App-header">
           <h1>Ride Surfer - Admin Dashboard</h1>
           <ul className="nav nav-tabs">
@@ -304,7 +500,7 @@ class App extends React.Component {
             ))}
           </ul>
         </header>
-        <main>
+        <main style={{ display: "flex", flex: 1 }}>
           {this.state.page ? this.state.page.render() : "No page selected"}
         </main>
       </div>
