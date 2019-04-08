@@ -327,6 +327,9 @@ class RideMap extends React.Component<{ ride: any | null }> {
       userId: null
     ) => {
       if (marker === null) {
+        if (coordinates === null) {
+          return null;
+        }
         let el = document.createElement("img");
         el.id = "marker";
         el.width = 30;
@@ -336,14 +339,33 @@ class RideMap extends React.Component<{ ride: any | null }> {
           draggable: true
         });
 
-        // function onDragEnd() {
-        //   var lngLat = marker.getLngLat();
-        //   coordinates.style.display = "block";
-        //   coordinates.innerHTML =
-        //     "Longitude: " + lngLat.lng + "<br />Latitude: " + lngLat.lat;
-        // }
+        marker.on("dragend", () => {
+          var lngLat = marker.getLngLat();
+          fetchAPI("/journeys/updateLocation/", {
+            method: "PUT",
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              userId: userId,
+              currentLocation: [lngLat.lat, lngLat.lng]
+            })
+          })
+            .then(resp => {
+              marker.getElement().style.borderColor = "white";
+            })
+            .catch(error => {
+              console.log(error);
+            });
+          marker.getElement().style.borderColor = "orange";
+        });
 
         // marker.on("dragend", onDragEnd);
+        el.addEventListener("dragstart", e => {
+          e.preventDefault();
+          return false;
+        });
         el.addEventListener("click", () => {
           console.log("clicked: ", coordinates);
         });
