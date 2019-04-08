@@ -54,13 +54,17 @@ let LightStyle: any = StyleSheet.create({
     fontSize: 24,
     width: width - 30
     // maxWidth: width / 2.3
+  },
+  heading: {
+    fontSize: 24,
+    fontWeight: "bold"
   }
 });
 
 let DarkStyle: any = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "black"
+    backgroundColor: Colors.darkShades
   },
   containerProfile: {
     flex: 1,
@@ -108,6 +112,11 @@ let DarkStyle: any = StyleSheet.create({
     fontSize: 24,
     width: width - 30
     // maxWidth: width / 2.3
+  },
+  heading: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: Colors.lightShades
   }
 });
 

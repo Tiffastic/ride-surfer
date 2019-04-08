@@ -133,7 +133,7 @@ export default class SettingsScreen extends React.Component<{
         keyboardVerticalOffset={22}
         enabled
       >
-        <Text style={{ fontSize: 24 }}>Locations</Text>
+        <Text style={Styles.heading}>Locations</Text>
         <PresetEditor
           icon="ios-home"
           name="Home"
@@ -146,7 +146,7 @@ export default class SettingsScreen extends React.Component<{
           value={this.state.work}
           onEdit={this.editWork}
         />
-        <Text style={{ fontSize: 24 }}>Experimental</Text>
+        <Text style={Styles.heading}>Experimental</Text>
         <View style={{ flexDirection: "row" }}>
           <Switch
             trackColor={{ true: Colors.primary, false: Colors.lightShades }}

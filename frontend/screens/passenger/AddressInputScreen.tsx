@@ -27,6 +27,7 @@ import {
 
 import { Permissions, Location } from "expo";
 import { geocodeAsync } from "expo-location";
+import RSIcon from "../../components/RSIcon";
 
 const { width, height } = Dimensions.get("window");
 
@@ -214,20 +215,22 @@ export default class AddressInputScreen extends React.Component<Props, state> {
       });
     }
 
-    if (this.state.userHome !== "") {
-      listItems.push({
-        icon: "ios-home",
-        name: "Home: " + this.state.userHome,
-        onPress: this.useHomeLocation
-      });
-    }
+    if (this.withWorkHome) {
+      if (this.state.userHome !== "") {
+        listItems.push({
+          icon: "ios-home",
+          name: "Home: " + this.state.userHome,
+          onPress: this.useHomeLocation
+        });
+      }
 
-    if (this.state.userWork !== "") {
-      listItems.push({
-        icon: "ios-briefcase",
-        name: "Work: " + this.state.userWork,
-        onPress: this.useWorkLocation
-      });
+      if (this.state.userWork !== "") {
+        listItems.push({
+          icon: "ios-briefcase",
+          name: "Work: " + this.state.userWork,
+          onPress: this.useWorkLocation
+        });
+      }
     }
 
     listItems.forEach((e, i) => (e.key = i.toString()));
@@ -252,34 +255,6 @@ export default class AddressInputScreen extends React.Component<Props, state> {
             <Text>Couldn't find "{this.state.locationInput}"</Text>
           )}
         </View>
-        {/* <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginLeft: 5,
-            marginTop: 5,
-            marginRight: 5,
-            marginBottom: 5
-          }}
-        >
-          <View>
-            <Button
-              title="Confirm"
-              disabled={this.state.locationInput === null}
-              color={Colors.primary}
-              onPress={() => {
-                if (this.state.location === null) {
-                  return;
-                }
-                this.props.onConfirm(
-                  this.state.locationInput,
-                  this.state.location
-                );
-              }}
-            />
-          </View>
-        </View> */}
         <View>
           {this.state.isLoading ? (
             <View style={{ flexDirection: "row", alignItems: "center" }}>
@@ -309,18 +284,10 @@ export default class AddressInputScreen extends React.Component<Props, state> {
                   >
                     {item.icon !== undefined && (
                       <View style={{ width: 60, justifyContent: "center" }}>
-                        <HeaderButtons
-                          HeaderButtonComponent={IoniconsHeaderButton}
-                        >
-                          <HeaderButton
-                            title={item.name}
-                            iconName={item.icon}
-                            iconSize={16}
-                          />
-                        </HeaderButtons>
+                        <RSIcon title={item.name} name={item.icon} size={16} />
                       </View>
                     )}
-                    <Text style={{ fontSize: 16 }}>{item.name}</Text>
+                    <Text style={{ flex: 1, fontSize: 20 }}>{item.name}</Text>
                   </View>
                 </TouchableHighlight>
               )}

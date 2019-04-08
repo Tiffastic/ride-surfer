@@ -34,8 +34,10 @@ const IoniconsHeaderButton = (color: string | undefined) => (
     IconComponent={Ionicons}
     iconSize={40}
     color={color === undefined ? Colors.primary : color}
-    buttonStyle={{
-      height: 60
-    }}
+    buttonStyle={
+      {
+        //   height: 60
+      }
+    }
   />
 );
