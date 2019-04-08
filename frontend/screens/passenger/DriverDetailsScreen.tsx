@@ -301,26 +301,6 @@ export default class DriverDetailsScreen extends React.Component<{
               } else {
                 console.log("DRIVER DETAILS passengerRides: ", responseJson);
 
-                // Request a ride, store rows into RideSharingMiles table, with finished defaulting to false
-                // meId: userDetails.id,
-                // youId: this.state.driverJourney.User.id
-
-                fetchAPI("/storeOurRidesIntoRideSharingMiles", {
-                  method: "POST",
-                  headers: {
-                    Accept: "application/json",
-                    "Content-Type": "application/json"
-                  },
-
-                  body: JSON.stringify({
-                    meId: userDetails.id,
-                    youId: this.state.driverJourney.User.id,
-                    passengerJourneyId: journeyResponseJson.id,
-                    driverJourneyId: this.state.driverJourney.id,
-                    miles: this.state.rideSharingMiles
-                  })
-                });
-
                 this.setState({ isLoading: false });
                 Alert.alert(
                   "Your request was sent!",
@@ -332,6 +312,25 @@ export default class DriverDetailsScreen extends React.Component<{
             .catch(error => {
               console.log(error);
             });
+
+          // Request a ride, store rows into RideSharingMiles table, with finished defaulting to false
+          // meId: userDetails.id,
+          // youId: this.state.driverJourney.User.id
+          fetchAPI("/storeOurRidesIntoRideSharingMiles", {
+            method: "POST",
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+              meId: userDetails.id,
+              youId: this.state.driverJourney.User.id,
+              passengerJourneyId: journeyResponseJson.id,
+              driverJourneyId: this.state.driverJourney.id,
+              miles: this.state.rideSharingMiles
+            })
+          });
         }
       })
       .catch(error => {
