@@ -47,7 +47,8 @@ export default class RideInProgress extends React.Component<{
     type: this.props.navigation.getParam("type"),
     appState: AppState.currentState,
     myMarkerImage: person,
-    partnerMarkerImage: car
+    partnerMarkerImage: car,
+    myId: null
   };
 
   componentWillMount() {
@@ -72,7 +73,16 @@ export default class RideInProgress extends React.Component<{
 
   componentDidMount() {
     AppState.addEventListener("change", this._handleAppStateChange);
+
+    this.bootstrap();
   }
+
+  bootstrap = async () => {
+    let userDetails = await UserSession.get();
+    if (userDetails == null) return;
+
+    this.setState({ myId: userDetails.id });
+  };
 
   componentWillUnmount() {
     TaskManager.unregisterTaskAsync(LOCATION_TASK_NAME);
@@ -191,6 +201,45 @@ export default class RideInProgress extends React.Component<{
           <Button
             title="Finish"
             onPress={() => {
+              // record ride-sharing miles for both passengers and drivers
+
+              /*
+              console.log(
+                "RIDE IN PROGRESS FINISHED: ",
+                this.state.rideDetails
+              );
+              */
+
+              // Ride finish, so mark it as finished in the RideSharingMiles table
+              console.log(
+                "ride details driver journey id = ",
+                this.state.rideDetails.driverJourneyId
+              );
+              console.log(
+                "ride details passenger journey id = ",
+                this.state.rideDetails.passengerJourneyId
+              );
+              console.log("me id = ", this.state.myId);
+              fetchAPI(
+                `/finishRideSharingMiles?meId=${
+                  this.state.myId
+                }&driverJourneyId=${
+                  this.state.rideDetails.driverJourneyId
+                }&passengerJourneyId=${
+                  this.state.rideDetails.passengerJourneyId
+                }`
+              ).then(async response => {
+                console.log("response status = ", response.status);
+                if (response.status === 200) {
+                  var responseJson = await response.json();
+                  alert(
+                    `Congrats!\n\nCO2 saved: ${responseJson.co2} on ${
+                      responseJson.miles
+                    } miles`
+                  );
+                }
+              });
+
               TaskManager.unregisterTaskAsync(LOCATION_TASK_NAME);
               this.props.navigation.navigate("RateDriver", {
                 ridePartner: this.state.ridePartner,

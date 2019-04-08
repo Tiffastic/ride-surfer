@@ -43,7 +43,8 @@ export default class DriverDetailsScreen extends React.Component<{
     pickupHumanAddress: null as null | string,
     dropoffHumanAddress: null as null | string,
     driverProfilePic: null,
-    isLoading: false
+    isLoading: false,
+    rideSharingMiles: 0
   };
 
   componentWillMount() {
@@ -69,6 +70,19 @@ export default class DriverDetailsScreen extends React.Component<{
     geocodeAddress(ridePlan.dropoff, "dropoffHumanAddress");
 
     this.getDriverProfilePic();
+  }
+
+  componentDidMount() {
+    let ridePlan = this.state.match.ridePlan;
+    this.calculateRideSharingMiles(ridePlan);
+  }
+
+  calculateRideSharingMiles(ridePlan: any) {
+    let round = (number: number) => Math.round(number * 10) / 10;
+    let toMiles = (number: number) => number * 0.621371;
+
+    var ridePlanMiles = round(toMiles(ridePlan.drivingDistance));
+    this.setState({ rideSharingMiles: ridePlanMiles });
   }
 
   private generateDirsFromRidePlan(ridePlan: any) {
@@ -285,6 +299,41 @@ export default class DriverDetailsScreen extends React.Component<{
                   errorMessage: "Error Sending Request"
                 });
               } else {
+                console.log("DRIVER DETAILS passengerRides: ", responseJson);
+
+                // Request a ride, store rows into RideSharingMiles table, with finished defaulting to false
+                // meId: userDetails.id,
+                // youId: this.state.driverJourney.User.id
+                fetchAPI("/storeIntoRideSharingMiles", {
+                  method: "POST",
+                  headers: {
+                    Accept: "application/json",
+                    "Content-Type": "application/json"
+                  },
+                  body: JSON.stringify({
+                    passengerJourneyId: journeyResponseJson.id,
+                    driverJourneyId: this.state.driverJourney.id,
+                    userId: userDetails.id, // not null because we already checked above
+                    miles: this.state.rideSharingMiles
+                    // finished defaults to false in table
+                  })
+                });
+
+                fetchAPI("/storeIntoRideSharingMiles", {
+                  method: "POST",
+                  headers: {
+                    Accept: "application/json",
+                    "Content-Type": "application/json"
+                  },
+                  body: JSON.stringify({
+                    passengerJourneyId: journeyResponseJson.id,
+                    driverJourneyId: this.state.driverJourney.id,
+                    userId: this.state.driverJourney.User.id,
+                    miles: this.state.rideSharingMiles
+                    // finished defaults to false in table
+                  })
+                });
+
                 this.setState({ isLoading: false });
                 Alert.alert(
                   "Your request was sent!",

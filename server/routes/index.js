@@ -11,6 +11,8 @@ const journeyRidesPhotosController = require("../controllers")
   .journeyRidesPhotos;
 
 const messagechatController = require("../controllers").messagechats;
+const rideSharingMilesController = require("../controllers").rideSharingMiles;
+const myStatsController = require("../controllers").myStats;
 
 module.exports = app => {
   //Using CORS, without this, Swagger  does not work with local host
@@ -157,4 +159,16 @@ module.exports = app => {
     "/sendChatMessageByRecipientId",
     messagechatController.sendChatMessage_ByRecipientId
   );
+
+  app.post(
+    "/storeIntoRideSharingMiles",
+    rideSharingMilesController.storeRideRequest
+  );
+
+  app.get(
+    "/calculateStatsFromSurfMiles",
+    myStatsController.calculateStatsFromSurfMiles
+  );
+
+  app.get("/finishRideSharingMiles", rideSharingMilesController.finishRide);
 };

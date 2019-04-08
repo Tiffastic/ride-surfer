@@ -1,4 +1,4 @@
-Bios = require("../models").Bios;
+const Bios = require("../models").Bios;
 
 module.exports = {
   update(req, res) {
