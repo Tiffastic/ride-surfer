@@ -1,11 +1,12 @@
 import React from "react";
-import { View, Text, Platform, StyleSheet } from "react-native";
-
-import { createStackNavigator } from "react-navigation";
-import HeaderButtons, { HeaderButton } from "react-navigation-header-buttons";
-import MyStatsYearChoiceScreen from "./MyStatsYearChoiceScreen";
-import Colors from "../../constants/Colors";
-import Ionicons from "react-native-vector-icons/Ionicons";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Platform,
+  ActivityIndicator
+} from "react-native";
 
 import { fetchAPI } from "../../network/Backend";
 import UserSession from "../../network/UserSession";
@@ -14,10 +15,14 @@ import StatsChart from "../../components/StatsChart";
 export default class MyStatsMilesPerYear extends React.Component<{
   navigation: any;
 }> {
+  constructor(props: any) {
+    super(props);
+  }
+
   state = {
-    meId: 0,
     year: this.props.navigation.getParam("year"),
-    milesPerMonthChart: null,
+    meId: 0,
+    milesPerYearChart: null,
     isLoadingMilesPerMonthChart: true
   };
 
@@ -31,10 +36,10 @@ export default class MyStatsMilesPerYear extends React.Component<{
 
     this.setState({ meId: userDetails.id });
 
-    this.getMilesPerMonthChart();
+    this.getCO2PerMonthChart();
   };
 
-  getMilesPerMonthChart() {
+  getCO2PerMonthChart() {
     fetchAPI(
       `/getMilesPerMonthData?meId=${this.state.meId}&year=${this.state.year}`
     ).then(async response => {
@@ -55,11 +60,6 @@ export default class MyStatsMilesPerYear extends React.Component<{
           tickFormatYAxis.push(roundMiles);
         });
 
-        console.log("data = ", data);
-        console.log("tickValuesXAxis = ", tickValuesXAxis);
-        console.log("tickFormatXAxis = ", tickFormatXAxis);
-        console.log("tickFormatYAxis = ", tickFormatYAxis);
-
         var milesPerMonthBarGraph = (
           <StatsChart
             tickValuesXAxis={tickValuesXAxis}
@@ -73,7 +73,7 @@ export default class MyStatsMilesPerYear extends React.Component<{
         );
 
         this.setState({
-          milesPerMonthChart: milesPerMonthBarGraph,
+          milesPerYearChart: milesPerMonthBarGraph,
           isLoadingMilesPerMonthChart: false
         });
       }
@@ -81,8 +81,11 @@ export default class MyStatsMilesPerYear extends React.Component<{
   }
 
   render() {
+    if (this.state.isLoadingMilesPerMonthChart) {
+      return <ActivityIndicator />;
+    }
     return (
-      <View>
+      <ScrollView>
         <View>
           <Text style={styles.pageHeading}>
             Ride-Surf Miles for Year{"\n"}
@@ -92,8 +95,8 @@ export default class MyStatsMilesPerYear extends React.Component<{
           <Text style={styles.subHeading}>Miles per Month</Text>
         </View>
 
-        {this.state.milesPerMonthChart}
-      </View>
+        <View>{this.state.milesPerYearChart}</View>
+      </ScrollView>
     );
   }
 }
@@ -103,7 +106,7 @@ const styles = StyleSheet.create({
     marginTop: 15,
     fontSize: 30,
     textAlign: "center",
-    color: "rgb(33, 120, 216)", //"rgb(61, 84, 154)",
+    color: "rgb(33, 120, 216)",
     fontWeight: "bold"
   },
 
@@ -111,6 +114,6 @@ const styles = StyleSheet.create({
     fontSize: 23,
     fontStyle: "italic",
     textAlign: "center",
-    color: "rgb(54, 146, 190)"
+    color: "rgb(66, 109, 183)" //"rgb(54, 146, 190)"
   }
 });

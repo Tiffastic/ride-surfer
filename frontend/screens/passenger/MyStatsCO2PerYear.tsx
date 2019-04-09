@@ -1,5 +1,12 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Platform,
+  ActivityIndicator
+} from "react-native";
 
 import { fetchAPI } from "../../network/Backend";
 import UserSession from "../../network/UserSession";
@@ -41,8 +48,6 @@ export default class MyStatsCO2PerYear extends React.Component<{
 
         const data = responseJson.co2PerMonth;
 
-        console.log("stats year details screen data = ", data);
-
         var tickValuesXAxis: any = [];
         var tickFormatXAxis: any = [];
         var tickFormatYAxis: any = [];
@@ -76,18 +81,22 @@ export default class MyStatsCO2PerYear extends React.Component<{
   }
 
   render() {
+    if (this.state.isLoadingCO2PerMonthChart) {
+      return <ActivityIndicator />;
+    }
     return (
-      <View>
+      <ScrollView>
         <View>
           <Text style={styles.pageHeading}>
-            CO2 for Year{"\n"}
+            CO2 Savings for Year{"\n"}
             {this.state.year}
           </Text>
 
           <Text style={styles.subHeading}>kg per Month</Text>
         </View>
-        {this.state.co2PerYearChart}
-      </View>
+
+        <View>{this.state.co2PerYearChart}</View>
+      </ScrollView>
     );
   }
 }
@@ -105,6 +114,6 @@ const styles = StyleSheet.create({
     fontSize: 23,
     fontStyle: "italic",
     textAlign: "center",
-    color: "rgb(54, 146, 190)"
+    color: "rgb(66, 109, 183)" //"rgb(54, 146, 190)"
   }
 });

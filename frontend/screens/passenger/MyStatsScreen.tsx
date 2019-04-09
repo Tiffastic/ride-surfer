@@ -17,6 +17,7 @@ import Colors from "../../constants/Colors";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import MyStatsYearChoiceScreen from "./MyStatsYearChoiceScreen";
 import MyStatsMilesPerYearScreen from "./MyStatsMilesPerYear";
+import MyStatsCO2PerYearScreen from "./MyStatsCO2PerYear";
 
 import { fetchAPI } from "../../network/Backend";
 import UserSession from "../../network/UserSession";
@@ -209,9 +210,7 @@ class MyStatsScreen extends React.Component<{
             </TouchableHighlight>
           </View>
 
-          <TouchableHighlight underlayColor="rgb(91, 125, 242)">
-            {this.state.milesPerYearChart}
-          </TouchableHighlight>
+          <View>{this.state.milesPerYearChart}</View>
 
           <View style={{ marginTop: 30 }}>
             <Text
@@ -233,6 +232,7 @@ class MyStatsScreen extends React.Component<{
                 Total {this.state.myTotalCO2Saved} kg
               </Text>
             </TouchableHighlight>
+
             <Text style={{ textAlign: "center", color: "rgb(66, 109, 183)" }}>
               (0.36 kg CO2 per mile)
             </Text>
@@ -306,7 +306,8 @@ export default createStackNavigator(
       })
     },
     MyStatsYearChoiceScreen: MyStatsYearChoiceScreen,
-    MyStatsMilesPerYear: MyStatsMilesPerYearScreen
+    MyStatsMilesPerYear: MyStatsMilesPerYearScreen,
+    MyStatsCO2PerYear: MyStatsCO2PerYearScreen
   },
   {
     initialRouteName: "MyStatsScreen"

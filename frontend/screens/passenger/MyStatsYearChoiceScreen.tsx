@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, Platform, StyleSheet } from "react-native";
+import { View, Text, ScrollView, Platform, StyleSheet } from "react-native";
 
 import { fetchAPI } from "../../network/Backend";
 import UserSession from "../../network/UserSession";
@@ -19,6 +19,10 @@ export default class MyStatsYearChoiceScreen extends React.Component<{
   }
 
   componentDidMount() {
+    this.bootstrap();
+  }
+
+  componentWillUnmount() {
     this.bootstrap();
   }
 
@@ -54,6 +58,8 @@ export default class MyStatsYearChoiceScreen extends React.Component<{
           });
 
           this.setState({ activeYears: textLink });
+        } else {
+          alert("Couldn't get active yeares");
         }
       })
       .catch(error => alert("Couldn't get stats:/n" + error));
@@ -61,15 +67,15 @@ export default class MyStatsYearChoiceScreen extends React.Component<{
 
   navigateToSpecificStatsYear(year: number) {
     if (this.state.statsChoice === "Ride-Surf Miles") {
-      this.props.navigation.navigate("MyStatsMilesPerYear", { year: year });
+      this.props.navigation.push("MyStatsMilesPerYear", { year: year });
     } else if (this.state.statsChoice === "CO2") {
-      this.props.navigation.navigate("MyStatsCO2PerYear", { year: year });
+      this.props.navigation.push("MyStatsCO2PerYear", { year: year });
     }
   }
 
   render() {
     return (
-      <View>
+      <ScrollView>
         <Text
           style={[
             styles.pageHeading,
@@ -85,7 +91,7 @@ export default class MyStatsYearChoiceScreen extends React.Component<{
         </Text>
 
         {this.state.activeYears}
-      </View>
+      </ScrollView>
     );
   }
 }
