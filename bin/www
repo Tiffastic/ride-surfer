@@ -24,7 +24,7 @@ io.on("connection", socket => {
 //	 console.log(msgInfo);
 	  io.emit("chat", msgInfo);
 
-	  console.log("www message: ", msgInfo.message);
+	//  console.log("www message: ", msgInfo.message);
 
 	  // when emitting chat message 
       // send whether recipient ID is in the online dictionary
@@ -56,7 +56,7 @@ socket.on("login", msgInfo => {
   
   onlineUsers[msgInfo.userId] = socket.id;
   onlineSockets[socket.id] = msgInfo.userId;
-  console.log("user id connected: ", msgInfo.userId);
+ // console.log("user id connected: ", msgInfo.userId);
 });
 
 // listen for disconnect
@@ -66,7 +66,7 @@ socket.on("login", msgInfo => {
 socket.on("disconnect", () => {
 
    var userId = onlineSockets[socket.id];
-   console.log("user id disconnected: ", userId);
+ //  console.log("user id disconnected: ", userId);
 
    delete onlineSockets[socket.id];
    delete onlineUsers[userId];

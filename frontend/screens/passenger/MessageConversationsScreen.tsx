@@ -8,7 +8,10 @@ import {
   Button,
   KeyboardAvoidingView,
   ScrollView,
-  ActivityIndicator
+  ActivityIndicator,
+  Keyboard,
+  TouchableHighlight,
+  TouchableOpacity
 } from "react-native";
 import Colors from "../../constants/Colors";
 import { Styles } from "../../constants/Styles";
@@ -31,8 +34,6 @@ export default class MessageConversationsScreen extends React.Component<{
 
   constructor(props: any) {
     super(props);
-
-    this.bootstrap();
   }
 
   state: any = {
@@ -44,7 +45,11 @@ export default class MessageConversationsScreen extends React.Component<{
     senderIsTyping: false,
     isLoadingConversations: true,
 
-    currentChatDate: ""
+    currentChatDate: "",
+
+    keyboardAppeared: false,
+    keyboardDisappeared: true,
+    chatMessageNum: 0
   };
 
   getUserDetails = async () => {
@@ -76,6 +81,7 @@ export default class MessageConversationsScreen extends React.Component<{
         chats.map((item: any, i: number) => {
           chatMessages.push(
             <ChatMessage
+              key={i.toString()}
               message={item.message}
               image={
                 item.userIdSender === this.state.userId
@@ -86,7 +92,7 @@ export default class MessageConversationsScreen extends React.Component<{
                 item.userIdSender === this.state.userId ? "sender" : "recipient"
               }
               date={this.formatDate(new Date(item.date))}
-              dateHasChanged={
+              showDate={
                 messageDate === ""
                   ? true
                   : this.formatDate(new Date(messageDate)) !==
@@ -107,7 +113,8 @@ export default class MessageConversationsScreen extends React.Component<{
 
         this.setState({
           recentMessages: chatMessages,
-          currentChatDate: this.formatDate(new Date(messageDate))
+          currentChatDate: this.formatDate(new Date(messageDate)),
+          chatMessageNum: chatMessages.length
         });
       });
   };
@@ -164,6 +171,7 @@ export default class MessageConversationsScreen extends React.Component<{
 
   emitIsTypingMessage(textMessage: string) {
     this.state.socket.emit("typing", {
+      userIdSender: this.state.userId,
       userIdRecipient: this.props.navigation.getParam("recipientId"),
       senderIsTyping: textMessage !== "" ? true : false
     });
@@ -180,7 +188,7 @@ export default class MessageConversationsScreen extends React.Component<{
 
       this.state.socket.emit("chat", {
         userIdSender: this.state.userId,
-        senderImage: this.state.userImage,
+        // senderImage: this.state.userImage,
         userIdRecipient: this.props.navigation.getParam("recipientId"),
         message: myMessage,
         date: todayFormatDate
@@ -193,19 +201,22 @@ export default class MessageConversationsScreen extends React.Component<{
       });
       // add our recent chat to the list of chats viewable on the screen
 
+      var messageNum = this.state.chatMessageNum + 1;
       this.setState({
         recentMessages: [
           ...this.state.recentMessages,
           <ChatMessage
+            key={messageNum.toString()}
             message={this.state.textMessage}
             image={this.state.userImage}
             role="sender"
             date={todayFormatDate}
-            dateHasChanged={this.currentDateChanged(todayFormatDate)}
+            showDate={this.currentDateChanged(todayFormatDate)}
           />
         ],
 
-        textMessage: ""
+        textMessage: "",
+        chatMessageNum: messageNum
       });
 
       // store message into database
@@ -226,7 +237,37 @@ export default class MessageConversationsScreen extends React.Component<{
     }
   }
 
+  componentWillUnmount() {
+    // this works
+    this.keyboardDidShowListener.remove();
+    this.keyboardDidHideListener.remove();
+  }
+
+  _keyboardDidShow = () => {
+    this.setState({ keyboardAppeared: true, keyboardDisappeared: false });
+  };
+
+  _keyboardDidHide = () => {
+    this.setState({ keyboardAppeared: false, keyboardDisappeared: true });
+  };
+
   componentDidMount() {
+    //https://facebook.github.io/react-native/docs/keyboard
+    //keyboard events
+    this.bootstrap();
+
+    // this works
+    this.keyboardDidShowListener = Keyboard.addListener(
+      "keyboardDidShow",
+      this._keyboardDidShow
+    );
+
+    // this works
+    this.keyboardDidHideListener = Keyboard.addListener(
+      "keyboardDidHide",
+      this._keyboardDidHide
+    );
+
     // connecting to websocket -- look in bin/www
 
     this.state.socket = io(API_URL);
@@ -235,29 +276,39 @@ export default class MessageConversationsScreen extends React.Component<{
       this.state.socket.emit("login", { userId: this.state.userId });
       // listening for websocket to emit "chat" signal  -- look in bin/wwww
       this.state.socket.on("chat", (msgInfo: any) => {
-        // we've received a chat message from some phone
-        if (msgInfo.userIdRecipient === this.state.userId) {
+        // we've received a chat message from someone, but it has to be the person we are currently chatting with in order to show up on our screen
+        if (
+          msgInfo.userIdRecipient === this.state.userId &&
+          msgInfo.userIdSender === this.props.navigation.getParam("recipientId")
+        ) {
           var formatMsgDate = this.formatDate(new Date(msgInfo.date));
           // if we are the recipient of this message, then display this message to us
           // this may not be the most secure way, but it works for now
+          var messageNum = this.state.chatMessageNum + 1;
           this.setState({
             recentMessages: [
               ...this.state.recentMessages,
               <ChatMessage
+                key={messageNum.toString()}
                 message={msgInfo.message}
-                image={msgInfo.senderImage}
+                // image={msgInfo.senderImage}
+                image={this.props.navigation.getParam("recipientImage")}
                 role="recipient"
                 date={formatMsgDate}
-                dateHasChanged={this.currentDateChanged(formatMsgDate)}
+                showDate={this.currentDateChanged(formatMsgDate)}
               />
             ],
-            senderIsTyping: false
+            senderIsTyping: false,
+            chatMessageNum: messageNum
           });
         }
       });
 
       this.state.socket.on("typing", (msgInfo: any) => {
-        if (msgInfo.userIdRecipient === this.state.userId) {
+        if (
+          msgInfo.userIdRecipient === this.state.userId &&
+          msgInfo.userIdSender === this.props.navigation.getParam("recipientId")
+        ) {
           this.setState({ senderIsTyping: msgInfo.senderIsTyping });
         }
       });
@@ -279,10 +330,31 @@ export default class MessageConversationsScreen extends React.Component<{
       });
     }
   }
+
+  // allow sender to view recipient's profile page
+  private viewProfile = () => {
+    var userId = this.props.navigation.getParam("recipientId");
+    fetchAPI("/getUserVehicles?userId=" + userId)
+      .then(response => response.json())
+      .then(responseJson => {
+        this.props.navigation.push("GenericProfile", {
+          user: {
+            id: userId,
+            firstName: this.props.navigation.getParam("recipientFirstName"),
+            lastName: this.props.navigation.getParam("recipientLastName"),
+            vehicles: responseJson.vehicles
+          }
+        });
+      });
+  };
+
   render() {
     if (this.state.isLoadingConversations) {
       return <ActivityIndicator />;
     }
+
+    // scroll to bottom of messages
+    // https://stackoverflow.com/questions/29310553/is-it-possible-to-keep-a-scrollview-scrolled-to-the-bottom
 
     return (
       <View style={styles.container}>
@@ -292,35 +364,63 @@ export default class MessageConversationsScreen extends React.Component<{
           behavior="padding"
           enabled
         >
-          <View style={{ alignItems: "center" }}>
-            <Image
-              style={{ height: 150, width: 150, borderRadius: 75 }}
-              resizeMode="center"
-              source={
-                this.props.navigation.getParam("recipientImage") !== null
-                  ? {
-                      uri: this.props.navigation.getParam("recipientImage")
-                    }
-                  : defaultPic
-              }
-            />
+          <View>
+            <TouchableHighlight onPress={this.viewProfile}>
+              <View style={{ alignItems: "center" }}>
+                <Image
+                  style={{ height: 150, width: 150, borderRadius: 150 }}
+                  source={
+                    this.props.navigation.getParam("recipientImage") !== null
+                      ? {
+                          uri: this.props.navigation.getParam("recipientImage")
+                        }
+                      : defaultPic
+                  }
+                />
 
-            <Text>
-              {this.props.navigation.getParam("recipientFirstName")}{" "}
-              {this.props.navigation.getParam("recipientLastName")}{" "}
-            </Text>
+                <Text style={{ color: "blue" }}>
+                  {this.props.navigation.getParam("recipientFirstName")}{" "}
+                  {this.props.navigation.getParam("recipientLastName")}{" "}
+                </Text>
 
-            <Text>{this.props.navigation.getParam("recipientEmail")} </Text>
-            {this.state.senderIsTyping ? (
-              <Text style={{ color: "purple" }}>...is typing</Text>
-            ) : (
-              <Text />
-            )}
+                <Text style={{ color: "blue" }}>
+                  {this.props.navigation.getParam("recipientEmail")}{" "}
+                </Text>
+              </View>
+            </TouchableHighlight>
           </View>
 
-          <ScrollView showsVerticalScrollIndicator={false}>
-            {this.state.recentMessages}
-          </ScrollView>
+          {this.state.senderIsTyping ? (
+            <Text style={{ color: "purple", textAlign: "center" }}>
+              ...is typing
+            </Text>
+          ) : (
+            <Text />
+          )}
+
+          {this.state.keyboardAppeared && (
+            <ScrollView
+              showsVerticalScrollIndicator={false}
+              ref={ref => (this.scrollView = ref)}
+              onContentSizeChange={(contentWidth, contentHeight) => {
+                this.scrollView.scrollToEnd({ animated: false });
+              }}
+            >
+              {this.state.recentMessages}
+            </ScrollView>
+          )}
+
+          {this.state.keyboardDisappeared && (
+            <ScrollView
+              showsVerticalScrollIndicator={false}
+              ref={ref => (this.scrollView = ref)}
+              onContentSizeChange={(contentWidth, contentHeight) => {
+                this.scrollView.scrollToEnd({ animated: false });
+              }}
+            >
+              {this.state.recentMessages}
+            </ScrollView>
+          )}
 
           <TextInput
             style={{ padding: 15 }}
@@ -339,6 +439,7 @@ export default class MessageConversationsScreen extends React.Component<{
 
           <Button
             title="Send"
+            color="rgb(36, 167, 217)"
             onPress={() => {
               this.submitChatMessage();
             }}

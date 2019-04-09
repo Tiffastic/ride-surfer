@@ -19,6 +19,8 @@ import { fetchAPI } from "../../network/Backend";
 import UserSession from "../../network/UserSession";
 import { isLoaded } from "expo-font";
 
+import { registerForPushNotifications } from "../../network/PushNotificationRegister";
+
 if (Platform.OS === "android") {
   var headerMode: any = null;
 }
@@ -188,7 +190,12 @@ export default class SignupScreen extends React.Component<{ navigation: any }> {
                 }
               } else {
                 responseJson.vehicles = [vehicleJson];
-                return this._saveUserAsync(responseJson).catch(console.log);
+                return this._saveUserAsync(responseJson)
+                  .then(() => {
+                    // register user for Push Notifications
+                    registerForPushNotifications();
+                  })
+                  .catch(console.log);
               }
             })
             .catch(error => {

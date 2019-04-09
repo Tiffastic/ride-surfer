@@ -7,7 +7,8 @@ import {
   TouchableOpacity,
   View,
   Alert,
-  Dimensions
+  Dimensions,
+  ActivityIndicator
 } from "react-native";
 
 import Icon from "react-native-vector-icons/FontAwesome";
@@ -54,6 +55,7 @@ export type Props = {
     destination: { latitude: number; longitude: number },
     arrivalAt: Date
   ) => void;
+  navigation: any;
 };
 
 export default class AddressPicker extends React.Component<Props, state> {
@@ -84,15 +86,23 @@ export default class AddressPicker extends React.Component<Props, state> {
   componentDidMount() {
     this.fetchCurrentLocation(position => {
       this.setState({
+        isLoading: false,
         startLocation: {
           latitude: position.coords.latitude,
           longitude: position.coords.longitude
         },
         startLocationInput: "Current Location"
       });
-      this.fetchMarkerData();
     });
   }
+
+  private fetchCurrentLocation = (callback: (position: any) => void) => {
+    navigator.geolocation.getCurrentPosition(
+      callback,
+      error => Alert.alert(error.message),
+      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
+    );
+  };
 
   onMapPress = (e: any) => {
     let coords = {
@@ -120,109 +130,6 @@ export default class AddressPicker extends React.Component<Props, state> {
         this.getDrivingRoute();
       }
     });
-  };
-
-  search = async () => {
-    let { status } = await Permissions.getAsync(Permissions.LOCATION);
-    if (status !== "granted") {
-      this.setState({
-        errorMessage: "Permission to access location was denied"
-      });
-    } else {
-      this.geocodeStartLocation().then(() =>
-        this.geocodeDestinationLocation().then(() =>
-          this.getDrivingRoute().then(() => {
-            this.fetchMarkerData();
-          })
-        )
-      );
-    }
-  };
-
-  private setHomeOrWork(destinationLocationInput: string) {
-    Alert.alert(
-      "",
-      "Would you like to save this address as a home or work address?",
-      [
-        {
-          text: "No thanks",
-          onPress: () => console.log("Ask me later pressed")
-        },
-        {
-          text: "Home",
-          onPress: async () => {
-            var userDetails = await UserSession.get();
-            if (userDetails === null) return;
-
-            await fetchAPI("/users/" + userDetails.id, {
-              method: "PUT",
-              headers: {
-                Accept: "application/json",
-                "Content-Type": "application/json"
-              },
-              body: JSON.stringify({
-                home: destinationLocationInput
-              })
-            }).then(response => {});
-            userDetails.home = destinationLocationInput;
-            await UserSession.set(userDetails);
-          }
-        },
-        {
-          text: "Work",
-          onPress: async () => {
-            var userDetails = await UserSession.get();
-            if (userDetails === null) return;
-
-            await fetchAPI("/users/" + userDetails.id, {
-              method: "PUT",
-              headers: {
-                Accept: "application/json",
-                "Content-Type": "application/json"
-              },
-              body: JSON.stringify({
-                work: destinationLocationInput
-              })
-            }).then(response => {});
-            userDetails.work = destinationLocationInput;
-            await UserSession.set(userDetails);
-          }
-        }
-      ],
-      { cancelable: false }
-    );
-  }
-
-  private geocodeStartLocation = async () => {
-    if (this.state.startLocationInput !== "Current Location") {
-      await Location.geocodeAsync(this.state.startLocationInput).then(
-        response => {
-          if (response.length > 0) {
-            let coords = {
-              latitude: response[0].latitude,
-              longitude: response[0].longitude
-            };
-            this.setState({ startLocation: coords });
-          }
-        }
-      );
-    }
-  };
-
-  private geocodeDestinationLocation = async () => {
-    if (this.state.destinationLocationInput !== "Current Location") {
-      await Location.geocodeAsync(this.state.destinationLocationInput).then(
-        response => {
-          if (response.length > 0) {
-            let coords = {
-              latitude: response[0].latitude,
-              longitude: response[0].longitude
-            };
-            this.setState({ destinationLocation: coords });
-          }
-        }
-      );
-    }
   };
 
   private getDrivingRoute = async () => {
@@ -263,41 +170,6 @@ export default class AddressPicker extends React.Component<Props, state> {
       .catch(error => {
         console.log(error);
       });
-
-    //ask if they want to save this location?
-    this.setHomeOrWork(this.state.destinationLocationInput);
-  };
-
-  fetchMarkerData() {
-    this.setState({
-      isLoading: false
-    });
-  }
-
-  private fetchCurrentLocation = (callback: (position: any) => void) => {
-    navigator.geolocation.getCurrentPosition(
-      callback,
-      error => Alert.alert(error.message),
-      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
-    );
-  };
-
-  private startAtCurrentLocation = async () => {
-    this.fetchCurrentLocation(position => {
-      this.setState({
-        startLocation: position.coords,
-        startLocationInput: "Current Location"
-      });
-    });
-  };
-
-  private endAtCurrentLocation = async () => {
-    this.fetchCurrentLocation(position =>
-      this.setState({
-        destinationLocation: position.coords,
-        destinationLocationInput: "Current Location"
-      })
-    );
   };
 
   private getRegionForCoordinates(points: any) {
@@ -333,18 +205,6 @@ export default class AddressPicker extends React.Component<Props, state> {
     };
   }
 
-  private async HomeWorkFavPress(type: string) {
-    var userDetails = await UserSession.get();
-    if (userDetails === null) return;
-
-    if (type === "Home") {
-      this.setState({ destinationLocationInput: userDetails.home });
-    } else if (type === "Work") {
-      this.setState({ destinationLocationInput: userDetails.work });
-    }
-    return;
-  }
-
   render() {
     let region = {
       latitude: this.state.startLocation.latitude,
@@ -362,43 +222,56 @@ export default class AddressPicker extends React.Component<Props, state> {
     return (
       <View style={Styles.container}>
         <View style={{ flexDirection: "row" }}>
-          <HeaderButtons HeaderButtonComponent={IoniconsHeaderButton}>
-            <HeaderButton
-              title="MessagesIcon"
-              iconName="ios-locate"
-              iconSize={20}
-              onPress={this.startAtCurrentLocation}
-            />
-          </HeaderButtons>
           <TextInput
             placeholder="Starting location?"
+            onFocus={() =>
+              this.props.navigation.push("AddressInput", {
+                title: "Starting Location",
+                onConfirm: (
+                  location: string,
+                  locationCoords: { latitude: number; longitude: number }
+                ) => {
+                  this.setState({
+                    startLocationInput: location,
+                    startLocation: locationCoords
+                  });
+                  this.getDrivingRoute();
+                }
+              })
+            }
             style={Styles.queryBox}
             value={this.state.startLocationInput}
-            onChangeText={text => this.setState({ startLocationInput: text })}
+            // onChangeText={text => this.setState({ startLocationInput: text })}
           />
         </View>
         <View style={{ flexDirection: "row" }}>
-          <HeaderButtons HeaderButtonComponent={IoniconsHeaderButton}>
-            <HeaderButton
-              title="MessagesIcon"
-              iconName="ios-locate"
-              iconSize={20}
-              onPress={this.endAtCurrentLocation}
-            />
-          </HeaderButtons>
           <TextInput
             placeholder="Where to?"
             // autoComplete= "street-address"
             // textContentType="streetAddressLine1"
+            onFocus={() =>
+              this.props.navigation.push("AddressInput", {
+                title: "Destination",
+                withCurrentLocation: false, // who would ever want to go to their current location?
+                onConfirm: (
+                  location: string,
+                  locationCoords: { latitude: number; longitude: number }
+                ) => {
+                  this.setState({
+                    destinationLocationInput: location,
+                    destinationLocation: locationCoords
+                  });
+                  this.getDrivingRoute();
+                }
+              })
+            }
             style={Styles.queryBox}
             value={this.state.destinationLocationInput}
-            onChangeText={text =>
-              this.setState({ destinationLocationInput: text })
-            }
-            onSubmitEditing={this.search}
+            // onChangeText={text =>
+            //   this.setState({ destinationLocationInput: text })
+            // }
+            // onSubmitEditing={this.search}
           />
-          <Button title="Home" onPress={() => this.HomeWorkFavPress("Home")} />
-          <Button title="Work" onPress={() => this.HomeWorkFavPress("Work")} />
         </View>
         <DateTimePicker
           mode="datetime"
@@ -427,6 +300,7 @@ export default class AddressPicker extends React.Component<Props, state> {
           <View>
             <Button
               title="Arrival By Time?"
+              color={Colors.primary}
               onPress={() => this.setState({ isDateTimePickerVisible: true })}
             />
           </View>
@@ -448,28 +322,35 @@ export default class AddressPicker extends React.Component<Props, state> {
             />
           </View>
         </View>
-        <MapView
-          style={{ flex: 1 }}
-          provider="google"
-          region={region} //this line relates to the map = 0 error
-          onPress={this.onMapPress}
-        >
-          <Marker coordinate={this.state.startLocation} />
-          {this.state.destinationLocation !== null && (
-            <Marker coordinate={this.state.destinationLocation}>
-              <Icon name="flag" size={30} color="red" />
-            </Marker>
-          )}
-          {this.state.drivingRoute && (
-            <Polyline
-              coordinates={this.state.drivingRoute.map((c: number[]) => ({
-                latitude: c[1],
-                longitude: c[0]
-              }))}
-              strokeWidth={2}
-            />
-          )}
-        </MapView>
+        {this.state.isLoading ? (
+          // an attempt to fix the map = 0 error
+          <View style={{ flex: 1 }}>
+            <ActivityIndicator size="large" />
+          </View>
+        ) : (
+          <MapView
+            style={{ flex: 1 }}
+            provider="google"
+            region={region} //this line relates to the map = 0 error
+            onPress={this.onMapPress}
+          >
+            <Marker coordinate={this.state.startLocation} />
+            {this.state.destinationLocation !== null && (
+              <Marker coordinate={this.state.destinationLocation}>
+                <Icon name="flag" size={30} color="red" />
+              </Marker>
+            )}
+            {this.state.drivingRoute && (
+              <Polyline
+                coordinates={this.state.drivingRoute.map((c: number[]) => ({
+                  latitude: c[1],
+                  longitude: c[0]
+                }))}
+                strokeWidth={2}
+              />
+            )}
+          </MapView>
+        )}
       </View>
     );
   }

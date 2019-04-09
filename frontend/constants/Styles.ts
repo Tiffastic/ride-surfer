@@ -46,20 +46,25 @@ let LightStyle: any = StyleSheet.create({
     backgroundColor: "white",
     color: "black",
     borderWidth: 1,
-    marginTop: 10,
-    marginBottom: 10,
+    marginTop: 5,
+    marginBottom: 5,
     marginLeft: 15,
     marginRight: 15,
+    padding: 5,
     fontSize: 24,
-    width: width / 2.3,
-    maxWidth: width / 2.3
+    width: width - 30
+    // maxWidth: width / 2.3
+  },
+  heading: {
+    fontSize: 24,
+    fontWeight: "bold"
   }
 });
 
 let DarkStyle: any = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "black"
+    backgroundColor: Colors.darkShades
   },
   containerProfile: {
     flex: 1,
@@ -99,13 +104,19 @@ let DarkStyle: any = StyleSheet.create({
     backgroundColor: "black",
     color: "white",
     borderWidth: 1,
-    marginTop: 10,
-    marginBottom: 10,
+    marginTop: 5,
+    marginBottom: 5,
     marginLeft: 15,
     marginRight: 15,
+    padding: 5,
     fontSize: 24,
-    width: width / 2.3,
-    maxWidth: width / 2.3
+    width: width - 30
+    // maxWidth: width / 2.3
+  },
+  heading: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: Colors.lightShades
   }
 });
 
@@ -134,4 +145,8 @@ export function setDark(bool: boolean) {
   for (let listener of listeners) {
     listener(Styles);
   }
+}
+
+export function getDark() {
+  return Styles === DarkStyle;
 }

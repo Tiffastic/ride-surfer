@@ -10,13 +10,13 @@ import { fetchAPI } from "../../network/Backend";
 import AddressPicker from "../../components/AddressPicker";
 import { Styles } from "../../constants/Styles";
 
+import AddressInputScreen from "./AddressInputScreen";
 import DriverPickerScreen from "./DriverPickerScreen";
 import DriverDetailsScreen from "./DriverDetailsScreen";
 import MessageContactsScreen from "./MessageContactsScreen";
 import MessageConversationsScreen from "./MessageConversationsScreen";
 import RateDriverScreen from "./RateDriverScreen";
 import RideInProgressScreen from "./RideInProgress";
-import PushNotificationsRegisterScreen from "../auth/PushNotificationsRegisterScreen";
 import GenericProfileScreen from "./GenericProfileScreen";
 import MessageNewChatSearchScreen from "./MessageNewChatSearch";
 import UserSettingsScreen from "../../screens/passenger/UserSettingsScreen";
@@ -165,6 +165,7 @@ class HomeScreen extends React.Component<{ navigation: any }> {
           </View>
         </View>
         <AddressPicker
+          navigation={this.props.navigation}
           onConfirm={
             this.state.mode === "Passenger"
               ? this.passengerConfirm
@@ -183,13 +184,13 @@ export default createStackNavigator(
     HomeScreen: {
       screen: HomeScreen
     },
+    AddressInput: AddressInputScreen,
     DriverPicker: DriverPickerScreen,
     DriverDetails: DriverDetailsScreen,
     MessageContacts: MessageContactsScreen,
     MessageConversations: MessageConversationsScreen,
     RideInProgress: RideInProgressScreen,
     RateDriver: RateDriverScreen,
-    PushNotificationsRegister: PushNotificationsRegisterScreen,
     GenericProfile: GenericProfileScreen,
     MessageNewChatSearch: MessageNewChatSearchScreen,
     UserSettings: UserSettingsScreen

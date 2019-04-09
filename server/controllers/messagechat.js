@@ -158,11 +158,11 @@ module.exports = {
     }
     model.sequelize
       .query(
-        'SELECT "recipientId" AS "partnerId", "firstName", "lastName", email, image AS "userImage", MyChats."chatId", message AS "chatMessage", Chats."createdAt" AS date' +
+        'SELECT "recipientId" AS "partnerId", "firstName", "lastName", email, image AS "userImage", MyChats."chatId", message AS "chatMessage", Chats."createdAt" AS date, Chats."senderId"' +
           ' FROM public."MyChats" AS MyChats' +
           ' INNER JOIN public."Users" AS Users ON MyChats."recipientId" = Users.id' +
           ' INNER JOIN public."Bios" AS Bios ON MyChats."recipientId" = Bios."userId"' +
-          ' INNER JOIN (SELECT rank() OVER (PARTITION BY "chatId" ORDER BY "createdAt" DESC) AS rank, "chatId", "createdAt", message FROM public."Chats") AS Chats ON MyChats."chatId" = Chats."chatId"' +
+          ' INNER JOIN (SELECT rank() OVER (PARTITION BY "chatId" ORDER BY "createdAt" DESC) AS rank, "chatId", "createdAt", message, "senderId" FROM public."Chats") AS Chats ON MyChats."chatId" = Chats."chatId"' +
           ' WHERE MyChats."senderId" = ' +
           req.query.meId +
           " AND Chats.rank = 1" +
@@ -390,5 +390,66 @@ module.exports = {
       })
 
       .catch(error => res.status(400).json({ message: error }));
+  },
+
+  getOurChatId(req, res) {
+    MyChats.findOne({
+      where: {
+        senderId: req.query.meId,
+        recipientId: req.query.youId
+      }
+    })
+      .then(result => {
+        if (!result) {
+          res.status(404).json({ message: "No such chats between you and me" });
+        } else {
+          res.status(200).json({ chatId: result.chatId });
+        }
+      })
+      .catch(err => res.status(400).json({ error: err }));
+  },
+
+  getChatIdAndRecipientPhoto(req, res) {
+    let hasChatId = false;
+    let hasImage = false;
+    let chatId;
+    let image;
+
+    MyChats.findOne({
+      where: {
+        senderId: req.query.meId,
+        recipientId: req.query.youId
+      }
+    })
+      .then(result => {
+        if (!result) {
+          res.status(404).json({ message: "No such chats between you and me" });
+        } else {
+          // res.status(200).json({ chatId: result.chatId });
+          chatId = result.chatId;
+          hasChatId = true;
+
+          if (hasChatId && hasImage) {
+            res.status(200).json({ chatId: chatId, userImage: image });
+          }
+        }
+      })
+
+      .catch(err => res.status(400).json({ error: err }));
+
+    Bios.findOne({ where: { userId: req.query.youId } })
+      .then(row => {
+        if (!row) {
+          res.status(404).json({ message: "No bio of you" });
+        } else {
+          image = row.image;
+          hasImage = true;
+
+          if (hasChatId && hasImage) {
+            res.status(200).json({ chatId: chatId, userImage: image });
+          }
+        }
+      })
+      .catch(err => res.status(400).json({ error: err }));
   }
 };

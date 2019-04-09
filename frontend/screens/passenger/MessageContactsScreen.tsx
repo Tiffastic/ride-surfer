@@ -5,7 +5,9 @@ import {
   View,
   Button,
   ScrollView,
-  ActivityIndicator
+  FlatList,
+  ActivityIndicator,
+  TouchableHighlight
 } from "react-native";
 import { Location } from "expo";
 import {
@@ -17,6 +19,7 @@ import { fetchAPI } from "../../network/Backend";
 import UserSession from "../../network/UserSession";
 
 import PreviousMessage from "../../components/PreviousChat";
+import PreviousChatSession from "../../components/PreviousChatSession";
 
 export default class MessageContactsScreen extends React.Component<{
   navigation: any;
@@ -30,8 +33,6 @@ export default class MessageContactsScreen extends React.Component<{
 
     this.getMyRecentChatSessions.bind(this);
     this.bootstrap.bind(this);
-
-    this.bootstrap();
   }
 
   state: any = {
@@ -48,7 +49,12 @@ export default class MessageContactsScreen extends React.Component<{
   componentWillUnmount() {
     clearStylesListener(this.onStylesChange);
   }
+
   private onStylesChange = () => this.forceUpdate();
+
+  componentDidMount() {
+    this.bootstrap();
+  }
 
   bootstrap = async () => {
     await this.getUserInfo(); // IMPORTANT, NEED userId first before we can move on
@@ -115,52 +121,97 @@ export default class MessageContactsScreen extends React.Component<{
       });
   };
 
-  render() {
-    if (this.state.isLoading_GetMyRecentChatSessions) {
-      return <ActivityIndicator />;
-    }
-
-    // create an array of previous chat messages
-    var myPreviousMessages: any = [];
-
-    this.state.recentPreviousChats.map((chat: any) => {
-      myPreviousMessages.push(
-        <View key={chat.userId}>
-          <PreviousMessage
-            chatId={chat.chatId}
-            message={chat.chatMessage}
-            recipientImage={chat.userImage}
-            firstName={chat.firstName}
-            lastName={chat.lastName}
-            date={this.formatDate(new Date(chat.date))}
-            recipientId={chat.partnerId}
-            recipientEmail={chat.email}
-            senderImage={this.state.userImage}
-            navigation={this.props.navigation}
-          />
-        </View>
-      );
+  continueChat(
+    id: number,
+    firstName: string,
+    lastName: string,
+    recipientImage: any,
+    email: string,
+    senderImage: any,
+    chatId: number
+  ) {
+    this.props.navigation.navigate("MessageConversations", {
+      recipientId: id,
+      recipientFirstName: firstName,
+      recipientLastName: lastName,
+      recipientImage: recipientImage,
+      recipientEmail: email,
+      userImage: senderImage,
+      chatId: chatId
     });
+  }
 
+  render() {
     return (
       <View style={Styles.container}>
         <View style={{ alignItems: "center" }}>
-          <Text>My Surf Messages</Text>
+          <Text
+            style={{
+              fontSize: 15,
+              fontStyle: "italic",
+              fontWeight: "bold",
+              color: "rgb(36, 167, 217)" //"rgb(39, 177, 211)" //"rgb(41, 181, 216)"
+            }}
+          >
+            My Surf Messages
+          </Text>
         </View>
 
-        <ScrollView showsVerticalScrollIndicator={false}>
-          {myPreviousMessages}
-        </ScrollView>
+        {this.state.isLoading_GetMyRecentChatSessions && <ActivityIndicator />}
 
-        <Button
-          title="New Chat"
-          onPress={() => {
-            this.props.navigation.navigate("MessageNewChatSearch", {
-              userImage: this.state.userImage,
-              senderId: this.state.userId
-            });
-          }}
-        />
+        {!this.state.isLoading_GetMyRecentChatSessions && (
+          <FlatList
+            style={{}}
+            data={this.state.recentPreviousChats}
+            extraData={this.state}
+            renderItem={({ item }: any) => (
+              <TouchableHighlight
+                underlayColor="rgb(30, 203, 234)"
+                onPress={() => {
+                  this.continueChat(
+                    item.partnerId,
+                    item.firstName,
+                    item.lastName,
+                    item.userImage,
+                    item.email,
+                    this.state.userImage,
+                    item.chatId
+                  );
+                }}
+              >
+                <PreviousChatSession
+                  chatId={item.chatId}
+                  message={item.chatMessage}
+                  recipientImage={item.userImage}
+                  firstName={item.firstName}
+                  lastName={item.lastName}
+                  date={this.formatDate(new Date(item.date))}
+                  recipientId={item.partnerId}
+                  recipientEmail={item.email}
+                  senderImage={this.state.userImage}
+                  messageColor={
+                    item.senderId == this.state.userId
+                      ? "rgb(208, 85, 88)"
+                      : "green"
+                  }
+                />
+              </TouchableHighlight>
+            )}
+          />
+        )}
+
+        <View style={{ marginLeft: 10, marginRight: 10 }}>
+          <Button
+            title="New Surf Chat"
+            color="rgb(36, 167, 217)" //"rgb(39, 177, 211)" //"rgb(41, 181, 216)"
+            onPress={() => {
+              this.props.navigation.navigate("MessageNewChatSearch", {
+                userImage: this.state.userImage,
+                senderId: this.state.userId
+              });
+            }}
+          />
+        </View>
       </View>
     );
   }
