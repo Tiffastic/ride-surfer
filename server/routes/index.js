@@ -42,6 +42,8 @@ module.exports = app => {
     })
   );
 
+  app.get("/verifyUserPassword", usersController.verifyUserPassword);
+
   app.get("/vehicles/", vehiclesController.retrieveAll);
   app.get("/vehicles/:id", vehiclesController.retrieve);
   app.get("/getUserVehicles", vehiclesController.getUserVehicles);

@@ -99,10 +99,6 @@ class ProfileScreen extends React.Component<{
     if (userDetails == null) throw ":(";
     this.setState({ user: userDetails });
 
-    AsyncStorage.getItem("userImage").then(item => {
-      this.setState({ userPhoto: item });
-    });
-
     this.getRatings();
     this.getUserPhoto();
   };
@@ -120,10 +116,15 @@ class ProfileScreen extends React.Component<{
     avgTimelinessRating: null as null | number,
     avgCleanlinessRating: null as null | number,
 
-    userPhoto: null
+    userPhoto: null,
+    updatedProfile: false
   };
 
-  updateProfile() {}
+  async updateProfile() {
+    var userDetails = await UserSession.get();
+    if (userDetails == null) throw ":(";
+    this.setState({ user: userDetails });
+  }
 
   getAvgOverallRating() {
     fetchAPI("/usersOverallRating/" + this.state.user.id)
@@ -379,7 +380,9 @@ export default createStackNavigator(
         headerTitle: "Profile",
         headerRight: (
           <Button
-            onPress={() => navigation.navigate("UpdateProfile")}
+            //navigate > go to instance of page if exist or push a new instance
+            //push > push a new instance even if one exist already
+            onPress={() => navigation.push("UpdateProfile")}
             title="Edit"
           />
         )
