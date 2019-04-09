@@ -30,10 +30,10 @@ export default class SignupDriverScreen extends React.Component<{
     header: headerMode
   };
   state = {
-    car_make: "",
-    car_model: "",
-    car_year: "",
-    car_plate: ""
+    car_make: null,
+    car_model: null,
+    car_year: null,
+    car_plate: null
   };
 
   render() {
@@ -77,10 +77,10 @@ export default class SignupDriverScreen extends React.Component<{
 
   private _saveAndGoBack = () => {
     this.props.navigation.state.params.returnData(
-      this.state.car_make.trim(),
-      this.state.car_model.trim(),
-      this.state.car_year.trim(),
-      this.state.car_plate.trim()
+      this.state.car_make,
+      this.state.car_model,
+      this.state.car_year,
+      this.state.car_plate
     );
     this.props.navigation.goBack();
   };
