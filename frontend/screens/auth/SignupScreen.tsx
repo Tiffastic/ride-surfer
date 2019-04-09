@@ -61,7 +61,7 @@ export default class SignupScreen extends React.Component<{ navigation: any }> {
           placeholder="First Name*"
           autoFocus={true}
           returnKeyType="done"
-          onChangeText={data => this.setState({ first_name: data.trim() })}
+          onChangeText={data => this.setState({ first_name: data })}
           onEndEditing={() => {}}
         />
 
@@ -69,7 +69,7 @@ export default class SignupScreen extends React.Component<{ navigation: any }> {
           style={Styles.textInput}
           placeholder="Last Name*"
           returnKeyType="done"
-          onChangeText={data => this.setState({ last_name: data.trim() })}
+          onChangeText={data => this.setState({ last_name: data })}
         />
 
         <TextInput
@@ -78,7 +78,7 @@ export default class SignupScreen extends React.Component<{ navigation: any }> {
           keyboardType="email-address"
           autoCapitalize="none"
           returnKeyType="done"
-          onChangeText={data => this.setState({ email: data.trim() })}
+          onChangeText={data => this.setState({ email: data })}
         />
 
         <TextInput
@@ -86,7 +86,7 @@ export default class SignupScreen extends React.Component<{ navigation: any }> {
           placeholder="Password*"
           returnKeyType="done"
           secureTextEntry={true}
-          onChangeText={data => this.setState({ password: data.trim() })}
+          onChangeText={data => this.setState({ password: data })}
         />
         <Button
           color={Colors.primary}
@@ -130,10 +130,10 @@ export default class SignupScreen extends React.Component<{ navigation: any }> {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        firstName: this.state.first_name,
-        lastName: this.state.last_name,
-        email: this.state.email,
-        password: this.state.password
+        firstName: this.state.first_name.trim(),
+        lastName: this.state.last_name.trim(),
+        email: this.state.email.trim(),
+        password: this.state.password.trim()
       })
     })
       .then(response => {
