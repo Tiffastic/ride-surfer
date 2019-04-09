@@ -11,6 +11,13 @@ import {
   ActivityIndicator
 } from "react-native";
 
+import { createStackNavigator } from "react-navigation";
+import HeaderButtons, { HeaderButton } from "react-navigation-header-buttons";
+import Colors from "../../constants/Colors";
+import Ionicons from "react-native-vector-icons/Ionicons";
+import MyStatsYearChoiceScreen from "./MyStatsYearChoiceScreen";
+import MyStatsMilesPerYearScreen from "./MyStatsMilesPerYear";
+
 import { fetchAPI } from "../../network/Backend";
 import UserSession from "../../network/UserSession";
 import StatsChart from "../../components/StatsChart";
@@ -18,17 +25,9 @@ import StatsChart from "../../components/StatsChart";
 //https://elpijimelon.files.wordpress.com/2015/04/planet-bumi-1.jpg
 const planetPic = require("../../assets/images/planet.jpg");
 
-if (Platform.OS === "android") {
-  var headerMode: any = null;
-}
-
-export default class MyStatsScreen extends React.Component<{
+class MyStatsScreen extends React.Component<{
   navigation: any;
 }> {
-  static navigationOptions = {
-    header: headerMode
-  };
-
   constructor(props: any) {
     super(props);
   }
@@ -97,11 +96,6 @@ export default class MyStatsScreen extends React.Component<{
             tickFormatYAxis.push(roundMiles);
           });
 
-          console.log("data = ", data);
-          console.log("tickValuesXAxis = ", tickValuesXAxis);
-          console.log("tickFormatXAxis = ", tickFormatXAxis);
-          console.log("tickFormatYAxis = ", tickFormatYAxis);
-
           var milesPerYearBarGraph = (
             <StatsChart
               tickValuesXAxis={tickValuesXAxis}
@@ -142,17 +136,12 @@ export default class MyStatsScreen extends React.Component<{
             tickFormatYAxis.push(roundCo2);
           });
 
-          console.log("data = ", data);
-          console.log("tickValuesXAxis = ", tickValuesXAxis);
-          console.log("tickFormatXAxis = ", tickFormatXAxis);
-          console.log("tickFormatYAxis = ", tickFormatYAxis);
-
           var co2PerYearBarGraph = (
             <StatsChart
               tickValuesXAxis={tickValuesXAxis}
               tickFormatXAxis={tickFormatXAxis}
               tickFormatYAxis={tickFormatYAxis}
-              style={{ data: { fill: "rgb(18, 194, 36)" } }}
+              style={{ data: { fill: "rgb(18, 194, 196)" } }} //"rgb(18, 194, 36)"  // "rgb(15, 230, 198)"
               data={data}
               x="year"
               y="co2"
@@ -170,11 +159,16 @@ export default class MyStatsScreen extends React.Component<{
 
   goToWebsite(url: string) {
     if (Platform.OS === "android") {
-      console.log("click picture");
       Linking.openURL(url);
     } else {
       LinkingIOS.openURL("http://google.com");
     }
+  }
+
+  goToStatsYearChoiceScreen(statsChoice: string) {
+    this.props.navigation.push("MyStatsYearChoice", {
+      statsChoice: statsChoice
+    });
   }
 
   render() {
@@ -190,39 +184,55 @@ export default class MyStatsScreen extends React.Component<{
     // UserID, Miles
     // based on their miles, show their stats
 
-    const data = [{ quarter: 1, earnings: 13000 }];
-
-    const co2Data = [{ year: 2018, co2: 10 }];
-
     return (
       <ScrollView>
-        <View style={{ alignItems: "center" }}>
+        <View style={{ alignItems: "center", marginBottom: 15 }}>
           <View>
             <Text style={styles.pageHeading}>My Ride-Surfing Stats</Text>
           </View>
           <View style={{ marginTop: 40 }}>
-            <Text style={[styles.statsHeading, { color: "rgb(33, 120, 216)" }]}>
+            <Text
+              style={[styles.statsHeading, { color: "rgb(33, 120, 216)" }]} //
+            >
               Ride-Surfing Miles
             </Text>
-            <Text style={styles.statsData}>
-              Total {this.state.myTotalRideSharingMiles} miles
-            </Text>
+
+            <TouchableHighlight
+              underlayColor="yellow"
+              onPress={() => {
+                this.goToStatsYearChoiceScreen("Ride-Surf Miles");
+              }}
+            >
+              <Text style={[styles.statsData, styles.textLink]}>
+                Total {this.state.myTotalRideSharingMiles} miles
+              </Text>
+            </TouchableHighlight>
           </View>
 
-          <View>{this.state.milesPerYearChart}</View>
+          <TouchableHighlight underlayColor="rgb(91, 125, 242)">
+            {this.state.milesPerYearChart}
+          </TouchableHighlight>
 
           <View style={{ marginTop: 30 }}>
             <Text
               style={[
                 styles.statsHeading,
-                { textAlign: "center", color: "green" }
+                { textAlign: "center", color: "rgb(13, 138, 145)" } //"rgb(15, 230, 198)""rgb(18, 194, 36)""rgb(14, 151, 158)"
               ]}
             >
               CO2 Savings
             </Text>
-            <Text style={styles.statsData}>
-              Total {this.state.myTotalCO2Saved} kg
-            </Text>
+
+            <TouchableHighlight
+              underlayColor="yellow"
+              onPress={() => {
+                this.goToStatsYearChoiceScreen("CO2");
+              }}
+            >
+              <Text style={[styles.statsData, styles.textLink]}>
+                Total {this.state.myTotalCO2Saved} kg
+              </Text>
+            </TouchableHighlight>
             <Text style={{ textAlign: "center", color: "rgb(66, 109, 183)" }}>
               (0.36 kg CO2 per mile)
             </Text>
@@ -236,10 +246,15 @@ export default class MyStatsScreen extends React.Component<{
               }
               underlayColor="rgb(46, 128, 210)"
             >
-              <Image
-                style={{ height: 350, width: 350, borderRadius: 350 }}
-                source={planetPic}
-              />
+              <View>
+                <Image
+                  style={{ height: 350, width: 350, borderRadius: 350 }}
+                  source={planetPic}
+                />
+                <Text style={[styles.textLink, { textAlign: "center" }]}>
+                  Learn more about CO2 calculations
+                </Text>
+              </View>
             </TouchableHighlight>
           </View>
         </View>
@@ -247,6 +262,56 @@ export default class MyStatsScreen extends React.Component<{
     );
   }
 }
+
+const IoniconsHeaderButton = (passMeFurther: any) => (
+  // the `passMeFurther` variable here contains props from <Item .../> as well as <HeaderButtons ... />
+  // and it is important to pass those props to `HeaderButton`
+  // then you may add some information like icon size or color (if you use icons)
+  <HeaderButton
+    {...passMeFurther}
+    IconComponent={Ionicons}
+    iconSize={40}
+    color={Colors.primary}
+    buttonStyle={{
+      // backgroundColor: "rgba(92, 99,216, 1)",
+      height: 60
+      // textAlignVertical: 'center',
+
+      // borderWidth: 0,
+      // borderRadius: 5
+    }}
+  />
+);
+export default createStackNavigator(
+  {
+    //RouteConfigs
+    MyStatsScreen: {
+      screen: MyStatsScreen,
+      navigationOptions: ({ navigation }: { navigation: any }) => ({
+        headerLeft: (
+          <HeaderButtons HeaderButtonComponent={IoniconsHeaderButton}>
+            <HeaderButton
+              title="ProfileIcon"
+              iconName="ios-menu"
+              onPress={() => navigation.openDrawer()}
+            />
+          </HeaderButtons>
+        ),
+        headerTitleStyle: {
+          textAlign: "center",
+          fontWeight: "bold",
+          height: 45,
+          flex: 1
+        }
+      })
+    },
+    MyStatsYearChoiceScreen: MyStatsYearChoiceScreen,
+    MyStatsMilesPerYear: MyStatsMilesPerYearScreen
+  },
+  {
+    initialRouteName: "MyStatsScreen"
+  }
+);
 
 const styles = StyleSheet.create({
   statsHeading: {
@@ -268,5 +333,10 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: "rgb(61, 84, 154)",
     fontWeight: "300"
+  },
+
+  textLink: {
+    color: "blue",
+    textDecorationLine: "underline"
   }
 });

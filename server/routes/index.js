@@ -180,4 +180,10 @@ module.exports = app => {
   app.get("/getMilesPerYearData", myStatsController.getMilesPerYearData);
 
   app.get("/getCO2PerYearData", myStatsController.getCO2PerYearData);
+
+  app.get("/getMyActiveYears", myStatsController.getMyActiveYears);
+
+  app.get("/getMilesPerMonthData", myStatsController.getMilesPerMonthData);
+
+  app.get("/getCO2PerMonthData", myStatsController.getCO2PerMonthData);
 };
