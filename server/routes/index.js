@@ -169,10 +169,15 @@ module.exports = app => {
     "/storeOurRidesIntoRideSharingMiles",
     rideSharingMilesController.storeBothOurRides
   );
+
+  app.get("/finishRideSharingMiles", rideSharingMilesController.finishRide);
+
   app.get(
     "/calculateStatsFromSurfMiles",
     myStatsController.calculateStatsFromSurfMiles
   );
 
-  app.get("/finishRideSharingMiles", rideSharingMilesController.finishRide);
+  app.get("/getMilesPerYearData", myStatsController.getMilesPerYearData);
+
+  app.get("/getCO2PerYearData", myStatsController.getCO2PerYearData);
 };
