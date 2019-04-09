@@ -16,10 +16,12 @@ module.exports = {
         if (driver.pushToken === null) {
           res.status(200).send("User not registered for push notification");
         } else {
+          console.log("driver = ", driver);
+          console.log("message = ", req.query.message);
           messages.push({
             to: driver.pushToken,
             sound: "default",
-            title: "Incoming Ride Surf Request",
+            title: "Surf News",
             body: req.query.message, //"May I surf a ride?",
             data: { withSome: "data" }
           });

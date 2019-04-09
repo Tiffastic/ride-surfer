@@ -17,7 +17,6 @@ import MessageContactsScreen from "./MessageContactsScreen";
 import MessageConversationsScreen from "./MessageConversationsScreen";
 import RateDriverScreen from "./RateDriverScreen";
 import RideInProgressScreen from "./RideInProgress";
-import PushNotificationsRegisterScreen from "../auth/PushNotificationsRegisterScreen";
 import GenericProfileScreen from "./GenericProfileScreen";
 import MessageNewChatSearchScreen from "./MessageNewChatSearch";
 import UserSettingsScreen from "../../screens/passenger/UserSettingsScreen";
@@ -192,7 +191,6 @@ export default createStackNavigator(
     MessageConversations: MessageConversationsScreen,
     RideInProgress: RideInProgressScreen,
     RateDriver: RateDriverScreen,
-    PushNotificationsRegister: PushNotificationsRegisterScreen,
     GenericProfile: GenericProfileScreen,
     MessageNewChatSearch: MessageNewChatSearchScreen,
     UserSettings: UserSettingsScreen

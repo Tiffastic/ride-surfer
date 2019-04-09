@@ -69,5 +69,15 @@ module.exports = {
           .catch(error => res.status(400).json(error));
       })
       .catch(error => res.status(400).json(error));
+  },
+
+  getUserVehicles(req, res) {
+    Vehicle.findAll({
+      where: {
+        userId: req.query.userId
+      }
+    })
+      .then(array => res.status(200).json({ vehicles: array }))
+      .catch(error => res.status(400).json({ message: error }));
   }
 };

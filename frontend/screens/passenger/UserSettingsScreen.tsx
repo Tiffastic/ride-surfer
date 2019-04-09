@@ -10,7 +10,8 @@ import {
   Platform,
   ActivityIndicator,
   TouchableHighlight,
-  Switch
+  Switch,
+  ColorPropType
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 
@@ -19,6 +20,7 @@ import Colors from "../../constants/Colors";
 import UserSession from "../../network/UserSession";
 import RSIcon from "../../components/RSIcon";
 import { fetchAPI } from "../../network/Backend";
+import { registerForPushNotifications } from "../../network/PushNotificationRegister";
 
 export default class SettingsScreen extends React.Component<{
   navigation: any;
@@ -146,6 +148,15 @@ export default class SettingsScreen extends React.Component<{
           value={this.state.work}
           onEdit={this.editWork}
         />
+
+        <View style={{ margin: 15 }}>
+          <Button
+            title="Reset Push Notification"
+            onPress={() => registerForPushNotifications()}
+            color="rgb(63, 197, 116)"
+          />
+        </View>
+
         <Text style={Styles.heading}>Experimental</Text>
         <View style={{ flexDirection: "row" }}>
           <Switch

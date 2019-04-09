@@ -6,7 +6,9 @@ import {
   Text,
   FlatList,
   TouchableHighlight,
-  Button
+  Button,
+  AsyncStorage,
+  ActivityIndicator
 } from "react-native";
 import Colors from "../../constants/Colors";
 import { Styles } from "../../constants/Styles";
@@ -35,6 +37,7 @@ export default class MyRidesDetailsScreen extends React.Component<{
   constructor(props: any) {
     super(props);
     this.getUserPhoto();
+    // this.getMyPhoto();
   }
 
   getUserPhoto = async () => {
@@ -48,13 +51,47 @@ export default class MyRidesDetailsScreen extends React.Component<{
       });
   };
 
+  startChatMessage() {
+    this.setState({ chatMessagePressed: true }, () => {
+      fetchAPI(
+        `/getChatIdAndRecipientPhoto?meId=${this.state.meId}&youId=${
+          this.state.ridePartner.id
+        }`
+      )
+        .then(response => response.json())
+
+        .then(responseJson => {
+          this.props.navigation.navigate("MessageConversations", {
+            recipientImage:
+              this.state.userPhoto !== null ? this.state.userPhoto : null,
+            recipientId: this.state.ridePartner.id,
+            recipientFirstName: this.state.ridePartner.firstName,
+            recipientLastName: this.state.ridePartner.lastName,
+            recipientEmail: this.state.ridePartner.email,
+            chatId: responseJson.chatId,
+            userImage: responseJson.userImage
+          });
+
+          // this.setState({ mePhoto: result });
+        })
+        .then(() => this.setState({ chatMessagePressed: false }))
+        .catch(err => {
+          alert("cannot send message: " + err);
+          this.setState({ chatMessagePressed: false });
+        });
+    });
+  }
+
   state = {
     destination: this.props.navigation.getParam("destination"),
     ridePartner: this.props.navigation.getParam("ridePartner"),
     rideDetails: this.props.navigation.getParam("rideDetails"),
     ridePartnerJourney: this.props.navigation.getParam("ridePartnerJourney"),
     type: this.props.navigation.getParam("type"),
-    userPhoto: null
+    userPhoto: null,
+    meId: this.props.navigation.getParam("meId"),
+    myPhoto: null,
+    chatMessagePressed: false
   };
 
   startRide = () => {
@@ -106,6 +143,24 @@ export default class MyRidesDetailsScreen extends React.Component<{
             </TouchableHighlight>
           )}
         />
+
+        {this.state.chatMessagePressed && (
+          <View style={{ marginLeft: 10, marginRight: 10, marginBottom: 10 }}>
+            <ActivityIndicator />
+          </View>
+        )}
+        {!this.state.chatMessagePressed && (
+          <View style={{ marginLeft: 10, marginRight: 10, marginBottom: 10 }}>
+            <Button
+              title="Message"
+              color="rgb(36, 167, 217)"
+              onPress={() => {
+                this.startChatMessage();
+              }}
+            />
+          </View>
+        )}
+
         <Button
           title="Start"
           onPress={this.startRide}
