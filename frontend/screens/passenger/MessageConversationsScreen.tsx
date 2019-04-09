@@ -171,6 +171,7 @@ export default class MessageConversationsScreen extends React.Component<{
 
   emitIsTypingMessage(textMessage: string) {
     this.state.socket.emit("typing", {
+      userIdSender: this.state.userId,
       userIdRecipient: this.props.navigation.getParam("recipientId"),
       senderIsTyping: textMessage !== "" ? true : false
     });
@@ -187,7 +188,7 @@ export default class MessageConversationsScreen extends React.Component<{
 
       this.state.socket.emit("chat", {
         userIdSender: this.state.userId,
-        senderImage: this.state.userImage,
+        // senderImage: this.state.userImage,
         userIdRecipient: this.props.navigation.getParam("recipientId"),
         message: myMessage,
         date: todayFormatDate
@@ -275,8 +276,11 @@ export default class MessageConversationsScreen extends React.Component<{
       this.state.socket.emit("login", { userId: this.state.userId });
       // listening for websocket to emit "chat" signal  -- look in bin/wwww
       this.state.socket.on("chat", (msgInfo: any) => {
-        // we've received a chat message from some phone
-        if (msgInfo.userIdRecipient === this.state.userId) {
+        // we've received a chat message from someone, but it has to be the person we are currently chatting with in order to show up on our screen
+        if (
+          msgInfo.userIdRecipient === this.state.userId &&
+          msgInfo.userIdSender === this.props.navigation.getParam("recipientId")
+        ) {
           var formatMsgDate = this.formatDate(new Date(msgInfo.date));
           // if we are the recipient of this message, then display this message to us
           // this may not be the most secure way, but it works for now
@@ -287,7 +291,8 @@ export default class MessageConversationsScreen extends React.Component<{
               <ChatMessage
                 key={messageNum.toString()}
                 message={msgInfo.message}
-                image={msgInfo.senderImage}
+                // image={msgInfo.senderImage}
+                image={this.props.navigation.getParam("recipientImage")}
                 role="recipient"
                 date={formatMsgDate}
                 showDate={this.currentDateChanged(formatMsgDate)}
@@ -300,7 +305,10 @@ export default class MessageConversationsScreen extends React.Component<{
       });
 
       this.state.socket.on("typing", (msgInfo: any) => {
-        if (msgInfo.userIdRecipient === this.state.userId) {
+        if (
+          msgInfo.userIdRecipient === this.state.userId &&
+          msgInfo.userIdSender === this.props.navigation.getParam("recipientId")
+        ) {
           this.setState({ senderIsTyping: msgInfo.senderIsTyping });
         }
       });
@@ -380,12 +388,15 @@ export default class MessageConversationsScreen extends React.Component<{
                 </Text>
               </View>
             </TouchableHighlight>
-            {this.state.senderIsTyping ? (
-              <Text style={{ color: "purple" }}>...is typing</Text>
-            ) : (
-              <Text />
-            )}
           </View>
+
+          {this.state.senderIsTyping ? (
+            <Text style={{ color: "purple", textAlign: "center" }}>
+              ...is typing
+            </Text>
+          ) : (
+            <Text />
+          )}
 
           {this.state.keyboardAppeared && (
             <ScrollView
