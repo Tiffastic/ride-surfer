@@ -61,10 +61,13 @@ export default class UpdateProfileScreen extends React.Component<{
   _bootstrapAsync = async () => {
     let userDetails = await UserSession.get();
     if (userDetails == null) return;
-    this.state.userId = userDetails.id;
 
+    this.setState({ userId: userDetails.id });
+    //this.state.userId = userDetails.id;
+
+    console.log();
     // get user previously stored information:
-    fetchAPI("/users/" + this.state.userId)
+    await fetchAPI("/users/" + this.state.userId)
       .then(response => response.json())
       .then(response => {
         this.state.first_name = response.firstName;
@@ -75,8 +78,11 @@ export default class UpdateProfileScreen extends React.Component<{
         this.state.work = response.work;
 
         this.setState({ ...this.state });
+        console.log("inside fetch: ", this.state);
       })
       .catch(error => console.log(error));
+
+    console.log("outside fetch: ", this.state);
   };
 
   updateMyProfile() {
