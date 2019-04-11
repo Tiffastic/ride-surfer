@@ -132,7 +132,7 @@ export default class SignupScreen extends React.Component<{ navigation: any }> {
       body: JSON.stringify({
         firstName: this.state.first_name.trim(),
         lastName: this.state.last_name.trim(),
-        email: this.state.email.trim(),
+        email: this.state.email.trim().toLowerCase(),
         password: this.state.password.trim()
       })
     })

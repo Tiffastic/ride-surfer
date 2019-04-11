@@ -114,8 +114,8 @@ export default class LoginScreen extends React.Component<{ navigation: any }> {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        email: this.state.email,
-        password: this.state.password
+        email: this.state.email.trim().toLowerCase(),
+        password: this.state.password.trim()
       })
     })
       .then(response => {
