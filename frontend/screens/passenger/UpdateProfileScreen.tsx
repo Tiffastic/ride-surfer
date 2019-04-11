@@ -63,9 +63,7 @@ export default class UpdateProfileScreen extends React.Component<{
     if (userDetails == null) return;
 
     this.setState({ userId: userDetails.id });
-    //this.state.userId = userDetails.id;
 
-    console.log();
     // get user previously stored information:
     await fetchAPI("/users/" + this.state.userId)
       .then(response => response.json())
@@ -78,11 +76,8 @@ export default class UpdateProfileScreen extends React.Component<{
         this.state.work = response.work;
 
         this.setState({ ...this.state });
-        console.log("inside fetch: ", this.state);
       })
       .catch(error => console.log(error));
-
-    console.log("outside fetch: ", this.state);
   };
 
   updateMyProfile() {
