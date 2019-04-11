@@ -18,9 +18,6 @@ module.exports = (sequelize, DataTypes) => {
         validate: {
           notEmpty: {
             msg: "First name is empty"
-          },
-          isAlpha: {
-            msg: "First name must contain letters"
           }
         }
       },
@@ -30,9 +27,6 @@ module.exports = (sequelize, DataTypes) => {
         validate: {
           notEmpty: {
             msg: "Last name is empty"
-          },
-          isAlpha: {
-            msg: "Last name must contain letters"
           }
         }
       },

@@ -9,6 +9,7 @@ const bios = require("./bios");
 const journeyRidesPhotos = require("./journeyRidePhotos");
 const messagechats = require("./messagechat");
 const rideSharingMiles = require("./rideSharingMiles");
+const forgotPassword = require("./forgotPassword");
 const myStats = require("./myStats");
 
 module.exports = {
@@ -23,5 +24,6 @@ module.exports = {
   journeyRidesPhotos,
   messagechats,
   rideSharingMiles,
+  forgotPassword
   myStats
 };

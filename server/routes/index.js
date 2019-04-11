@@ -9,6 +9,7 @@ const calculateRatingsController = require("../controllers").calculateRatings;
 const biosController = require("../controllers").bios;
 const journeyRidesPhotosController = require("../controllers")
   .journeyRidesPhotos;
+const forgotPasswordController = require("../controllers").forgotPassword;
 
 const messagechatController = require("../controllers").messagechats;
 const rideSharingMilesController = require("../controllers").rideSharingMiles;
@@ -22,6 +23,7 @@ module.exports = app => {
       "Access-Control-Allow-Headers",
       "Origin, X-Requested-With, Content-Type, Accept"
     );
+    res.header("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, HEAD");
     next();
   });
 
@@ -43,6 +45,8 @@ module.exports = app => {
       message: "Method Not Allowed"
     })
   );
+
+  app.get("/verifyUserPassword", usersController.verifyUserPassword);
 
   app.get("/vehicles/", vehiclesController.retrieveAll);
   app.get("/vehicles/:id", vehiclesController.retrieve);
@@ -158,6 +162,16 @@ module.exports = app => {
   app.post(
     "/sendChatMessageByRecipientId",
     messagechatController.sendChatMessage_ByRecipientId
+  );
+
+  app.get(
+    "/sendPasswordResetLink",
+    forgotPasswordController.sendPasswordResetLink
+  );
+
+  app.get(
+    "/verifiedResetPasswordLink",
+    forgotPasswordController.verifiedResetPasswordLink
   );
 
   app.post(

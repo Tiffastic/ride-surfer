@@ -5,20 +5,11 @@ import {
   ScrollView,
   StyleSheet,
   Button,
-  Platform,
-  View,
-  KeyboardAvoidingView,
-  ActivityIndicator,
-  Alert
+  Platform
 } from "react-native";
 
 import Colors from "../../constants/Colors";
 import { Styles } from "../../constants/Styles";
-import { fetchAPI } from "../../network/Backend";
-
-import UserSession from "../../network/UserSession";
-import { isLoaded } from "expo-font";
-
 if (Platform.OS === "android") {
   var headerMode: any = null;
 }

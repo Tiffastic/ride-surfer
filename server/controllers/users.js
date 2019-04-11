@@ -67,6 +67,24 @@ module.exports = {
       .catch(error => res.status(400).json(error));
   },
 
+  verifyUserPassword(req, res) {
+    User.findOne({
+      where: {
+        id: req.query.userId
+      }
+    })
+      .then(result => {
+        if (!result) {
+          return res.status(404).json({ message: "Email does not exist." });
+        } else if (!bcrypt.compareSync(req.query.password, result.password)) {
+          res.status(404).json({ message: "Password does not match" });
+        }
+
+        res.status(200).json(result);
+      })
+      .catch(error => res.status(400).json(error));
+  },
+
   destroy(req, res) {
     return User.findByPk(req.params.id)
       .then(user => {
