@@ -159,11 +159,7 @@ class MyStatsScreen extends React.Component<{
   }
 
   goToWebsite(url: string) {
-    if (Platform.OS === "android") {
-      Linking.openURL(url);
-    } else {
-      LinkingIOS.openURL("http://google.com");
-    }
+    Linking.openURL(url);
   }
 
   goToStatsYearChoiceScreen(statsChoice: string) {
