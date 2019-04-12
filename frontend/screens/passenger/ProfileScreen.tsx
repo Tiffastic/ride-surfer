@@ -7,7 +7,9 @@ import {
   Button,
   Image,
   TouchableHighlight,
-  AsyncStorage
+  AsyncStorage,
+  Alert,
+  PixelRatio
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { createStackNavigator } from "react-navigation";
@@ -56,6 +58,7 @@ class ProfileScreen extends React.Component<{
       headerRight: (
         <Button
           onPress={() => navigation.navigate("UpdateProfile")}
+          color={Colors.primary}
           title="Edit"
         />
       ),
@@ -183,7 +186,7 @@ class ProfileScreen extends React.Component<{
       .then(response => response.json())
       .then(response => {
         this.setState({ userPhoto: response.userImage });
-        AsyncStorage.setItem("userImage", response.userImage); // save user image in async storage
+        // AsyncStorage.setItem("userImage", response.userImage); // save user image in async storage
       })
       .catch(error => {
         console.log(error);
@@ -253,12 +256,34 @@ class ProfileScreen extends React.Component<{
     }
   };
 
+  updateUserPhoto = () => {
+    Alert.alert(
+      "Update Profile Picture",
+      "",
+      [
+        {
+          text: "Choose Photo",
+          onPress: this.uploadUserPhoto
+        },
+        {
+          text: "Take Photo",
+          onPress: this.takeUserPhoto
+        },
+        {
+          text: "Cancel",
+          onPress: () => {}
+        }
+      ],
+      { cancelable: true }
+    );
+  };
+
   render() {
     let name = this.state.user.firstName + " " + this.state.user.lastName;
 
     let round = (number: number) => Math.round(number * 10) / 10;
     return (
-      <View style={Styles.containerProfile}>
+      <View style={[Styles.containerProfile, { marginTop: 20 }]}>
         <View style={{ flexDirection: "row" }}>
           <TouchableHighlight
             style={{
@@ -272,8 +297,12 @@ class ProfileScreen extends React.Component<{
             }}
           >
             <Image
-              style={{ height: 150, width: 150, borderRadius: 75 }}
-              resizeMode="center"
+              style={{
+                height: 150,
+                width: 150,
+                borderRadius: PixelRatio.get() === 3 ? 300 : 75
+              }}
+              resizeMode="cover"
               source={
                 this.state.userPhoto !== null
                   ? { uri: this.state.userPhoto }
@@ -286,7 +315,7 @@ class ProfileScreen extends React.Component<{
               name="pencil"
               size={30}
               color={Colors.darkAccent}
-              onPress={this.uploadUserPhoto.bind(this)}
+              onPress={this.updateUserPhoto}
             />
           </View>
         </View>
@@ -304,7 +333,10 @@ class ProfileScreen extends React.Component<{
             this.state.user.vehicles[0].model !== null &&
             this.state.user.vehicles[0].plate !== null && (
               <FlatList
-                data={this.state.user.vehicles}
+                data={this.state.user.vehicles.map((v: any, i) => ({
+                  ...v,
+                  key: i
+                }))}
                 extraData={this.state}
                 keyExtractor={(item: any, index: any) => item.id}
                 renderItem={({ item, separators }: any) => (
@@ -356,13 +388,6 @@ class ProfileScreen extends React.Component<{
               </Text>
             )}
         </View>
-
-        <Button
-          title="Take picture"
-          onPress={() => {
-            this.takeUserPhoto();
-          }}
-        />
       </View>
     );
   }
@@ -381,6 +406,7 @@ export default createStackNavigator(
             //push > push a new instance even if one exist already
             onPress={() => navigation.push("UpdateProfile")}
             title="Edit"
+            color={Colors.primary}
           />
         ),
         headerStyle: {

@@ -85,7 +85,7 @@ class DriverItem extends React.Component<{ driver: any; navigation: any }> {
                 ? { uri: this.state.userPhoto }
                 : defaultProfilePic
             }
-            style={{ width: 50, height: 50 }}
+            style={{ width: 50, height: 50, borderRadius: 25 }}
           />
         </TouchableOpacity>
         <Text style={[styles.searchResultsName, Styles.colorFlip]}>

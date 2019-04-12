@@ -393,7 +393,7 @@ export default class DriverDetailsScreen extends React.Component<{
           <View style={{ flexDirection: "row" }}>
             <TouchableOpacity onPress={this.viewProfile}>
               <Image
-                style={{ width: 50, height: 50 }}
+                style={{ width: 50, height: 50, borderRadius: 25 }}
                 source={
                   this.state.driverProfilePic !== null
                     ? { uri: this.state.driverProfilePic }
