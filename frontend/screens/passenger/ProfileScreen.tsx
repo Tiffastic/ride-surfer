@@ -99,7 +99,11 @@ class ProfileScreen extends React.Component<{
   _bootstrapAsync = async () => {
     var userDetails = await UserSession.get();
     if (userDetails == null) throw ":(";
-    this.setState({ user: userDetails });
+    this.setState({ user: userDetails }, () => {
+      console.log(
+        "PROFILE SCREEN USER first name: " + this.state.user.firstName
+      );
+    });
 
     this.getRatings();
     this.getUserPhoto();
@@ -121,12 +125,6 @@ class ProfileScreen extends React.Component<{
     userPhoto: null,
     updatedProfile: false
   };
-
-  async updateProfile() {
-    var userDetails = await UserSession.get();
-    if (userDetails == null) throw ":(";
-    this.setState({ user: userDetails });
-  }
 
   getAvgOverallRating() {
     fetchAPI("/usersOverallRating/" + this.state.user.id)
