@@ -261,7 +261,6 @@ class ProfileScreen extends React.Component<{
     let name = this.state.user.firstName + " " + this.state.user.lastName;
 
     let round = (number: number) => Math.round(number * 10) / 10;
-
     return (
       <View style={Styles.containerProfile}>
         <View style={{ flexDirection: "row" }}>
@@ -355,20 +354,9 @@ class ProfileScreen extends React.Component<{
             this.takeUserPhoto();
           }}
         />
-
-        <Button
-          title="Log Out"
-          onPress={this._logOut}
-          color={Colors.darkAccent}
-        />
       </View>
     );
   }
-
-  _logOut = async () => {
-    await UserSession.clear();
-    this.props.navigation.navigate("Auth");
-  };
 }
 
 export default createStackNavigator(

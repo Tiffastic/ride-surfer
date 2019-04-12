@@ -47,9 +47,10 @@ export async function registerForPushNotifications() {
     body: JSON.stringify({ pushToken: token })
   })
     .then(response => {
-      alert("Push Notification Registered");
+      return true;
     })
     .catch(error => {
       console.log(error);
     });
+  return false;
 }

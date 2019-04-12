@@ -297,12 +297,23 @@ export default class AddressPicker extends React.Component<Props, state> {
             marginBottom: 5
           }}
         >
-          <View>
-            <Button
-              title="Arrival By Time?"
-              color={Colors.primary}
+          <View style={{ flexDirection: "row", marginLeft: 5 }}>
+            <TouchableOpacity
               onPress={() => this.setState({ isDateTimePickerVisible: true })}
-            />
+            >
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <Icon name="calendar" size={30} color={Colors.primary} />
+                <Text style={{ marginLeft: 5 }}>
+                  {this.state.arrivalAt.toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "numeric",
+                    day: "numeric",
+                    hour: "numeric",
+                    minute: "numeric"
+                  }) + " Arrival"}
+                </Text>
+              </View>
+            </TouchableOpacity>
           </View>
           <View>
             <Button

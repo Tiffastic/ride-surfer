@@ -127,6 +127,11 @@ export default class SettingsScreen extends React.Component<{
     });
   };
 
+  _logOut = async () => {
+    await UserSession.clear();
+    this.props.navigation.navigate("Auth");
+  };
+
   render() {
     return (
       <KeyboardAvoidingView
@@ -135,39 +140,58 @@ export default class SettingsScreen extends React.Component<{
         keyboardVerticalOffset={22}
         enabled
       >
-        <Text style={Styles.heading}>Locations</Text>
-        <PresetEditor
-          icon="ios-home"
-          name="Home"
-          value={this.state.home}
-          onEdit={this.editHome}
-        />
-        <PresetEditor
-          icon="ios-briefcase"
-          name="Work"
-          value={this.state.work}
-          onEdit={this.editWork}
-        />
-
-        <View style={{ margin: 15 }}>
-          <Button
-            title="Reset Push Notification"
-            onPress={() => registerForPushNotifications()}
-            color="rgb(63, 197, 116)"
+        <View style={{ margin: 10 }}>
+          <Text style={Styles.heading}>Locations</Text>
+          <PresetEditor
+            icon="ios-home"
+            name="Home"
+            value={this.state.home}
+            onEdit={this.editHome}
           />
-        </View>
-
-        <Text style={Styles.heading}>Experimental</Text>
-        <View style={{ flexDirection: "row" }}>
-          <Switch
-            trackColor={{ true: Colors.primary, false: Colors.lightShades }}
-            value={this.state.isDarkMode}
-            onValueChange={value => {
-              setDark(value);
-              this.setState({ isDarkMode: value });
-            }}
+          <PresetEditor
+            icon="ios-briefcase"
+            name="Work"
+            value={this.state.work}
+            onEdit={this.editWork}
           />
-          <Text>Dark Mode</Text>
+
+          <Text style={Styles.heading}>Experimental</Text>
+          <View
+            style={{ flexDirection: "row", alignItems: "center", margin: 10 }}
+          >
+            <Switch
+              trackColor={{ true: Colors.primary, false: Colors.lightShades }}
+              value={this.state.isDarkMode}
+              onValueChange={value => {
+                setDark(value);
+                this.setState({ isDarkMode: value });
+              }}
+            />
+            <Text style={{ marginLeft: 10 }}>Dark Mode</Text>
+          </View>
+
+          <View style={{ justifyContent: "flex-end" }}>
+            <Text style={Styles.heading}>General</Text>
+            <View style={{ margin: 15 }}>
+              <Button
+                title="Reset Push Notification"
+                onPress={() => {
+                  const registered = registerForPushNotifications();
+                  if (registered) {
+                    alert("Push Notification Registered");
+                  } else {
+                    alert("Error Registering for Push Notifications");
+                  }
+                }}
+                color={Colors.primary}
+              />
+            </View>
+            <Button
+              title="Log Out"
+              onPress={this._logOut}
+              color={Colors.primary}
+            />
+          </View>
         </View>
       </KeyboardAvoidingView>
     );
@@ -182,7 +206,7 @@ function PresetEditor(props: {
 }) {
   return (
     <View>
-      <Text>{props.name}</Text>
+      <Text style={{ marginTop: 5, marginBottom: 5 }}>{props.name}</Text>
       {props.value === null ? (
         <ActivityIndicator />
       ) : (
@@ -191,12 +215,13 @@ function PresetEditor(props: {
             style={{
               flexDirection: "row",
               alignContent: "center",
-              alignItems: "center"
+              alignItems: "center",
+              margin: 5
             }}
           >
             <RSIcon title={props.name} name={props.icon} size={16} />
             {props.value === "" ? (
-              <View style={{ flexDirection: "row" }}>
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
                 <RSIcon
                   color="grey"
                   title={"Add " + props.name}
@@ -208,7 +233,12 @@ function PresetEditor(props: {
             ) : (
               <View style={{ flexDirection: "row" }}>
                 <Text>{props.value}</Text>
-                <Icon name="pencil" size={30} color={Colors.darkAccent} />
+                <Icon
+                  name="pencil"
+                  size={25}
+                  color={Colors.darkAccent}
+                  style={{ marginLeft: 10 }}
+                />
               </View>
             )}
           </View>
