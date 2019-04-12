@@ -135,12 +135,6 @@ export default class UpdateProfileScreen extends React.Component<{
   };
 
   changeUserInfoAndVehicle = async () => {
-    console.log("THIS.STATE.VEHICLES = ", this.state.vehicles);
-    console.log("this.state.first_name = ", this.state.first_name);
-    console.log("this.state.last_name = ", this.state.last_name);
-    console.log("this.state.email = ", this.state.email);
-    console.log("this.state.current password = ", this.state.currentPassword);
-    console.log("this.state.newPassword = ", this.state.newPassword);
     var userInfoUpdateSuccess = false;
     var vehicleUpdateSuccess = false;
     // update User profile
