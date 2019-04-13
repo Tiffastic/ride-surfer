@@ -132,6 +132,7 @@ GROUP BY EXTRACT(YEAR FROM Miles."updatedAt");`,
         FROM public."RideSharingMiles"
         WHERE "userId" = ${meId} AND finished = true AND EXTRACT(YEAR FROM "updatedAt") = ${year}
         GROUP BY EXTRACT(MONTH FROM "updatedAt")
+        ORDER BY EXTRACT(MONTH FROM "updatedAt")
         `,
 
         { type: model.sequelize.QueryTypes.SELECT }
@@ -177,6 +178,7 @@ GROUP BY EXTRACT(YEAR FROM Miles."updatedAt");`,
       FROM public."RideSharingMiles"
       WHERE "userId" = ${meId} AND finished = true AND EXTRACT(YEAR FROM "updatedAt") = ${year}
       GROUP BY EXTRACT(MONTH FROM "updatedAt")
+      ORDER BY EXTRACT(MONTH FROM "updatedAt")
         `,
 
         { type: model.sequelize.QueryTypes.SELECT }
