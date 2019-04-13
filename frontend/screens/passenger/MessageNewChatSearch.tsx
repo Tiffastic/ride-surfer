@@ -20,7 +20,6 @@ export default class MessageContactsScreen extends React.Component<{
   };
   constructor(props: any) {
     super(props);
-    this.submitChatMessage.bind(this);
   }
 
   state: any = {

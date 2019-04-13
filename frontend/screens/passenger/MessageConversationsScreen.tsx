@@ -382,10 +382,6 @@ export default class MessageConversationsScreen extends React.Component<{
                   {this.props.navigation.getParam("recipientFirstName")}{" "}
                   {this.props.navigation.getParam("recipientLastName")}{" "}
                 </Text>
-
-                <Text style={{ color: "blue" }}>
-                  {this.props.navigation.getParam("recipientEmail")}{" "}
-                </Text>
               </View>
             </TouchableHighlight>
           </View>

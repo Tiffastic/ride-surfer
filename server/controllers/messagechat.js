@@ -5,6 +5,8 @@ const MyChats = require("../models").MyChats;
 const Chats = require("../models").Chats;
 const model = require("../models");
 
+const Sequelize = require("sequelize");
+
 module.exports = {
   getChatSessionInfo_ByEmail(req, res) {
     // from Users
@@ -20,9 +22,14 @@ module.exports = {
 
     // send back recipient info and chatId
 
+    var userEmail = req.query.email.toLowerCase();
     User.findOne({
       where: {
-        email: req.query.email
+        email: Sequelize.where(
+          Sequelize.fn("LOWER", Sequelize.col("email")),
+          "LIKE",
+          "%" + userEmail + "%"
+        )
       }
     }).then(user => {
       if (!user) {

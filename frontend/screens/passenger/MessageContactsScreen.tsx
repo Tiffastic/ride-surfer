@@ -29,10 +29,6 @@ export default class MessageContactsScreen extends React.Component<{
   };
   constructor(props: any) {
     super(props);
-    this.getUserInfo.bind(this);
-
-    this.getMyRecentChatSessions.bind(this);
-    this.bootstrap.bind(this);
   }
 
   state: any = {
@@ -48,12 +44,23 @@ export default class MessageContactsScreen extends React.Component<{
 
   componentWillUnmount() {
     clearStylesListener(this.onStylesChange);
+
+    // make sure that MessageContactsScreen will always refresh when navigate to it
+    this.willFocusMessageContacts.remove();
   }
 
   private onStylesChange = () => this.forceUpdate();
 
   componentDidMount() {
-    this.bootstrap();
+    // this.bootstrap();
+
+    // make sure that MessageContactsScreen will always refresh when navigate to it
+    this.willFocusMessageContacts = this.props.navigation.addListener(
+      "willFocus",
+      () => {
+        this.bootstrap();
+      }
+    );
   }
 
   bootstrap = async () => {
