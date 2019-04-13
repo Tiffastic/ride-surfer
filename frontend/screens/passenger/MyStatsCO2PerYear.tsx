@@ -38,10 +38,10 @@ export default class MyStatsCO2PerYear extends React.Component<{
 
     this.setState({ meId: userDetails.id });
 
-    this.getCO2PerMonthChart();
+    this.getCO2PerMonthData();
   };
 
-  getCO2PerMonthChart() {
+  getCO2PerMonthData() {
     fetchAPI(
       `/getCO2PerMonthData?meId=${this.state.meId}&year=${this.state.year}`
     ).then(async response => {
