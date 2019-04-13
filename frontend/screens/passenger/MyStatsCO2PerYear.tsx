@@ -23,6 +23,7 @@ export default class MyStatsCO2PerYear extends React.Component<{
     year: this.props.navigation.getParam("year"),
     meId: 0,
     co2PerYearChart: null,
+    co2PearYearList: null,
     isLoadingCO2PerMonthChart: true
   };
 
@@ -52,12 +53,24 @@ export default class MyStatsCO2PerYear extends React.Component<{
         var tickFormatXAxis: any = [];
         var tickFormatYAxis: any = [];
 
+        var co2PerYearText: any = [];
+
         data.map((row: any, index: number) => {
           tickValuesXAxis.push(row.month);
           tickFormatXAxis.push(row.month);
 
-          var roundCO2 = Math.round(row.co2);
+          var roundCO2 = Math.round(row.co2 * 100) / 100;
           tickFormatYAxis.push(roundCO2);
+
+          co2PerYearText.push(
+            <Text
+              key={index.toString()}
+              style={{ fontWeight: "bold", color: "rgb(66, 109, 183)" }}
+            >
+              {row.month}:{" "}
+              <Text style={{ fontWeight: "normal" }}>{roundCO2} kg</Text>
+            </Text>
+          );
         });
 
         var co2PerMonthBarGraph = (
@@ -74,6 +87,7 @@ export default class MyStatsCO2PerYear extends React.Component<{
 
         this.setState({
           co2PerYearChart: co2PerMonthBarGraph,
+          co2PearYearList: co2PerYearText,
           isLoadingCO2PerMonthChart: false
         });
       }
@@ -96,6 +110,7 @@ export default class MyStatsCO2PerYear extends React.Component<{
         </View>
 
         <View>{this.state.co2PerYearChart}</View>
+        <View style={{ marginLeft: 55 }}>{this.state.co2PearYearList}</View>
       </ScrollView>
     );
   }

@@ -22,6 +22,7 @@ import MyStatsCO2PerYearScreen from "./MyStatsCO2PerYear";
 import { fetchAPI } from "../../network/Backend";
 import UserSession from "../../network/UserSession";
 import StatsChart from "../../components/StatsChart";
+import { NavigationActions, StackActions } from "react-navigation";
 
 //https://elpijimelon.files.wordpress.com/2015/04/planet-bumi-1.jpg
 const planetPic = require("../../assets/images/planet.jpg");
@@ -34,8 +35,8 @@ class MyStatsScreen extends React.Component<{
   }
 
   state = {
-    myTotalRideSharingMiles: "X",
-    myTotalCO2Saved: "Y",
+    myTotalRideSharingMiles: 0,
+    myTotalCO2Saved: 0,
     isLoadingOverallStats: true,
     meId: 0,
     milesPerYearChart: null,
@@ -45,7 +46,18 @@ class MyStatsScreen extends React.Component<{
   };
 
   componentDidMount() {
-    this.bootstrap();
+    // make sure that Stats Screen will always refresh when navigated to it.
+    this.willFocusStatsScreen = this.props.navigation.addListener(
+      "willFocus",
+      () => {
+        this.bootstrap();
+      }
+    );
+  }
+
+  componentWillUnmount() {
+    // make sure that Stats Screen will always refresh when navigated to it.
+    -this.willFocusStatsScreen.remove();
   }
 
   bootstrap = async () => {
@@ -163,9 +175,18 @@ class MyStatsScreen extends React.Component<{
   }
 
   goToStatsYearChoiceScreen(statsChoice: string) {
-    this.props.navigation.push("MyStatsYearChoice", {
-      statsChoice: statsChoice
+    const resetAction = StackActions.reset({
+      index: 1,
+      key: null,
+      actions: [
+        NavigationActions.navigate({ routeName: "MyStatsScreen" }),
+        NavigationActions.navigate({
+          routeName: "MyStatsYearChoiceScreen",
+          params: { statsChoice: statsChoice }
+        })
+      ]
     });
+    this.props.navigation.dispatch(resetAction);
   }
 
   render() {
@@ -181,6 +202,7 @@ class MyStatsScreen extends React.Component<{
     // UserID, Miles
     // based on their miles, show their stats
 
+    var pluralMiles = this.state.myTotalRideSharingMiles > 1 ? "miles" : "mile";
     return (
       <ScrollView>
         <View style={{ alignItems: "center", marginBottom: 15 }}>
@@ -201,7 +223,7 @@ class MyStatsScreen extends React.Component<{
               }}
             >
               <Text style={[styles.statsData, styles.textLink]}>
-                Total {this.state.myTotalRideSharingMiles} miles
+                Total {this.state.myTotalRideSharingMiles} {pluralMiles}
               </Text>
             </TouchableHighlight>
           </View>
