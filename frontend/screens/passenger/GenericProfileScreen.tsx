@@ -5,11 +5,13 @@ import {
   StyleSheet,
   TouchableHighlight,
   Text,
-  Image
+  Image,
+  Linking
 } from "react-native";
 
 import { fetchAPI } from "../../network/Backend";
 import { Styles } from "../../constants/Styles";
+import Icon from "react-native-vector-icons/FontAwesome";
 
 export default class GenericProfileScreen extends React.Component<{
   navigation: any;
@@ -102,6 +104,10 @@ export default class GenericProfileScreen extends React.Component<{
       });
   }
 
+  openFacebook = async () => {
+    Linking.openURL(this.state.user.facebookLink);
+  };
+
   render() {
     let name = this.state.user.firstName + " " + this.state.user.lastName;
 
@@ -135,6 +141,7 @@ export default class GenericProfileScreen extends React.Component<{
         <View style={{ flex: 2, alignItems: "center" }}>
           <Text style={{ fontSize: 34, margin: 10 }}>{name}</Text>
           <Text style={{ fontSize: 20 }}>{this.state.user.email}</Text>
+
           {this.state.user.vehicles &&
             this.state.user.vehicles[0] &&
             this.state.user.vehicles[0].year !== null &&
@@ -185,6 +192,21 @@ export default class GenericProfileScreen extends React.Component<{
               <Text style={{ fontSize: 18 }}>No ratings yet</Text>
             )}
         </View>
+        {this.state.user.facebookLink && (
+          <View style={{ flex: 1 }}>
+            <TouchableHighlight
+              underlayColor="#99d9f4"
+              onPress={this.openFacebook.bind(this)}
+              style={{ height: 45, width: 45 }}
+            >
+              <Image
+                style={{ height: 45, width: 45, borderRadius: 5 }}
+                resizeMode="center"
+                source={require("../../assets/images/facebook-blue.png")}
+              />
+            </TouchableHighlight>
+          </View>
+        )}
       </View>
     );
   }

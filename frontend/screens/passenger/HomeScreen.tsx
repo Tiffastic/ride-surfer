@@ -196,7 +196,6 @@ export default createStackNavigator(
     RateDriver: RateDriverScreen,
     GenericProfile: GenericProfileScreen,
     MessageNewChatSearch: MessageNewChatSearchScreen,
-    UserSettings: UserSettingsScreen,
     MyStatsYearChoice: MyStatsYearChoiceScreen,
     MyStatsMilesPerYear: MyStatsMilesPerYearScreen,
     MyStatsCO2PerYear: MyStatsCO2PerYearScreen

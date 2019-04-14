@@ -1,18 +1,14 @@
 import React from "react";
 import {
-  StyleSheet,
   Text,
   KeyboardAvoidingView,
-  ScrollView,
-  TextInput,
   View,
   Button,
-  Platform,
   ActivityIndicator,
   TouchableHighlight,
-  Switch,
-  ColorPropType
+  Switch
 } from "react-native";
+import { createStackNavigator } from "react-navigation";
 import Icon from "react-native-vector-icons/FontAwesome";
 
 import { Styles, setDark, getDark } from "../../constants/Styles";
@@ -21,20 +17,44 @@ import UserSession from "../../network/UserSession";
 import RSIcon from "../../components/RSIcon";
 import { fetchAPI } from "../../network/Backend";
 import { registerForPushNotifications } from "../../network/PushNotificationRegister";
+import AddressInputScreen from "./AddressInputScreen";
+import Ionicons from "react-native-vector-icons/Ionicons";
+import HeaderButtons, { HeaderButton } from "react-navigation-header-buttons";
 
-export default class SettingsScreen extends React.Component<{
+const IoniconsHeaderButton = (passMeFurther: any) => (
+  // the `passMeFurther` variable here contains props from <Item .../> as well as <HeaderButtons ... />
+  // and it is important to pass those props to `HeaderButton`
+  // then you may add some information like icon size or color (if you use icons)
+  <HeaderButton
+    {...passMeFurther}
+    IconComponent={Ionicons}
+    iconSize={40}
+    color={Colors.primary}
+    buttonStyle={{
+      // backgroundColor: "rgba(92, 99,216, 1)",
+      height: 60
+      // textAlignVertical: 'center',
+
+      // borderWidth: 0,
+      // borderRadius: 5
+    }}
+  />
+);
+
+class SettingsScreen extends React.Component<{
   navigation: any;
 }> {
   static navigationOptions = ({ navigation }: any) => {
     return {
       headerTitle: "Settings",
-      headerRight: <View />,
       headerLeft: (
-        <RSIcon
-          title="Drawer"
-          name="ios-menu"
-          onPress={() => navigation.openDrawer()}
-        />
+        <HeaderButtons HeaderButtonComponent={IoniconsHeaderButton}>
+          <HeaderButton
+            title="ProfileIcon"
+            iconName="ios-menu"
+            onPress={() => navigation.openDrawer()}
+          />
+        </HeaderButtons>
       ),
       headerTitleStyle: {
         textAlign: "center",
@@ -88,7 +108,7 @@ export default class SettingsScreen extends React.Component<{
   };
 
   private editHome = () => {
-    this.props.navigation.push("AddressInput", {
+    this.props.navigation.push("AddressInputPresets", {
       title: "Set Home",
       withWorkHome: false,
       onConfirm: async (location: string, locationCoords: any) => {
@@ -108,7 +128,7 @@ export default class SettingsScreen extends React.Component<{
   };
 
   private editWork = () => {
-    this.props.navigation.push("AddressInput", {
+    this.props.navigation.push("AddressInputPresets", {
       title: "Set Work",
       withWorkHome: false,
       onConfirm: async (location: string, locationCoords: any) => {
@@ -197,6 +217,22 @@ export default class SettingsScreen extends React.Component<{
     );
   }
 }
+
+export default createStackNavigator(
+  {
+    //RouteConfigs
+    SettingsScreen: {
+      screen: SettingsScreen,
+      navigationOptions: ({ navigation }: { navigation: any }) => ({
+        headerTitle: "Settings"
+      })
+    },
+    AddressInputPresets: AddressInputScreen
+  },
+  {
+    initialRouteName: "SettingsScreen"
+  }
+);
 
 function PresetEditor(props: {
   icon: string;
