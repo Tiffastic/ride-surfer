@@ -80,7 +80,8 @@ export default class ForgotPasswordScreen extends React.Component<{
               textAlign: "center",
               marginTop: 20,
               fontSize: 25,
-              fontStyle: "italic"
+              fontStyle: "italic",
+              color: "rgb(129, 37, 95)"
             }}
           >
             Forgot Password
