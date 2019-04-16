@@ -111,8 +111,8 @@ module.exports = {
     // if matches, then set password in the User table
     // send an email to user telling them that their password has been reset and give them the temp password
 
-    const resetPassword = req.query.resetPassword.toLowerCase();
-    const userEmail = req.query.email;
+    const userEmail = req.query.email.toLowerCase();
+    const resetPassword = req.query.resetPassword;
 
     ForgottenPasswords.findOne({
       where: {
