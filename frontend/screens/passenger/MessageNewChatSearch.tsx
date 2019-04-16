@@ -50,7 +50,11 @@ export default class MessageContactsScreen extends React.Component<{
             userImage: this.props.navigation.getParam("userImage")
           });
 
-          this.setState({ recipientEmail: "" });
+          this.setState({
+            recipientEmail: "",
+            pressedSearch: false,
+            error: ""
+          });
         } else {
           this.setState({ error: responseJson.message, pressedSearch: false });
         }
