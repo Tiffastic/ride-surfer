@@ -15,7 +15,7 @@ module.exports = {
     // if matches, then set password in the User table
     // send an email to user telling them that their password has been reset and give them the temp password
 
-    const userEmail = req.query.email;
+    const userEmail = req.query.email.toLowerCase();
     const hostURL = req.query.url;
 
     // check to see that email exists in the Users table:
@@ -38,17 +38,29 @@ module.exports = {
         // store the randomly generated password and email in the ForgottenPasswords table
 
         // if the user has reset the password once already but never clicked on the verify link sent to their email
-        var promise1 = ForgottenPasswords.findOne({
-          where: { email: userEmail }
-        })
-          .then(result => {
-            if (result) {
-              result.destroy();
-            }
+        var promise1 = new Promise((resolve, reject) => {
+          ForgottenPasswords.findOne({
+            where: { email: userEmail }
           })
-          .catch(error => {
-            res.status(400).json({ message: error });
-          });
+            .then(result => {
+              if (result) {
+                result
+                  .destroy()
+                  .then(() => resolve("success"))
+                  .catch(destroyError => {
+                    reject(
+                      "destroy forgotten password row failure: " + destroyError
+                    );
+                  });
+              } else {
+                resolve("success");
+              }
+            })
+            .catch(error => {
+              res.status(400).json({ message: error });
+              reject("reject: " + error);
+            });
+        });
 
         var promise2 = ForgottenPasswords.create({
           email: userEmail,
@@ -77,7 +89,7 @@ module.exports = {
 
             transporter.sendMail(mailOptions, function(error, info) {
               if (error) {
-                res.status(400).json({ error: error });
+                res.status(400).json({ message: error });
               } else {
                 res
                   .status(200)
@@ -99,7 +111,7 @@ module.exports = {
     // if matches, then set password in the User table
     // send an email to user telling them that their password has been reset and give them the temp password
 
-    const resetPassword = req.query.resetPassword;
+    const resetPassword = req.query.resetPassword.toLowerCase();
     const userEmail = req.query.email;
 
     ForgottenPasswords.findOne({
