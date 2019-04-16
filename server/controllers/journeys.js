@@ -3,6 +3,8 @@ const User = require("../models").User;
 const Vehicle = require("../models").Vehicle;
 const https = require("https");
 const turf = require("@turf/turf");
+const Sequelize = require("../models").Sequelize;
+const Op = Sequelize.Op;
 
 function generateRidePlan(start, end, path) {
   start = turf.point([start.longitude, start.latitude]);
@@ -115,8 +117,22 @@ module.exports = {
     if (coords === null) {
       return res.status(401).json({ message: "Couldn't parse coords string" });
     }
+    let user = req.query["user"];
+    if (user === null) {
+      return res.status(401).json({ message: "Couldn't parse user string" });
+    }
+    let time = req.query["time"];
+    if (time === null) {
+      return res.status(401).json({ message: "Couldn't parse time string" });
+    }
     return Journey.findAll({
-      where: { isDriver: true },
+      where: {
+        [Op.and]: [
+          { isDriver: true },
+          { userId: { [Op.ne]: user } },
+          { arrivalAt: { [Op.lte]: time } }
+        ]
+      },
       include: [User]
     })
       .then(journeys => {

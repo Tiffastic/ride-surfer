@@ -17,6 +17,7 @@ import MapView, { Marker } from "react-native-maps";
 import { Styles } from "../../constants/Styles";
 import { fetchAPI } from "../../network/Backend";
 import { number, string } from "prop-types";
+import UserSession from "../../network/UserSession";
 
 const { width, height } = Dimensions.get("window");
 
@@ -120,7 +121,7 @@ export default class DriverPickerScreen extends React.Component<{
     });
   };
 
-  componentDidMount() {
+  componentDidMount = async () => {
     let origin = [this.state.origin.longitude, this.state.origin.latitude].join(
       ","
     );
@@ -129,7 +130,16 @@ export default class DriverPickerScreen extends React.Component<{
       this.state.destination.latitude
     ].join(",");
     let coords = [origin, dest].join(";");
-    fetchAPI(`/journeys/matches?coords=${encodeURIComponent(coords)}`)
+    let userDetails = await UserSession.get();
+    if (userDetails == null) return;
+
+    fetchAPI(
+      `/journeys/matches?user=${encodeURIComponent(
+        userDetails.id.toString()
+      )}&time=${encodeURIComponent(
+        this.state.arrivalAt
+      )}&coords=${encodeURIComponent(coords)}`
+    )
       .then(async resp => {
         let json = await resp.json();
         if (!resp.ok) {
@@ -150,7 +160,7 @@ export default class DriverPickerScreen extends React.Component<{
         console.log(error);
         this.setState({ errorMessage: error.toString() });
       });
-  }
+  };
 
   render() {
     let image = this.state.destination.preview;
