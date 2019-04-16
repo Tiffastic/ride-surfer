@@ -1,14 +1,13 @@
 import * as React from "react";
 import {
   TextInput,
-  StyleSheet,
   Button,
-  Text,
-  TouchableOpacity,
   View,
   Alert,
   Dimensions,
-  ActivityIndicator
+  ActivityIndicator,
+  TouchableOpacity,
+  Text
 } from "react-native";
 
 import Icon from "react-native-vector-icons/FontAwesome";
@@ -16,7 +15,6 @@ import Colors from "../constants/Colors";
 import HeaderButtons, { HeaderButton } from "react-navigation-header-buttons";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { fetchAPI } from "../network/Backend";
-import UserSession from "../network/UserSession";
 import {
   Styles,
   addStylesListener,
@@ -25,7 +23,6 @@ import {
 
 import { Permissions, Location } from "expo";
 import MapView, { Marker, Polyline } from "react-native-maps";
-import { geocodeAsync } from "expo-location";
 import DateTimePicker from "react-native-modal-datetime-picker";
 
 const { width, height } = Dimensions.get("window");
@@ -81,8 +78,10 @@ export default class AddressPicker extends React.Component<Props, state> {
   componentWillUnmount() {
     clearStylesListener(this.onStylesChange);
   }
-  private onStylesChange = () => this.forceUpdate();
-
+  private onStylesChange = () => {
+    this.forceUpdate();
+    this.props.navigation.setParams({});
+  };
   componentDidMount() {
     this.fetchCurrentLocation(position => {
       this.setState({
@@ -205,6 +204,192 @@ export default class AddressPicker extends React.Component<Props, state> {
     };
   }
 
+  googleMaps: any = [
+    {
+      elementType: "geometry",
+      stylers: [
+        {
+          color: "#212121"
+        }
+      ]
+    },
+    {
+      elementType: "labels.icon",
+      stylers: [
+        {
+          visibility: "off"
+        }
+      ]
+    },
+    {
+      elementType: "labels.text.fill",
+      stylers: [
+        {
+          color: "#757575"
+        }
+      ]
+    },
+    {
+      elementType: "labels.text.stroke",
+      stylers: [
+        {
+          color: "#212121"
+        }
+      ]
+    },
+    {
+      featureType: "administrative",
+      elementType: "geometry",
+      stylers: [
+        {
+          color: "#757575"
+        }
+      ]
+    },
+    {
+      featureType: "administrative.country",
+      elementType: "labels.text.fill",
+      stylers: [
+        {
+          color: "#9e9e9e"
+        }
+      ]
+    },
+    {
+      featureType: "administrative.land_parcel",
+      stylers: [
+        {
+          visibility: "off"
+        }
+      ]
+    },
+    {
+      featureType: "administrative.locality",
+      elementType: "labels.text.fill",
+      stylers: [
+        {
+          color: "#bdbdbd"
+        }
+      ]
+    },
+    {
+      featureType: "poi",
+      elementType: "labels.text.fill",
+      stylers: [
+        {
+          color: "#757575"
+        }
+      ]
+    },
+    {
+      featureType: "poi.park",
+      elementType: "geometry",
+      stylers: [
+        {
+          color: "#181818"
+        }
+      ]
+    },
+    {
+      featureType: "poi.park",
+      elementType: "labels.text.fill",
+      stylers: [
+        {
+          color: "#616161"
+        }
+      ]
+    },
+    {
+      featureType: "poi.park",
+      elementType: "labels.text.stroke",
+      stylers: [
+        {
+          color: "#1b1b1b"
+        }
+      ]
+    },
+    {
+      featureType: "road",
+      elementType: "geometry.fill",
+      stylers: [
+        {
+          color: "#2c2c2c"
+        }
+      ]
+    },
+    {
+      featureType: "road",
+      elementType: "labels.text.fill",
+      stylers: [
+        {
+          color: "#8a8a8a"
+        }
+      ]
+    },
+    {
+      featureType: "road.arterial",
+      elementType: "geometry",
+      stylers: [
+        {
+          color: "#373737"
+        }
+      ]
+    },
+    {
+      featureType: "road.highway",
+      elementType: "geometry",
+      stylers: [
+        {
+          color: "#3c3c3c"
+        }
+      ]
+    },
+    {
+      featureType: "road.highway.controlled_access",
+      elementType: "geometry",
+      stylers: [
+        {
+          color: "#4e4e4e"
+        }
+      ]
+    },
+    {
+      featureType: "road.local",
+      elementType: "labels.text.fill",
+      stylers: [
+        {
+          color: "#616161"
+        }
+      ]
+    },
+    {
+      featureType: "transit",
+      elementType: "labels.text.fill",
+      stylers: [
+        {
+          color: "#757575"
+        }
+      ]
+    },
+    {
+      featureType: "water",
+      elementType: "geometry",
+      stylers: [
+        {
+          color: "#000000"
+        }
+      ]
+    },
+    {
+      featureType: "water",
+      elementType: "labels.text.fill",
+      stylers: [
+        {
+          color: "#3d3d3d"
+        }
+      ]
+    }
+  ];
   render() {
     let region = {
       latitude: this.state.startLocation.latitude,
@@ -218,7 +403,6 @@ export default class AddressPicker extends React.Component<Props, state> {
         this.state.startLocation
       ]);
     }
-
     return (
       <View style={Styles.container}>
         <View style={{ flexDirection: "row" }}>
@@ -252,6 +436,7 @@ export default class AddressPicker extends React.Component<Props, state> {
             onFocus={() =>
               this.props.navigation.push("AddressInput", {
                 title: "Destination",
+
                 withCurrentLocation: false, // who would ever want to go to their current location?
                 onConfirm: (
                   location: string,
@@ -340,10 +525,20 @@ export default class AddressPicker extends React.Component<Props, state> {
           </View>
         ) : (
           <MapView
+            key={
+              Styles.colorFlip.backgroundColor === Colors.darkBackground
+                ? "dark"
+                : "light"
+            }
             style={{ flex: 1 }}
             provider="google"
             region={region} //this line relates to the map = 0 error
             onPress={this.onMapPress}
+            customMapStyle={
+              Styles.colorFlip.backgroundColor == Colors.darkBackground
+                ? this.googleMaps
+                : []
+            }
           >
             <Marker coordinate={this.state.startLocation} />
             {this.state.destinationLocation !== null && (
@@ -358,6 +553,11 @@ export default class AddressPicker extends React.Component<Props, state> {
                   longitude: c[0]
                 }))}
                 strokeWidth={2}
+                strokeColor={
+                  Styles.colorFlip.backgroundColor == Colors.darkBackground
+                    ? "white"
+                    : "black"
+                }
               />
             )}
           </MapView>
