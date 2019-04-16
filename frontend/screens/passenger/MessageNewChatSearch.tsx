@@ -33,9 +33,9 @@ export default class MessageContactsScreen extends React.Component<{
 
   startNewChatSession() {
     fetchAPI(
-      `/getChatSessionInfo?email=${
-        this.state.recipientEmail
-      }&meId=${this.props.navigation.getParam("senderId")}`
+      `/getChatSessionInfo?email=${this.state.recipientEmail.toLowerCase()}&meId=${this.props.navigation.getParam(
+        "senderId"
+      )}`
     )
       .then(async response => {
         let responseJson = await response.json();

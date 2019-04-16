@@ -22,14 +22,11 @@ module.exports = {
 
     // send back recipient info and chatId
 
-    var userEmail = req.query.email.toLowerCase();
+    var userEmail = req.query.email;
+
     User.findOne({
       where: {
-        email: Sequelize.where(
-          Sequelize.fn("LOWER", Sequelize.col("email")),
-          "LIKE",
-          "%" + userEmail + "%"
-        )
+        email: userEmail
       }
     }).then(user => {
       if (!user) {
