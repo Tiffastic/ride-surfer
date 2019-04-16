@@ -22,7 +22,7 @@ module.exports = {
 
     // send back recipient info and chatId
 
-    var userEmail = req.query.email;
+    var userEmail = req.query.email.toLowerCase();
 
     User.findOne({
       where: {
