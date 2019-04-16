@@ -72,10 +72,30 @@ const drawer = createDrawerNavigator(
               color: "white"
             }}
           >
-            My Ride
+            My Rides
           </Text>
         ),
         drawerIcon: <Icon name="ios-car" size={24} color="white" />
+      }
+    },
+    MyStats: {
+      screen: MyStatsScreen,
+      navigationOptions: {
+        drawerLabel: (
+          <Text
+            style={{
+              fontSize: 18,
+              fontWeight: "bold",
+              textAlign: "left",
+              paddingBottom: 20,
+              paddingTop: 20,
+              color: "white"
+            }}
+          >
+            My Stats
+          </Text>
+        ),
+        drawerIcon: <Icon name="ios-stats" size={24} color="white" />
       }
     },
     UserSettings: {
