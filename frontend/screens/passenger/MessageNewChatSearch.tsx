@@ -31,7 +31,7 @@ export default class MessageContactsScreen extends React.Component<{
     pressedSearch: false
   };
 
-  submitChatMessage() {
+  startNewChatSession() {
     fetchAPI(
       `/getChatSessionInfo?email=${
         this.state.recipientEmail
@@ -81,7 +81,7 @@ export default class MessageContactsScreen extends React.Component<{
           // get picture and recipient's user id from backend
           // pass that info to MessageConversationsScreen
           this.setState({ pressedSearch: true }, () => {
-            this.submitChatMessage();
+            this.startNewChatSession();
           });
         }}
       />
@@ -105,7 +105,7 @@ export default class MessageContactsScreen extends React.Component<{
             value={this.state.recipientEmail}
             placeholder="RideSurfer@Email.com"
             onSubmitEditing={() => {
-              this.submitChatMessage();
+              this.startNewChatSession();
             }}
             onChangeText={
               typed => this.setState({ recipientEmail: typed.trim() }) // trim the email so that there is no trailing white space
