@@ -149,7 +149,7 @@ export default class UpdateProfileScreen extends React.Component<{
       body: JSON.stringify({
         firstName: this.state.first_name.trim(),
         lastName: this.state.last_name.trim(),
-        email: this.state.email.trim(),
+        email: this.state.email.trim().toLowerCase(),
         password:
           this.state.newPassword === ""
             ? this.state.currentPassword
