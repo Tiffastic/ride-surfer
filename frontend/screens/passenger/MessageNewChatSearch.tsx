@@ -60,7 +60,6 @@ export default class MessageContactsScreen extends React.Component<{
   };
   componentWillMount() {
     addStylesListener(this.onStylesChange);
-  
   }
   componentWillUnmount() {
     clearStylesListener(this.onStylesChange);
