@@ -492,10 +492,15 @@ export default class AddressPicker extends React.Component<Props, state> {
                   {this.state.arrivalAt.toLocaleDateString("en-US", {
                     year: "numeric",
                     month: "numeric",
-                    day: "numeric",
-                    hour: "numeric",
-                    minute: "numeric"
-                  }) + " Arrival"}
+                    day: "numeric"
+                  }) +
+                    " " +
+                    this.state.arrivalAt.toLocaleTimeString("en-US", {
+                      hour12: true,
+                      hour: "numeric",
+                      minute: "numeric"
+                    }) +
+                    " Arrival"}
                 </Text>
               </View>
             </TouchableOpacity>
