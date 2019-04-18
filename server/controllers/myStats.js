@@ -43,7 +43,8 @@ module.exports = {
         `SELECT EXTRACT(YEAR FROM Miles."updatedAt") AS Year, SUM(miles) AS Miles
 	FROM public."RideSharingMiles" AS Miles
 	WHERE "userId" = ${meId}  AND finished = true
-	GROUP BY EXTRACT(YEAR FROM Miles."updatedAt");`,
+  GROUP BY EXTRACT(YEAR FROM Miles."updatedAt")
+  ORDER BY EXTRACT(YEAR FROM Miles."updatedAt")`,
 
         { type: model.sequelize.QueryTypes.SELECT }
       )
@@ -65,7 +66,8 @@ module.exports = {
         `SELECT EXTRACT(YEAR FROM Miles."updatedAt") AS Year, SUM(miles)*0.36 AS CO2
 FROM public."RideSharingMiles" AS Miles
 WHERE "userId" = ${meId}  AND finished = true
-GROUP BY EXTRACT(YEAR FROM Miles."updatedAt");`,
+GROUP BY EXTRACT(YEAR FROM Miles."updatedAt")
+ORDER BY EXTRACT(YEAR FROM Miles."updatedAt")`,
 
         { type: model.sequelize.QueryTypes.SELECT }
       )
@@ -87,7 +89,8 @@ GROUP BY EXTRACT(YEAR FROM Miles."updatedAt");`,
         `
         SELECT DISTINCT EXTRACT(YEAR FROM "updatedAt") AS Year
       FROM public."RideSharingMiles" AS Miles
-      WHERE "userId" = ${meId} AND finished = true`,
+      WHERE "userId" = ${meId} AND finished = true
+      ORDER BY EXTRACT(YEAR FROM Miles."updatedAt")`,
 
         { type: model.sequelize.QueryTypes.SELECT }
       )
@@ -132,6 +135,7 @@ GROUP BY EXTRACT(YEAR FROM Miles."updatedAt");`,
         FROM public."RideSharingMiles"
         WHERE "userId" = ${meId} AND finished = true AND EXTRACT(YEAR FROM "updatedAt") = ${year}
         GROUP BY EXTRACT(MONTH FROM "updatedAt")
+        ORDER BY EXTRACT(MONTH FROM "updatedAt")
         `,
 
         { type: model.sequelize.QueryTypes.SELECT }
@@ -177,6 +181,7 @@ GROUP BY EXTRACT(YEAR FROM Miles."updatedAt");`,
       FROM public."RideSharingMiles"
       WHERE "userId" = ${meId} AND finished = true AND EXTRACT(YEAR FROM "updatedAt") = ${year}
       GROUP BY EXTRACT(MONTH FROM "updatedAt")
+      ORDER BY EXTRACT(MONTH FROM "updatedAt")
         `,
 
         { type: model.sequelize.QueryTypes.SELECT }

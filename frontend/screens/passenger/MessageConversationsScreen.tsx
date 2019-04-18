@@ -14,8 +14,11 @@ import {
   TouchableOpacity
 } from "react-native";
 import Colors from "../../constants/Colors";
-import { Styles } from "../../constants/Styles";
-
+import {
+  Styles,
+  addStylesListener,
+  clearStylesListener
+} from "../../constants/Styles";
 import ChatMessage from "../../components/ChatMessage";
 
 // web socket to communicate with server and server can send out signals to other phones
@@ -28,8 +31,31 @@ const defaultPic = require("../../assets/images/default-profile.png");
 export default class MessageConversationsScreen extends React.Component<{
   navigation: any;
 }> {
-  static navigationOptions = {
-    title: "Message Details"
+  static navigationOptions = ({ navigation }: any) => {
+    return {
+      title: "Message Details",
+      headerRight: <Text />,
+      headerStyle: {
+        backgroundColor:
+          Styles.colorFlip.backgroundColor === Colors.darkBackground
+            ? Colors.darkBackground
+            : Colors.lightBackground
+      },
+      headerTitleStyle: {
+        textAlign: "center",
+        fontWeight: "bold",
+        flex: 1,
+        color:
+          Styles.colorFlip.backgroundColor === Colors.darkBackground
+            ? Colors.darkText
+            : Colors.lightText,
+        height: 45
+      },
+      headerTintColor:
+        Styles.colorFlip.backgroundColor === Colors.darkBackground
+          ? Colors.darkText
+          : Colors.lightText
+    };
   };
 
   constructor(props: any) {
@@ -52,6 +78,14 @@ export default class MessageConversationsScreen extends React.Component<{
     chatMessageNum: 0
   };
 
+  componentWillMount() {
+    addStylesListener(this.onStylesChange);
+  }
+
+  private onStylesChange = () => {
+    this.forceUpdate();
+    this.props.navigation.setParams({});
+  };
   getUserDetails = async () => {
     let userDetails = await UserSession.get();
     if (userDetails == null) return;
@@ -241,6 +275,8 @@ export default class MessageConversationsScreen extends React.Component<{
     // this works
     this.keyboardDidShowListener.remove();
     this.keyboardDidHideListener.remove();
+
+    clearStylesListener(this.onStylesChange);
   }
 
   _keyboardDidShow = () => {
@@ -357,9 +393,9 @@ export default class MessageConversationsScreen extends React.Component<{
     // https://stackoverflow.com/questions/29310553/is-it-possible-to-keep-a-scrollview-scrolled-to-the-bottom
 
     return (
-      <View style={styles.container}>
+      <View style={Styles.container}>
         <KeyboardAvoidingView
-          style={styles.container}
+          style={Styles.container}
           keyboardVerticalOffset={100}
           behavior="padding"
           enabled
@@ -378,12 +414,12 @@ export default class MessageConversationsScreen extends React.Component<{
                   }
                 />
 
-                <Text style={{ color: "blue" }}>
+                <Text style={Styles.color}>
                   {this.props.navigation.getParam("recipientFirstName")}{" "}
                   {this.props.navigation.getParam("recipientLastName")}{" "}
                 </Text>
 
-                <Text style={{ color: "blue" }}>
+                <Text style={Styles.color}>
                   {this.props.navigation.getParam("recipientEmail")}{" "}
                 </Text>
               </View>
@@ -423,7 +459,7 @@ export default class MessageConversationsScreen extends React.Component<{
           )}
 
           <TextInput
-            style={{ padding: 15 }}
+            style={[{ padding: 15 }, Styles.color]}
             placeholder="Message..."
             value={this.state.textMessage}
             onChangeText={textMessage => {
@@ -439,7 +475,7 @@ export default class MessageConversationsScreen extends React.Component<{
 
           <Button
             title="Send"
-            color="rgb(36, 167, 217)"
+            color={Colors.primary}
             onPress={() => {
               this.submitChatMessage();
             }}
@@ -449,10 +485,3 @@ export default class MessageConversationsScreen extends React.Component<{
     );
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff"
-  }
-});

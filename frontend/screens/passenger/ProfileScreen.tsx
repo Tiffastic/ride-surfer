@@ -7,7 +7,9 @@ import {
   Button,
   Image,
   TouchableHighlight,
-  AsyncStorage
+  AsyncStorage,
+  Alert,
+  PixelRatio
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { createStackNavigator } from "react-navigation";
@@ -56,6 +58,7 @@ class ProfileScreen extends React.Component<{
       headerRight: (
         <Button
           onPress={() => navigation.navigate("UpdateProfile")}
+          color={Colors.primary}
           title="Edit"
         />
       ),
@@ -91,8 +94,10 @@ class ProfileScreen extends React.Component<{
   componentWillUnmount() {
     clearStylesListener(this.onStylesChange);
   }
-  private onStylesChange = () => this.forceUpdate();
-
+  private onStylesChange = () => {
+    this.forceUpdate();
+    this.props.navigation.setParams({});
+  };
   // Fetch the token from storage then navigate to our appropriate place
   _bootstrapAsync = async () => {
     var userDetails = await UserSession.get();
@@ -119,12 +124,6 @@ class ProfileScreen extends React.Component<{
     userPhoto: null,
     updatedProfile: false
   };
-
-  async updateProfile() {
-    var userDetails = await UserSession.get();
-    if (userDetails == null) throw ":(";
-    this.setState({ user: userDetails });
-  }
 
   getAvgOverallRating() {
     fetchAPI("/usersOverallRating/" + this.state.user.id)
@@ -187,7 +186,7 @@ class ProfileScreen extends React.Component<{
       .then(response => response.json())
       .then(response => {
         this.setState({ userPhoto: response.userImage });
-        AsyncStorage.setItem("userImage", response.userImage); // save user image in async storage
+        // AsyncStorage.setItem("userImage", response.userImage); // save user image in async storage
       })
       .catch(error => {
         console.log(error);
@@ -257,12 +256,34 @@ class ProfileScreen extends React.Component<{
     }
   };
 
+  updateUserPhoto = () => {
+    Alert.alert(
+      "Update Profile Picture",
+      "",
+      [
+        {
+          text: "Choose Photo",
+          onPress: this.uploadUserPhoto
+        },
+        {
+          text: "Take Photo",
+          onPress: this.takeUserPhoto
+        },
+        {
+          text: "Cancel",
+          onPress: () => {}
+        }
+      ],
+      { cancelable: true }
+    );
+  };
+
   render() {
     let name = this.state.user.firstName + " " + this.state.user.lastName;
 
     let round = (number: number) => Math.round(number * 10) / 10;
     return (
-      <View style={Styles.containerProfile}>
+      <View style={[Styles.containerProfile, { marginTop: 20 }]}>
         <View style={{ flexDirection: "row" }}>
           <TouchableHighlight
             style={{
@@ -276,8 +297,12 @@ class ProfileScreen extends React.Component<{
             }}
           >
             <Image
-              style={{ height: 150, width: 150, borderRadius: 75 }}
-              resizeMode="center"
+              style={{
+                height: 150,
+                width: 150,
+                borderRadius: PixelRatio.get() === 3 ? 300 : 75
+              }}
+              resizeMode="cover"
               source={
                 this.state.userPhoto !== null
                   ? { uri: this.state.userPhoto }
@@ -290,13 +315,17 @@ class ProfileScreen extends React.Component<{
               name="pencil"
               size={30}
               color={Colors.darkAccent}
-              onPress={this.uploadUserPhoto.bind(this)}
+              onPress={this.updateUserPhoto}
             />
           </View>
         </View>
         <View style={{ flex: 2, alignItems: "center" }}>
-          <Text style={{ fontSize: 34, margin: 10 }}>{name}</Text>
-          <Text style={{ fontSize: 20 }}>{this.state.user.email}</Text>
+          <Text style={[{ fontSize: 34, margin: 10 }, Styles.colorFlip]}>
+            {name}
+          </Text>
+          <Text style={[{ fontSize: 20 }, Styles.colorFlip]}>
+            {this.state.user.email}
+          </Text>
           {this.state.user.vehicles &&
             this.state.user.vehicles[0] &&
             this.state.user.vehicles[0].year !== null &&
@@ -304,15 +333,25 @@ class ProfileScreen extends React.Component<{
             this.state.user.vehicles[0].model !== null &&
             this.state.user.vehicles[0].plate !== null && (
               <FlatList
-                data={this.state.user.vehicles}
+                data={this.state.user.vehicles.map((v: any, i) => ({
+                  ...v,
+                  key: i
+                }))}
                 extraData={this.state}
                 keyExtractor={(item: any, index: any) => item.id}
                 renderItem={({ item, separators }: any) => (
-                  <View style={{ flex: 1, alignItems: "center" }}>
-                    <Text style={{ fontSize: 20 }}>
+                  <View
+                    style={[
+                      { flex: 1, alignItems: "center" },
+                      Styles.colorFlip
+                    ]}
+                  >
+                    <Text style={[{ fontSize: 20 }, Styles.colorFlip]}>
                       {item.year + " " + item.make + " " + item.model}
                     </Text>
-                    <Text style={{ fontSize: 20 }}>{item.plate}</Text>
+                    <Text style={[{ fontSize: 20 }, Styles.colorFlip]}>
+                      {item.plate}
+                    </Text>
                   </View>
                 )}
               />
@@ -321,22 +360,22 @@ class ProfileScreen extends React.Component<{
 
         <View style={{ flex: 1, alignItems: "center", margin: 10 }}>
           {this.state.avgOverallRating !== null && (
-            <Text style={{ fontSize: 18 }}>
+            <Text style={[{ fontSize: 18 }, Styles.colorFlip]}>
               Overall: {round(this.state.avgOverallRating)} ★
             </Text>
           )}
           {this.state.avgSafetyRating !== null && (
-            <Text style={{ fontSize: 18 }}>
+            <Text style={[{ fontSize: 18 }, Styles.colorFlip]}>
               Safety: {round(this.state.avgSafetyRating)} ★
             </Text>
           )}
           {this.state.avgTimelinessRating !== null && (
-            <Text style={{ fontSize: 18 }}>
+            <Text style={[{ fontSize: 18 }, Styles.colorFlip]}>
               Timeliness: {round(this.state.avgTimelinessRating)} ★
             </Text>
           )}
           {this.state.avgCleanlinessRating !== null && (
-            <Text style={{ fontSize: 18 }}>
+            <Text style={[{ fontSize: 18 }, Styles.colorFlip]}>
               Cleanliness: {round(this.state.avgCleanlinessRating)} ★
             </Text>
           )}
@@ -344,16 +383,11 @@ class ProfileScreen extends React.Component<{
             !this.state.avgSafetyRating &&
             !this.state.avgTimelinessRating &&
             !this.state.avgCleanlinessRating && (
-              <Text style={{ fontSize: 18 }}>No ratings yet</Text>
+              <Text style={[{ fontSize: 18 }, Styles.colorFlip]}>
+                No ratings yet
+              </Text>
             )}
         </View>
-
-        <Button
-          title="Take picture"
-          onPress={() => {
-            this.takeUserPhoto();
-          }}
-        />
       </View>
     );
   }
@@ -372,8 +406,25 @@ export default createStackNavigator(
             //push > push a new instance even if one exist already
             onPress={() => navigation.push("UpdateProfile")}
             title="Edit"
+            color={Colors.primary}
           />
-        )
+        ),
+        headerStyle: {
+          backgroundColor:
+            Styles.colorFlip.backgroundColor === Colors.darkBackground
+              ? Colors.darkBackground
+              : Colors.lightBackground
+        },
+        headerTitleStyle: {
+          textAlign: "center",
+          fontWeight: "bold",
+          flex: 1,
+          color:
+            Styles.colorFlip.backgroundColor === Colors.darkBackground
+              ? Colors.darkText
+              : Colors.lightText,
+          height: 45
+        }
       })
     },
     UpdateProfile: UpdateProfileScreen
@@ -382,20 +433,3 @@ export default createStackNavigator(
     initialRouteName: "HomeScreen"
   }
 );
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingTop: 15,
-    backgroundColor: "#fff",
-    alignItems: "center"
-  },
-  tableRow: {
-    flexDirection: "row"
-  },
-  uploadButton: {
-    width: 256,
-    height: 50,
-    backgroundColor: "blue"
-  }
-});

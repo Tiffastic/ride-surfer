@@ -10,8 +10,7 @@ import {
 } from "react-native";
 import { createStackNavigator } from "react-navigation";
 import Icon from "react-native-vector-icons/FontAwesome";
-
-import { Styles, setDark, getDark } from "../../constants/Styles";
+import { Styles, setDark, isDark } from "../../constants/Styles";
 import Colors from "../../constants/Colors";
 import UserSession from "../../network/UserSession";
 import RSIcon from "../../components/RSIcon";
@@ -44,27 +43,6 @@ const IoniconsHeaderButton = (passMeFurther: any) => (
 class SettingsScreen extends React.Component<{
   navigation: any;
 }> {
-  static navigationOptions = ({ navigation }: any) => {
-    return {
-      headerTitle: "Settings",
-      headerLeft: (
-        <HeaderButtons HeaderButtonComponent={IoniconsHeaderButton}>
-          <HeaderButton
-            title="ProfileIcon"
-            iconName="ios-menu"
-            onPress={() => navigation.openDrawer()}
-          />
-        </HeaderButtons>
-      ),
-      headerTitleStyle: {
-        textAlign: "center",
-        fontWeight: "bold",
-        height: 45,
-        flex: 1
-      }
-    };
-  };
-
   constructor(props: any) {
     super(props);
   }
@@ -88,7 +66,7 @@ class SettingsScreen extends React.Component<{
   state = {
     home: null as null | string, // null when loading, empty string if unset
     work: null as null | string,
-    isDarkMode: getDark()
+    isDarkMode: isDark()
   };
 
   private saveUserValue = async (data: any) => {
@@ -185,6 +163,7 @@ class SettingsScreen extends React.Component<{
               onValueChange={value => {
                 setDark(value);
                 this.setState({ isDarkMode: value });
+                this.props.navigation.setParams({});
               }}
             />
             <Text style={{ marginLeft: 10 }}>Dark Mode</Text>
@@ -224,7 +203,37 @@ export default createStackNavigator(
     SettingsScreen: {
       screen: SettingsScreen,
       navigationOptions: ({ navigation }: { navigation: any }) => ({
-        headerTitle: "Settings"
+        headerTitle: "Settings",
+        headerRight: <Text />,
+        headerLeft: (
+          <HeaderButtons HeaderButtonComponent={IoniconsHeaderButton}>
+            <HeaderButton
+              title="ProfileIcon"
+              iconName="ios-menu"
+              onPress={() => navigation.openDrawer()}
+            />
+          </HeaderButtons>
+        ),
+        headerStyle: {
+          backgroundColor:
+            Styles.colorFlip.backgroundColor === Colors.darkBackground
+              ? Colors.darkBackground
+              : Colors.lightBackground
+        },
+        headerTitleStyle: {
+          textAlign: "center",
+          fontWeight: "bold",
+          flex: 1,
+          color:
+            Styles.colorFlip.backgroundColor === Colors.darkBackground
+              ? Colors.darkText
+              : Colors.lightText,
+          height: 45
+        },
+        headerTintColor:
+          Styles.colorFlip.backgroundColor === Colors.darkBackground
+            ? Colors.darkText
+            : Colors.lightText
       })
     },
     AddressInputPresets: AddressInputScreen
@@ -242,7 +251,9 @@ function PresetEditor(props: {
 }) {
   return (
     <View>
-      <Text style={{ marginTop: 5, marginBottom: 5 }}>{props.name}</Text>
+      <Text style={[{ marginTop: 5, marginBottom: 5 }, Styles.colorFlip]}>
+        {props.name}
+      </Text>
       {props.value === null ? (
         <ActivityIndicator />
       ) : (
@@ -268,7 +279,7 @@ function PresetEditor(props: {
               </View>
             ) : (
               <View style={{ flexDirection: "row" }}>
-                <Text>{props.value}</Text>
+                <Text style={Styles.colorFlip}>{props.value}</Text>
                 <Icon
                   name="pencil"
                   size={25}

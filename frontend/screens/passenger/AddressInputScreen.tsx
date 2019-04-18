@@ -73,12 +73,25 @@ export default class AddressInputScreen extends React.Component<Props, state> {
     return {
       headerTitle: navigation.getParam("title"),
       headerRight: <View />,
+      headerStyle: {
+        backgroundColor:
+          Styles.colorFlip.backgroundColor === Colors.darkBackground
+            ? Colors.darkBackground
+            : Colors.lightBackground
+      },
       headerTitleStyle: {
         textAlign: "center",
         fontWeight: "bold",
-        // height: 45,
-        flex: 1
-      }
+        flex: 1,
+        color:
+          Styles.colorFlip.backgroundColor === Colors.darkBackground
+            ? Colors.darkText
+            : Colors.lightText
+      },
+      headerTintColor:
+        Styles.colorFlip.backgroundColor === Colors.darkBackground
+          ? Colors.darkText
+          : Colors.lightText
     };
   };
 
@@ -97,8 +110,10 @@ export default class AddressInputScreen extends React.Component<Props, state> {
   componentWillUnmount() {
     clearStylesListener(this.onStylesChange);
   }
-  private onStylesChange = () => this.forceUpdate();
-
+  private onStylesChange = () => {
+    this.forceUpdate();
+    this.props.navigation.setParams({});
+  };
   componentDidMount() {
     // this.fetchCurrentLocation(position => {
     //   this.setState({
@@ -287,7 +302,9 @@ export default class AddressInputScreen extends React.Component<Props, state> {
                         <RSIcon title={item.name} name={item.icon} size={16} />
                       </View>
                     )}
-                    <Text style={{ flex: 1, fontSize: 20 }}>{item.name}</Text>
+                    <Text style={[{ flex: 1, fontSize: 20 }, Styles.colorFlip]}>
+                      {item.name}
+                    </Text>
                   </View>
                 </TouchableHighlight>
               )}
@@ -298,46 +315,3 @@ export default class AddressInputScreen extends React.Component<Props, state> {
     );
   }
 }
-
-const IoniconsHeaderButton = (passMeFurther: any) => (
-  // the `passMeFurther` variable here contains props from <Item .../> as well as <HeaderButtons ... />
-  // and it is important to pass those props to `HeaderButton`
-  // then you may add some information like icon size or color (if you use icons)
-  <HeaderButton
-    {...passMeFurther}
-    IconComponent={Ionicons}
-    iconSize={40}
-    color={Colors.primary}
-    buttonStyle={{
-      // backgroundColor: "rgba(92, 99,216, 1)",
-      height: 60
-      // textAlignVertical: 'center',
-
-      // borderWidth: 0,
-      // borderRadius: 5
-    }}
-  />
-);
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     backgroundColor: "black"
-//   },
-//   searchResultsList: {
-//     marginTop: 10,
-//     marginBottom: 10,
-//     backgroundColor: "white"
-//   },
-//   searchResultsItem: {
-//     borderColor: "#c3c3c3",
-//     borderBottomWidth: 1
-//   },
-//   searchResultsName: {
-//     fontSize: 20
-//   },
-//   searchResultsAddress: {
-//     fontSize: 20,
-//     color: "grey"
-//   }
-// });
