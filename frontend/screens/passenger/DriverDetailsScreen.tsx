@@ -29,8 +29,11 @@ import { number, string } from "prop-types";
 import { fetchAPI } from "../../network/Backend";
 import UserSession from "../../network/UserSession";
 import { State } from "react-native-gesture-handler";
-import { Styles } from "../../constants/Styles";
-
+import {
+  Styles,
+  addStylesListener,
+  clearStylesListener
+} from "../../constants/Styles";
 export default class DriverDetailsScreen extends React.Component<{
   navigation: any;
 }> {
@@ -47,7 +50,39 @@ export default class DriverDetailsScreen extends React.Component<{
     rideSharingMiles: 0
   };
 
+  static navigationOptions = ({ navigation }: any) => {
+    return {
+      headerStyle: {
+        backgroundColor:
+          Styles.colorFlip.backgroundColor === Colors.darkBackground
+            ? Colors.darkBackground
+            : Colors.lightBackground
+      },
+      headerTitleStyle: {
+        textAlign: "center",
+        fontWeight: "bold",
+        flex: 1,
+        color:
+          Styles.colorFlip.backgroundColor === Colors.darkBackground
+            ? Colors.darkText
+            : Colors.lightText
+      },
+      headerTintColor:
+        Styles.colorFlip.backgroundColor === Colors.darkBackground
+          ? Colors.darkText
+          : Colors.lightText
+    };
+  };
+  componentWillUnmount() {
+    clearStylesListener(this.onStylesChange);
+  }
+  private onStylesChange = () => {
+    this.forceUpdate();
+    this.props.navigation.setParams({});
+  };
   componentWillMount() {
+    addStylesListener(this.onStylesChange);
+
     let ridePlan = this.state.match.ridePlan;
     let formatAddress = (response: any) => {
       let address = response.name;
@@ -111,6 +146,192 @@ export default class DriverDetailsScreen extends React.Component<{
       user: this.state.driverJourney.User
     });
   };
+  googleMaps: any = [
+    {
+      elementType: "geometry",
+      stylers: [
+        {
+          color: "#212121"
+        }
+      ]
+    },
+    {
+      elementType: "labels.icon",
+      stylers: [
+        {
+          visibility: "off"
+        }
+      ]
+    },
+    {
+      elementType: "labels.text.fill",
+      stylers: [
+        {
+          color: "#757575"
+        }
+      ]
+    },
+    {
+      elementType: "labels.text.stroke",
+      stylers: [
+        {
+          color: "#212121"
+        }
+      ]
+    },
+    {
+      featureType: "administrative",
+      elementType: "geometry",
+      stylers: [
+        {
+          color: "#757575"
+        }
+      ]
+    },
+    {
+      featureType: "administrative.country",
+      elementType: "labels.text.fill",
+      stylers: [
+        {
+          color: "#9e9e9e"
+        }
+      ]
+    },
+    {
+      featureType: "administrative.land_parcel",
+      stylers: [
+        {
+          visibility: "off"
+        }
+      ]
+    },
+    {
+      featureType: "administrative.locality",
+      elementType: "labels.text.fill",
+      stylers: [
+        {
+          color: "#bdbdbd"
+        }
+      ]
+    },
+    {
+      featureType: "poi",
+      elementType: "labels.text.fill",
+      stylers: [
+        {
+          color: "#757575"
+        }
+      ]
+    },
+    {
+      featureType: "poi.park",
+      elementType: "geometry",
+      stylers: [
+        {
+          color: "#181818"
+        }
+      ]
+    },
+    {
+      featureType: "poi.park",
+      elementType: "labels.text.fill",
+      stylers: [
+        {
+          color: "#616161"
+        }
+      ]
+    },
+    {
+      featureType: "poi.park",
+      elementType: "labels.text.stroke",
+      stylers: [
+        {
+          color: "#1b1b1b"
+        }
+      ]
+    },
+    {
+      featureType: "road",
+      elementType: "geometry.fill",
+      stylers: [
+        {
+          color: "#2c2c2c"
+        }
+      ]
+    },
+    {
+      featureType: "road",
+      elementType: "labels.text.fill",
+      stylers: [
+        {
+          color: "#8a8a8a"
+        }
+      ]
+    },
+    {
+      featureType: "road.arterial",
+      elementType: "geometry",
+      stylers: [
+        {
+          color: "#373737"
+        }
+      ]
+    },
+    {
+      featureType: "road.highway",
+      elementType: "geometry",
+      stylers: [
+        {
+          color: "#3c3c3c"
+        }
+      ]
+    },
+    {
+      featureType: "road.highway.controlled_access",
+      elementType: "geometry",
+      stylers: [
+        {
+          color: "#4e4e4e"
+        }
+      ]
+    },
+    {
+      featureType: "road.local",
+      elementType: "labels.text.fill",
+      stylers: [
+        {
+          color: "#616161"
+        }
+      ]
+    },
+    {
+      featureType: "transit",
+      elementType: "labels.text.fill",
+      stylers: [
+        {
+          color: "#757575"
+        }
+      ]
+    },
+    {
+      featureType: "water",
+      elementType: "geometry",
+      stylers: [
+        {
+          color: "#000000"
+        }
+      ]
+    },
+    {
+      featureType: "water",
+      elementType: "labels.text.fill",
+      stylers: [
+        {
+          color: "#3d3d3d"
+        }
+      ]
+    }
+  ];
 
   private getDriverProfilePic() {
     fetchAPI("/getUserImage/" + this.state.driverJourney.User.id)
@@ -129,10 +350,15 @@ export default class DriverDetailsScreen extends React.Component<{
     let dirs = this.generateDirsFromRidePlan(ridePlan);
 
     return (
-      <View style={styles.container}>
+      <View style={Styles.container}>
         <MapView
           style={{ flex: 1 }}
           provider="google"
+          customMapStyle={
+            Styles.colorFlip.backgroundColor == Colors.darkBackground
+              ? this.googleMaps
+              : []
+          }
           region={{
             latitude: this.state.destination.latitude,
             longitude: this.state.destination.longitude,
@@ -167,7 +393,7 @@ export default class DriverDetailsScreen extends React.Component<{
           <View style={{ flexDirection: "row" }}>
             <TouchableOpacity onPress={this.viewProfile}>
               <Image
-                style={{ width: 50, height: 50 }}
+                style={{ width: 50, height: 50, borderRadius: 25 }}
                 source={
                   this.state.driverProfilePic !== null
                     ? { uri: this.state.driverProfilePic }
@@ -177,13 +403,13 @@ export default class DriverDetailsScreen extends React.Component<{
             </TouchableOpacity>
             <Text
               onPress={this.viewProfile}
-              style={{ fontSize: 25, margin: 5 }}
+              style={[{ fontSize: 25, margin: 5 }, Styles.colorFlip]}
             >
               {this.state.driverJourney.User.firstName}
             </Text>
           </View>
 
-          <Text style={{ fontSize: 15, marginLeft: 5 }}>
+          <Text style={[{ fontSize: 25, margin: 5 }, Styles.colorFlip]}>
             Directions to {this.state.destinationHumanAddress}
           </Text>
 
@@ -197,8 +423,12 @@ export default class DriverDetailsScreen extends React.Component<{
                 onHideUnderlay={separators.unhighlight}
               >
                 <View style={styles.flatview}>
-                  <Text style={{ flex: 1 }}>{(item as any).time}</Text>
-                  <Text style={{ flex: 2 }}>{(item as any).desc}</Text>
+                  <Text style={[{ flex: 1 }, Styles.colorFlip]}>
+                    {(item as any).time}
+                  </Text>
+                  <Text style={[{ flex: 2 }, Styles.colorFlip]}>
+                    {(item as any).desc}
+                  </Text>
                 </View>
               </TouchableHighlight>
             )}

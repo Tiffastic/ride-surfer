@@ -11,12 +11,40 @@ import {
 } from "react-native";
 
 import { fetchAPI } from "../../network/Backend";
-
+import Colors from "../../constants/Colors";
+import {
+  Styles,
+  addStylesListener,
+  clearStylesListener
+} from "../../constants/Styles";
 export default class MessageContactsScreen extends React.Component<{
   navigation: any;
 }> {
-  static navigationOptions = {
-    title: "New Chat Search"
+  static navigationOptions = ({ navigation }: any) => {
+    return {
+      title: "New Chat Search",
+      headerRight: <Text />,
+      headerStyle: {
+        backgroundColor:
+          Styles.colorFlip.backgroundColor === Colors.darkBackground
+            ? Colors.darkBackground
+            : Colors.lightBackground
+      },
+      headerTitleStyle: {
+        textAlign: "center",
+        fontWeight: "bold",
+        flex: 1,
+        color:
+          Styles.colorFlip.backgroundColor === Colors.darkBackground
+            ? Colors.darkText
+            : Colors.lightText,
+        height: 45
+      },
+      headerTintColor:
+        Styles.colorFlip.backgroundColor === Colors.darkBackground
+          ? Colors.darkText
+          : Colors.lightText
+    };
   };
   constructor(props: any) {
     super(props);
@@ -30,7 +58,17 @@ export default class MessageContactsScreen extends React.Component<{
     recipientImage: "",
     pressedSearch: false
   };
-
+  componentWillMount() {
+    addStylesListener(this.onStylesChange);
+  
+  }
+  componentWillUnmount() {
+    clearStylesListener(this.onStylesChange);
+  }
+  private onStylesChange = () => {
+    this.forceUpdate();
+    this.props.navigation.setParams({});
+  };
   startNewChatSession() {
     fetchAPI(
       `/getChatSessionInfo?email=${
@@ -77,6 +115,7 @@ export default class MessageContactsScreen extends React.Component<{
     ) : (
       <Button
         title="Start New Chat"
+        color={Colors.primary}
         onPress={() => {
           // get picture and recipient's user id from backend
           // pass that info to MessageConversationsScreen
@@ -92,7 +131,7 @@ export default class MessageContactsScreen extends React.Component<{
     }
     return (
       <KeyboardAvoidingView
-        style={styles.container}
+        style={[styles.container, Styles.colorFlip]}
         keyboardVerticalOffset={100}
         behavior="padding"
         enabled
@@ -101,7 +140,7 @@ export default class MessageContactsScreen extends React.Component<{
           {showErr}
 
           <TextInput
-            style={{ alignSelf: "center" }}
+            style={[{ alignSelf: "center" }, Styles.colorFlip]}
             value={this.state.recipientEmail}
             placeholder="RideSurfer@Email.com"
             onSubmitEditing={() => {
@@ -122,7 +161,6 @@ export default class MessageContactsScreen extends React.Component<{
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "rgb(255, 255, 255)",
     justifyContent: "center",
     alignItems: "center"
   }

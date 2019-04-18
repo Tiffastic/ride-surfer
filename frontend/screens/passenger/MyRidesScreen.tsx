@@ -20,8 +20,11 @@ import { fetchAPI } from "../../network/Backend";
 import UserSession from "../../network/UserSession";
 import MyRidesDetailsScreen from "./MyRidesDetailsScreen";
 import GenericProfileScreen from "./GenericProfileScreen";
-import { Styles } from "../../constants/Styles";
-
+import {
+  Styles,
+  addStylesListener,
+  clearStylesListener
+} from "../../constants/Styles";
 const defaultPic = require("../../assets/images/default-profile.png");
 
 const IoniconsHeaderButton = (passMeFurther: any) => (
@@ -59,6 +62,17 @@ class MyRidesScreen extends React.Component<{
     driversPhotos: {},
     passengersPhotos: {},
     meId: 0
+  };
+
+  componentWillMount() {
+    addStylesListener(this.onStylesChange);
+  }
+  componentWillUnmount() {
+    clearStylesListener(this.onStylesChange);
+  }
+  private onStylesChange = () => {
+    this.forceUpdate();
+    this.props.navigation.setParams({});
   };
 
   fetchRides = async () => {
@@ -232,11 +246,11 @@ class MyRidesScreen extends React.Component<{
       return <ActivityIndicator />;
     }
     return (
-      <View style={styles.container}>
+      <View style={Styles.container}>
         <ScrollView>
           {this.state.drivingRides.length > 0 && (
             <View style={{ alignItems: "center" }}>
-              <Text style={styles.name}>My Drives</Text>
+              <Text style={[styles.name, Styles.colorFlip]}>My Drives</Text>
             </View>
           )}
           <FlatList
@@ -376,11 +390,17 @@ export default createStackNavigator(
             />
           </HeaderButtons>
         ),
+        headerStyle: {
+          backgroundColor:
+            Styles.colorFlip.backgroundColor === Colors.darkBackground
+              ? Colors.darkBackground
+              : Colors.lightBackground
+        },
         headerTitleStyle: {
           textAlign: "center",
           fontWeight: "bold",
-          height: 45,
-          flex: 1
+          flex: 1,
+          height: 45
         }
       })
     },

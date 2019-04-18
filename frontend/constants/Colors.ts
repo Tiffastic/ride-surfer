@@ -17,5 +17,10 @@ export default {
 
   //  Use as the text color for dark-on-light designs, or as the
   // background for inverted designs.
-  darkShades: "#000411"
+  darkShades: "#000411",
+
+  darkBackground: "#000411",
+  darkText: "#bababa",
+  lightBackground: "white",
+  lightText: "black"
 };

@@ -8,44 +8,119 @@ import MyStatsScreen from "../../screens/passenger/MyStatsScreen";
 
 import HomeScreen from "../../screens/passenger/HomeScreen";
 import Icon from "react-native-vector-icons/Ionicons";
+import Colors from "../../constants/Colors";
+import {
+  Styles,
+  addStylesListener,
+  clearStylesListener
+} from "../../constants/Styles";
+import { Text, ScrollView, StyleSheet } from "react-native";
 
-export default createDrawerNavigator({
-  Home: {
-    screen: HomeScreen,
-    navigationOptions: {
-      drawerLabel: "Home",
-      drawerIcon: ({ tintColor }) => <Icon name="ios-home" size={24} />
+const drawer = createDrawerNavigator(
+  {
+    Home: {
+      screen: HomeScreen,
+      navigationOptions: {
+        drawerLabel: (
+          <Text
+            style={{
+              fontSize: 18,
+              fontWeight: "bold",
+              textAlign: "left",
+              paddingBottom: 20,
+              paddingTop: 20,
+              color: "white"
+            }}
+          >
+            Home
+          </Text>
+        ),
+        drawerIcon: <Icon name="ios-home" size={24} color="white" />
+      }
+    },
+    Profile: {
+      screen: ProfileScreen,
+      navigationOptions: {
+        drawerLabel: (
+          <Text
+            style={{
+              fontSize: 18,
+              fontWeight: "bold",
+              textAlign: "left",
+              paddingBottom: 20,
+              paddingTop: 20,
+              color: "white"
+            }}
+          >
+            Profile
+          </Text>
+        ),
+        drawerIcon: <Icon name="ios-person" size={24} color="white" />
+      }
+    },
+    MyRides: {
+      screen: MyRidesScreen,
+      navigationOptions: {
+        drawerLabel: (
+          <Text
+            style={{
+              fontSize: 18,
+              fontWeight: "bold",
+              textAlign: "left",
+              paddingBottom: 20,
+              paddingTop: 20,
+              color: "white"
+            }}
+          >
+            My Rides
+          </Text>
+        ),
+        drawerIcon: <Icon name="ios-car" size={24} color="white" />
+      }
+    },
+    MyStats: {
+      screen: MyStatsScreen,
+      navigationOptions: {
+        drawerLabel: (
+          <Text
+            style={{
+              fontSize: 18,
+              fontWeight: "bold",
+              textAlign: "left",
+              paddingBottom: 20,
+              paddingTop: 20,
+              color: "white"
+            }}
+          >
+            My Stats
+          </Text>
+        ),
+        drawerIcon: <Icon name="ios-stats" size={24} color="white" />
+      }
+    },
+    UserSettings: {
+      screen: UserSettingsScreen,
+      navigationOptions: {
+        drawerLabel: (
+          <Text
+            style={{
+              fontSize: 18,
+              fontWeight: "bold",
+              textAlign: "left",
+              paddingBottom: 20,
+              paddingTop: 20,
+              color: "white"
+            }}
+          >
+            Settings
+          </Text>
+        ),
+        drawerIcon: <Icon name="ios-settings" size={24} color="white" />
+      }
     }
   },
-  Profile: {
-    screen: ProfileScreen,
-    navigationOptions: {
-      drawerLabel: "Profile",
-      drawerIcon: ({ tintColor }) => <Icon name="ios-person" size={24} />
-    }
-  },
-  MyRides: {
-    screen: MyRidesScreen,
-    navigationOptions: {
-      drawerLabel: "My Rides",
-      drawerIcon: ({ tintColor }) => <Icon name="ios-car" size={24} />
-    }
-  },
-
-  // set icon for drawer navigation: https://stackoverflow.com/questions/51685716/react-navigation-v2-how-to-set-the-icon-and-the-label-of-a-stack-navigator-in
-  MyStats: {
-    screen: MyStatsScreen,
-    navigationOptions: {
-      drawerLabel: "My Stats",
-      drawerIcon: ({ tintColor }) => <Icon name="ios-stats" size={24} />
-    }
-  },
-
-  UserSettings: {
-    screen: UserSettingsScreen,
-    navigationOptions: {
-      drawerLabel: "Settings",
-      drawerIcon: ({ tintColor }) => <Icon name="ios-settings" size={24} />
-    }
+  {
+    drawerBackgroundColor: Colors.primary
   }
-});
+);
+export default drawer;

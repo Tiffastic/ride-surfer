@@ -1,50 +1,48 @@
 import React from "react";
 import {
-  StyleSheet,
   Text,
   KeyboardAvoidingView,
-  ScrollView,
-  TextInput,
   View,
   Button,
-  Platform,
   ActivityIndicator,
   TouchableHighlight,
-  Switch,
-  ColorPropType
+  Switch
 } from "react-native";
+import { createStackNavigator } from "react-navigation";
 import Icon from "react-native-vector-icons/FontAwesome";
-
-import { Styles, setDark, getDark } from "../../constants/Styles";
+import { Styles, setDark, isDark } from "../../constants/Styles";
 import Colors from "../../constants/Colors";
 import UserSession from "../../network/UserSession";
 import RSIcon from "../../components/RSIcon";
 import { fetchAPI } from "../../network/Backend";
 import { registerForPushNotifications } from "../../network/PushNotificationRegister";
+import AddressInputScreen from "./AddressInputScreen";
+import Ionicons from "react-native-vector-icons/Ionicons";
+import HeaderButtons, { HeaderButton } from "react-navigation-header-buttons";
 
-export default class SettingsScreen extends React.Component<{
+const IoniconsHeaderButton = (passMeFurther: any) => (
+  // the `passMeFurther` variable here contains props from <Item .../> as well as <HeaderButtons ... />
+  // and it is important to pass those props to `HeaderButton`
+  // then you may add some information like icon size or color (if you use icons)
+  <HeaderButton
+    {...passMeFurther}
+    IconComponent={Ionicons}
+    iconSize={40}
+    color={Colors.primary}
+    buttonStyle={{
+      // backgroundColor: "rgba(92, 99,216, 1)",
+      height: 60
+      // textAlignVertical: 'center',
+
+      // borderWidth: 0,
+      // borderRadius: 5
+    }}
+  />
+);
+
+class SettingsScreen extends React.Component<{
   navigation: any;
 }> {
-  static navigationOptions = ({ navigation }: any) => {
-    return {
-      headerTitle: "Settings",
-      headerRight: <View />,
-      headerLeft: (
-        <RSIcon
-          title="Drawer"
-          name="ios-menu"
-          onPress={() => navigation.openDrawer()}
-        />
-      ),
-      headerTitleStyle: {
-        textAlign: "center",
-        fontWeight: "bold",
-        height: 45,
-        flex: 1
-      }
-    };
-  };
-
   constructor(props: any) {
     super(props);
   }
@@ -68,7 +66,7 @@ export default class SettingsScreen extends React.Component<{
   state = {
     home: null as null | string, // null when loading, empty string if unset
     work: null as null | string,
-    isDarkMode: getDark()
+    isDarkMode: isDark()
   };
 
   private saveUserValue = async (data: any) => {
@@ -88,7 +86,7 @@ export default class SettingsScreen extends React.Component<{
   };
 
   private editHome = () => {
-    this.props.navigation.push("AddressInput", {
+    this.props.navigation.push("AddressInputPresets", {
       title: "Set Home",
       withWorkHome: false,
       onConfirm: async (location: string, locationCoords: any) => {
@@ -108,7 +106,7 @@ export default class SettingsScreen extends React.Component<{
   };
 
   private editWork = () => {
-    this.props.navigation.push("AddressInput", {
+    this.props.navigation.push("AddressInputPresets", {
       title: "Set Work",
       withWorkHome: false,
       onConfirm: async (location: string, locationCoords: any) => {
@@ -127,6 +125,11 @@ export default class SettingsScreen extends React.Component<{
     });
   };
 
+  _logOut = async () => {
+    await UserSession.clear();
+    this.props.navigation.navigate("Auth");
+  };
+
   render() {
     return (
       <KeyboardAvoidingView
@@ -135,44 +138,110 @@ export default class SettingsScreen extends React.Component<{
         keyboardVerticalOffset={22}
         enabled
       >
-        <Text style={Styles.heading}>Locations</Text>
-        <PresetEditor
-          icon="ios-home"
-          name="Home"
-          value={this.state.home}
-          onEdit={this.editHome}
-        />
-        <PresetEditor
-          icon="ios-briefcase"
-          name="Work"
-          value={this.state.work}
-          onEdit={this.editWork}
-        />
-
-        <View style={{ margin: 15 }}>
-          <Button
-            title="Reset Push Notification"
-            onPress={() => registerForPushNotifications()}
-            color="rgb(63, 197, 116)"
+        <View style={{ margin: 10 }}>
+          <Text style={Styles.heading}>Locations</Text>
+          <PresetEditor
+            icon="ios-home"
+            name="Home"
+            value={this.state.home}
+            onEdit={this.editHome}
           />
-        </View>
-
-        <Text style={Styles.heading}>Experimental</Text>
-        <View style={{ flexDirection: "row" }}>
-          <Switch
-            trackColor={{ true: Colors.primary, false: Colors.lightShades }}
-            value={this.state.isDarkMode}
-            onValueChange={value => {
-              setDark(value);
-              this.setState({ isDarkMode: value });
-            }}
+          <PresetEditor
+            icon="ios-briefcase"
+            name="Work"
+            value={this.state.work}
+            onEdit={this.editWork}
           />
-          <Text>Dark Mode</Text>
+
+          <Text style={Styles.heading}>Experimental</Text>
+          <View
+            style={{ flexDirection: "row", alignItems: "center", margin: 10 }}
+          >
+            <Switch
+              trackColor={{ true: Colors.primary, false: Colors.lightShades }}
+              value={this.state.isDarkMode}
+              onValueChange={value => {
+                setDark(value);
+                this.setState({ isDarkMode: value });
+                this.props.navigation.setParams({});
+              }}
+            />
+            <Text style={{ marginLeft: 10 }}>Dark Mode</Text>
+          </View>
+
+          <View style={{ justifyContent: "flex-end" }}>
+            <Text style={Styles.heading}>General</Text>
+            <View style={{ margin: 15 }}>
+              <Button
+                title="Reset Push Notification"
+                onPress={() => {
+                  const registered = registerForPushNotifications();
+                  if (registered) {
+                    alert("Push Notification Registered");
+                  } else {
+                    alert("Error Registering for Push Notifications");
+                  }
+                }}
+                color={Colors.primary}
+              />
+            </View>
+            <Button
+              title="Log Out"
+              onPress={this._logOut}
+              color={Colors.primary}
+            />
+          </View>
         </View>
       </KeyboardAvoidingView>
     );
   }
 }
+
+export default createStackNavigator(
+  {
+    //RouteConfigs
+    SettingsScreen: {
+      screen: SettingsScreen,
+      navigationOptions: ({ navigation }: { navigation: any }) => ({
+        headerTitle: "Settings",
+        headerRight: <Text />,
+        headerLeft: (
+          <HeaderButtons HeaderButtonComponent={IoniconsHeaderButton}>
+            <HeaderButton
+              title="ProfileIcon"
+              iconName="ios-menu"
+              onPress={() => navigation.openDrawer()}
+            />
+          </HeaderButtons>
+        ),
+        headerStyle: {
+          backgroundColor:
+            Styles.colorFlip.backgroundColor === Colors.darkBackground
+              ? Colors.darkBackground
+              : Colors.lightBackground
+        },
+        headerTitleStyle: {
+          textAlign: "center",
+          fontWeight: "bold",
+          flex: 1,
+          color:
+            Styles.colorFlip.backgroundColor === Colors.darkBackground
+              ? Colors.darkText
+              : Colors.lightText,
+          height: 45
+        },
+        headerTintColor:
+          Styles.colorFlip.backgroundColor === Colors.darkBackground
+            ? Colors.darkText
+            : Colors.lightText
+      })
+    },
+    AddressInputPresets: AddressInputScreen
+  },
+  {
+    initialRouteName: "SettingsScreen"
+  }
+);
 
 function PresetEditor(props: {
   icon: string;
@@ -182,7 +251,9 @@ function PresetEditor(props: {
 }) {
   return (
     <View>
-      <Text>{props.name}</Text>
+      <Text style={[{ marginTop: 5, marginBottom: 5 }, Styles.colorFlip]}>
+        {props.name}
+      </Text>
       {props.value === null ? (
         <ActivityIndicator />
       ) : (
@@ -191,12 +262,13 @@ function PresetEditor(props: {
             style={{
               flexDirection: "row",
               alignContent: "center",
-              alignItems: "center"
+              alignItems: "center",
+              margin: 5
             }}
           >
             <RSIcon title={props.name} name={props.icon} size={16} />
             {props.value === "" ? (
-              <View style={{ flexDirection: "row" }}>
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
                 <RSIcon
                   color="grey"
                   title={"Add " + props.name}
@@ -207,8 +279,13 @@ function PresetEditor(props: {
               </View>
             ) : (
               <View style={{ flexDirection: "row" }}>
-                <Text>{props.value}</Text>
-                <Icon name="pencil" size={30} color={Colors.darkAccent} />
+                <Text style={Styles.colorFlip}>{props.value}</Text>
+                <Icon
+                  name="pencil"
+                  size={25}
+                  color={Colors.darkAccent}
+                  style={{ marginLeft: 10 }}
+                />
               </View>
             )}
           </View>

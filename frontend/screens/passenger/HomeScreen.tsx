@@ -8,7 +8,11 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import UserSession from "../../network/UserSession";
 import { fetchAPI } from "../../network/Backend";
 import AddressPicker from "../../components/AddressPicker";
-import { Styles } from "../../constants/Styles";
+import {
+  Styles,
+  addStylesListener,
+  clearStylesListener
+} from "../../constants/Styles";
 
 import AddressInputScreen from "./AddressInputScreen";
 import DriverPickerScreen from "./DriverPickerScreen";
@@ -53,6 +57,15 @@ class HomeScreen extends React.Component<{ navigation: any }> {
   state = {
     mode: "Passenger" as "Passenger" | "Driver"
   };
+
+  componentWillMount() {
+    addStylesListener(this.onStylesChange);
+  }
+  componentWillUnmount() {
+    clearStylesListener(this.onStylesChange);
+  }
+  private onStylesChange = () => this.forceUpdate();
+
   private passengerConfirm = (
     origin: any,
     destination: any,
@@ -111,12 +124,15 @@ class HomeScreen extends React.Component<{ navigation: any }> {
     return (
       <View style={{ flex: 1 }}>
         <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignContent: "center",
-            height: 60
-          }}
+          style={[
+            {
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignContent: "center",
+              height: 60
+            },
+            Styles.colorFlip
+          ]}
         >
           <View
             style={{
@@ -147,7 +163,16 @@ class HomeScreen extends React.Component<{ navigation: any }> {
                 this.setState({ mode: value ? "Driver" : "Passenger" })
               }
             />
-            <Text style={{ marginLeft: 10, marginRight: 10, fontSize: 16 }}>
+            <Text
+              style={[
+                {
+                  marginLeft: 10,
+                  marginRight: 10,
+                  fontSize: 16
+                },
+                Styles.colorFlip
+              ]}
+            >
               {this.state.mode}
             </Text>
           </View>
@@ -196,7 +221,6 @@ export default createStackNavigator(
     RateDriver: RateDriverScreen,
     GenericProfile: GenericProfileScreen,
     MessageNewChatSearch: MessageNewChatSearchScreen,
-    UserSettings: UserSettingsScreen,
     MyStatsYearChoice: MyStatsYearChoiceScreen,
     MyStatsMilesPerYear: MyStatsMilesPerYearScreen,
     MyStatsCO2PerYear: MyStatsCO2PerYearScreen
@@ -209,7 +233,7 @@ export default createStackNavigator(
     navigationOptions: {
       //in react nav ver 3, this is called defaultNavigationOptions
       headerStyle: {
-        backgroundColor: "white"
+        backgroundColor: "#white"
         // margin: 10, //this makes it clear what exactly StackNavigatorConfig is modifing.
       },
       headerTintColor: "black",

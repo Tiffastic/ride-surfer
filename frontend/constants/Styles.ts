@@ -2,11 +2,80 @@ import { StyleSheet, Dimensions } from "react-native";
 
 import Colors from "./Colors";
 const { width, height } = Dimensions.get("window");
+// // Add the below lines to make a screen darkmode ready
+// componentWillMount() {
+//   addStylesListener(this.onStylesChange);
+// }
+// componentWillUnmount() {
+//   clearStylesListener(this.onStylesChange);
+// }
+// private onStylesChange = () => {
+//   this.forceUpdate();
+//   this.props.navigation.setParams({});
+// };
+
+// headerStyle: {
+//   backgroundColor:
+//     Styles.colorFlip.backgroundColor === Colors.darkBackground
+//       ? Colors.darkBackground
+//       : Colors.lightBackground
+// },
+// headerTitleStyle: {
+//   textAlign: "center",
+//   fontWeight: "bold",
+//   flex: 1,
+//   color:
+//     Styles.colorFlip.backgroundColor === Colors.darkBackground
+//       ? Colors.darkText
+//       : Colors.lightText,
+//   height: 45
+// },
+// headerTintColor:
+//   Styles.colorFlip.backgroundColor === Colors.darkBackground
+//     ? Colors.darkText
+//     : Colors.lightText
+
+// static navigationOptions = ({ navigation }: any) => {
+//   return {
+//     title: "Message Details",
+//     headerRight: <Text />,
+//     headerStyle: {
+//       backgroundColor:
+//         Styles.colorFlip.backgroundColor === Colors.darkBackground
+//           ? Colors.darkBackground
+//           : Colors.lightBackground
+//     },
+//     headerTitleStyle: {
+//       textAlign: "center",
+//       fontWeight: "bold",
+//       flex: 1,
+//       color:
+//         Styles.colorFlip.backgroundColor === Colors.darkBackground
+//           ? Colors.darkText
+//           : Colors.lightText,
+//       height: 45
+//     },
+//     headerTintColor:
+//       Styles.colorFlip.backgroundColor === Colors.darkBackground
+//         ? Colors.darkText
+//         : Colors.lightText
+//   };
+// };
 
 let LightStyle: any = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "white"
+  },
+  colorFlip: {
+    backgroundColor: Colors.lightBackground,
+    color: Colors.lightText
+  },
+  backColor: {
+    backgroundColor: Colors.lightBackground
+  },
+  color: {
+    color: Colors.lightText
   },
   containerProfile: {
     flex: 1,
@@ -66,6 +135,11 @@ let DarkStyle: any = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.darkShades
   },
+  colorFlip: { backgroundColor: Colors.darkBackground, color: Colors.darkText },
+  backColor: { backgroundColor: Colors.darkBackground },
+
+  color: { color: Colors.darkText },
+
   containerProfile: {
     flex: 1,
     backgroundColor: "black",
@@ -147,6 +221,6 @@ export function setDark(bool: boolean) {
   }
 }
 
-export function getDark() {
+export function isDark() {
   return Styles === DarkStyle;
 }

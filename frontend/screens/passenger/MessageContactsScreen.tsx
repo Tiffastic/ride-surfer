@@ -20,12 +20,36 @@ import UserSession from "../../network/UserSession";
 
 import PreviousMessage from "../../components/PreviousChat";
 import PreviousChatSession from "../../components/PreviousChatSession";
+import Colors from "../../constants/Colors";
 
 export default class MessageContactsScreen extends React.Component<{
   navigation: any;
 }> {
-  static navigationOptions = {
-    title: "Messages"
+  static navigationOptions = ({ navigation }: any) => {
+    return {
+      title: "Messages",
+      headerRight: <Text />,
+
+      headerStyle: {
+        backgroundColor:
+          Styles.colorFlip.backgroundColor === Colors.darkBackground
+            ? Colors.darkBackground
+            : Colors.lightBackground
+      },
+      headerTitleStyle: {
+        textAlign: "center",
+        fontWeight: "bold",
+        flex: 1,
+        color:
+          Styles.colorFlip.backgroundColor === Colors.darkBackground
+            ? Colors.darkText
+            : Colors.lightText
+      },
+      headerTintColor:
+        Styles.colorFlip.backgroundColor === Colors.darkBackground
+          ? Colors.darkText
+          : Colors.lightText
+    };
   };
   constructor(props: any) {
     super(props);
@@ -49,8 +73,10 @@ export default class MessageContactsScreen extends React.Component<{
     this.willFocusMessageContacts.remove();
   }
 
-  private onStylesChange = () => this.forceUpdate();
-
+  private onStylesChange = () => {
+    this.forceUpdate();
+    this.props.navigation.setParams({});
+  };
   componentDidMount() {
     // this.bootstrap();
 
@@ -210,7 +236,7 @@ export default class MessageContactsScreen extends React.Component<{
         <View style={{ marginLeft: 10, marginRight: 10 }}>
           <Button
             title="New Surf Chat"
-            color="rgb(36, 167, 217)" //"rgb(39, 177, 211)" //"rgb(41, 181, 216)"
+            color={Colors.primary}
             onPress={() => {
               this.props.navigation.navigate("MessageNewChatSearch", {
                 userImage: this.state.userImage,
@@ -223,10 +249,3 @@ export default class MessageContactsScreen extends React.Component<{
     );
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "rgb(255, 255, 255)"
-  }
-});
