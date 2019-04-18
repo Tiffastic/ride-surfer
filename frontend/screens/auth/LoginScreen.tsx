@@ -52,6 +52,7 @@ export default class LoginScreen extends React.Component<{ navigation: any }> {
             <TextInput
               placeholder="Email"
               style={Styles.textInput}
+              keyboardType="email-address"
               onChangeText={email => this.setState({ email })}
             />
           </View>
