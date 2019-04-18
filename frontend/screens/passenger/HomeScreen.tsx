@@ -110,7 +110,7 @@ class HomeScreen extends React.Component<{ navigation: any }> {
         this.setState({ isLoading: false });
         Alert.alert(
           "Your drive was confirmed!",
-          "Go to the messages screen to view your ride requests."
+          "Go to My Rides to view your ride requests."
         );
       })
       .catch((error: any) => {

@@ -63,7 +63,7 @@ export default class AuthLandingScreen extends React.Component<
 
         //create user if this is their first time logging in
 
-        const user = this.getFacebookUser(details.email);
+        const user = await this.getFacebookUser(details.email);
         if (user && user != null && this.state.status === 200) {
           this._saveUserAsync(user);
         } else {
@@ -130,15 +130,15 @@ export default class AuthLandingScreen extends React.Component<
           this.setState({
             error: responseJson.message
           });
+          return null;
         } else {
           return responseJson;
         }
       })
       .catch(error => {
         console.log(error);
+        return null;
       });
-
-    return null;
   }
 
   createUser = async (

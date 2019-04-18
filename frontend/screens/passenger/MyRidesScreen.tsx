@@ -69,7 +69,17 @@ class MyRidesScreen extends React.Component<{
   }
   componentWillUnmount() {
     clearStylesListener(this.onStylesChange);
+
+    this.willFocusRides.remove();
   }
+
+  componentDidMount() {
+    // make sure that MessageContactsScreen will always refresh when navigate to it
+    this.willFocusRides = this.props.navigation.addListener("willFocus", () => {
+      this.fetchRides();
+    });
+  }
+
   private onStylesChange = () => {
     this.forceUpdate();
     this.props.navigation.setParams({});
