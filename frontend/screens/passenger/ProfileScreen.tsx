@@ -85,15 +85,25 @@ class ProfileScreen extends React.Component<{
   }
 
   componentDidMount() {
-    this._bootstrapAsync();
+    // this._bootstrapAsync();
+
+    this.willFocusProfileScreen = this.props.navigation.addListener(
+      "willFocus",
+      () => {
+        this._bootstrapAsync();
+      }
+    );
   }
 
   componentWillMount() {
     addStylesListener(this.onStylesChange);
   }
+
   componentWillUnmount() {
     clearStylesListener(this.onStylesChange);
+    this.willFocusProfileScreen.remove();
   }
+
   private onStylesChange = () => {
     this.forceUpdate();
     this.props.navigation.setParams({});
