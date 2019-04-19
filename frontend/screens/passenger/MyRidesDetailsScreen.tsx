@@ -12,20 +12,11 @@ import {
 } from "react-native";
 import Colors from "../../constants/Colors";
 import { Styles } from "../../constants/Styles";
+import { reverseGeocodeAsync } from "expo-location";
+import UserSession from "../../network/UserSession";
 
 import { fetchAPI } from "../../network/Backend";
 const defaultPic = require("../../assets/images/default-profile.png");
-
-let dummyDirections: [
-  {
-    key: "1";
-    time: "1 min";
-    desc: "Walk to  4689 Holladay Blvd E";
-    addr: "4689 Holladay Blvd E";
-  },
-  { key: "2"; time: "16 mins"; desc: "Drive to 2000 1100 E" },
-  { key: "3"; time: "5 mins"; desc: "Walk to 2011 1100 E" }
-];
 
 export default class MyRidesDetailsScreen extends React.Component<{
   navigation: any;
@@ -37,6 +28,7 @@ export default class MyRidesDetailsScreen extends React.Component<{
   constructor(props: any) {
     super(props);
     this.getUserPhoto();
+    this.getPassengerDirections();
     // this.getMyPhoto();
   }
 
@@ -91,8 +83,114 @@ export default class MyRidesDetailsScreen extends React.Component<{
     userPhoto: null,
     meId: this.props.navigation.getParam("meId"),
     myPhoto: null,
-    chatMessagePressed: false
+    chatMessagePressed: false,
+    match: {},
+    destinationHumanAddress: null as null | string,
+    pickupHumanAddress: null as null | string,
+    dropoffHumanAddress: null as null | string,
+    directions: []
   };
+
+  getPassengerDirections = () => {
+    let origin = [
+      this.state.rideDetails.passengerJourney.origin.coordinates[1],
+      this.state.rideDetails.passengerJourney.origin.coordinates[0]
+    ].join(",");
+    let dest = [
+      this.state.destination.coordinates.longitude,
+      this.state.destination.coordinates.latitude
+    ].join(",");
+    let coords = [origin, dest].join(";");
+
+    fetchAPI(
+      `/journeys/directions?id=${encodeURIComponent(
+        this.state.rideDetails.driverJourney.id.toString()
+      )}&coords=${encodeURIComponent(coords)}`
+    )
+      .then(resp => {
+        return resp.json();
+      })
+      .then(json => {
+        json.match.key = json.match.journey.id.toString();
+
+        this.setState({
+          loading: false,
+          match: json.match
+        });
+      })
+      .then(() => {
+        this.loadThing1();
+        this.loadThing2();
+        this.loadThing3();
+      })
+      .catch(error => {
+        console.log(error);
+        this.setState({ errorMessage: error.toString() });
+      });
+  };
+
+  private formatAddress = (response: any) => {
+    let address = response.name;
+    if (response.street !== null) {
+      address += " " + response.street;
+    }
+    return address;
+  };
+
+  private loadThing1 = async () => {
+    let response = await reverseGeocodeAsync(
+      this.state.destination.coordinates
+    );
+    if (response.length > 0) {
+      let newState: any = {};
+      newState["destinationHumanAddress"] = this.formatAddress(response[0]);
+      this.setState(newState, this.checkThings);
+    }
+  };
+  private loadThing2 = async () => {
+    let response = await reverseGeocodeAsync(this.state.match.ridePlan.pickup);
+    if (response.length > 0) {
+      let newState: any = {};
+      newState["pickupHumanAddress"] = this.formatAddress(response[0]);
+      this.setState(newState, this.checkThings);
+    }
+  };
+  private loadThing3 = async () => {
+    let response = await reverseGeocodeAsync(this.state.match.ridePlan.dropoff);
+    if (response.length > 0) {
+      let newState: any = {};
+      newState["dropoffHumanAddress"] = this.formatAddress(response[0]);
+      this.setState(newState, this.checkThings);
+    }
+  };
+  private checkThings() {
+    if (
+      this.state.destinationHumanAddress &&
+      this.state.pickupHumanAddress &&
+      this.state.dropoffHumanAddress
+    ) {
+      if (this.state.type == "passenger") {
+        this.generateDirsFromRidePlan(this.state.match.ridePlan);
+      } else {
+        this.generateDrivingDirsFromRidePlan(this.state.match.ridePlan);
+      }
+    }
+  }
+
+  componentWillMount = async () => {};
+
+  componentWillUnmount() {
+    this.willFocusRideDetails.remove();
+  }
+  componentDidMount() {
+    // make sure that MessageContactsScreen will always refresh when navigate to it
+    this.willFocusRideDetails = this.props.navigation.addListener(
+      "willFocus",
+      () => {
+        this.getPassengerDirections();
+      }
+    );
+  }
 
   startRide = () => {
     this.props.navigation.navigate("RideInProgress", {
@@ -104,6 +202,49 @@ export default class MyRidesDetailsScreen extends React.Component<{
       type: this.state.type
     });
   };
+
+  private generateDirsFromRidePlan(ridePlan: any) {
+    let round = (number: number) => Math.round(number * 10) / 10;
+    let toMiles = (number: number) => number * 0.621371;
+    let dirs = [
+      {
+        time: round(toMiles(ridePlan.pickup.distance)) + " miles",
+        desc: "Walk to " + (this.state.pickupHumanAddress || "pickup")
+      },
+      {
+        time: round(toMiles(ridePlan.drivingDistance)) + " miles",
+        desc: "Ride to " + (this.state.dropoffHumanAddress || "dropoff")
+      },
+      {
+        time: round(toMiles(ridePlan.dropoff.distance)) + " miles",
+        desc: "Walk to " + (this.state.destinationHumanAddress || "destination")
+      }
+    ];
+    dirs.forEach((d: any, i) => (d.key = i.toString()));
+    this.setState({ directions: dirs });
+  }
+
+  private generateDrivingDirsFromRidePlan(ridePlan: any) {
+    let round = (number: number) => Math.round(number * 10) / 10;
+    let toMiles = (number: number) => number * 0.621371;
+    let dirs = [
+      {
+        time: round(toMiles(ridePlan.pickup.distance)) + " miles",
+        desc: "Drive to " + (this.state.pickupHumanAddress || "pickup")
+      },
+      {
+        time: round(toMiles(ridePlan.drivingDistance)) + " miles",
+        desc: "Drive to " + (this.state.dropoffHumanAddress || "dropoff")
+      },
+      {
+        time: round(toMiles(ridePlan.dropoff.distance)) + " miles",
+        desc:
+          "Drive to " + (this.state.destinationHumanAddress || "destination")
+      }
+    ];
+    dirs.forEach((d: any, i) => (d.key = i.toString()));
+    this.setState({ directions: dirs });
+  }
 
   render() {
     return (
@@ -123,13 +264,13 @@ export default class MyRidesDetailsScreen extends React.Component<{
             this.state.ridePartner.lastName}
         </Text>
 
-        <Text style={{ fontSize: 15, marginLeft: 5 }}>
-          Directions to {this.state.destination.name[0].street}
+        <Text style={[{ fontSize: 25, margin: 5 }, Styles.colorFlip]}>
+          Directions to {this.state.destinationHumanAddress}
         </Text>
+
         <FlatList
-          data={dummyDirections}
+          data={this.state.directions}
           showsVerticalScrollIndicator={false}
-          keyExtractor={(item: any, index: any) => item.key}
           renderItem={({ item, separators }) => (
             <TouchableHighlight
               style={styles.searchResultsItem}
@@ -137,13 +278,16 @@ export default class MyRidesDetailsScreen extends React.Component<{
               onHideUnderlay={separators.unhighlight}
             >
               <View style={styles.flatview}>
-                <Text style={{ flex: 1 }}>{(item as any).time}</Text>
-                <Text style={{ flex: 2 }}>{(item as any).desc}</Text>
+                <Text style={[{ flex: 1 }, Styles.colorFlip]}>
+                  {(item as any).time}
+                </Text>
+                <Text style={[{ flex: 2 }, Styles.colorFlip]}>
+                  {(item as any).desc}
+                </Text>
               </View>
             </TouchableHighlight>
           )}
         />
-
         {this.state.chatMessagePressed && (
           <View style={{ marginLeft: 10, marginRight: 10, marginBottom: 10 }}>
             <ActivityIndicator />

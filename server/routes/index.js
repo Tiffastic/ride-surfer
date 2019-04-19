@@ -57,6 +57,7 @@ module.exports = app => {
 
   app.get("/journeys", journeysController.retrieveAll);
   app.get("/journeys/matches", journeysController.retrieveMatches);
+  app.get("/journeys/directions", journeysController.getDirections);
   app.get("/journeys/:id", journeysController.retrieve);
   app.post("/journeys", journeysController.create);
   app.put("/journeys/updateLocation", journeysController.updateAll);

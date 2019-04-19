@@ -172,6 +172,48 @@ module.exports = {
       });
   },
 
+  getDirections(req, res) {
+    console.log("looking up direcitions");
+    let coords = parseCoordsString(req.query["coords"]);
+    if (coords === null) {
+      return res.status(401).json({ message: "Couldn't parse coords string" });
+    }
+    let id = req.query["id"];
+    if (id === null) {
+      return res.status(401).json({ message: "Couldn't parse id string" });
+    }
+    return Journey.findOne({
+      where: {
+        id: id
+      },
+      include: [User]
+    })
+      .then(journey => {
+        if (!journey) {
+          return res.status(404).json({
+            message: "Journeys Not Found"
+          });
+        }
+        match = {
+          ridePlan: generateRidePlan(
+            coords.origin,
+            coords.destination,
+            journey.path
+          ),
+          journey: journey
+        };
+        return res.status(200).json({
+          origin: coords.origin,
+          destination: coords.destination,
+          match: match
+        });
+      })
+      .catch(error => {
+        console.error(error);
+        return res.status(400).json(error);
+      });
+  },
+
   async create(req, res) {
     var origin = {
       type: "Point",
