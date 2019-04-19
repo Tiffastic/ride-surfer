@@ -414,7 +414,12 @@ export default class MessageConversationsScreen extends React.Component<{
                   }
                 />
 
-                <Text style={Styles.color}>
+                <Text
+                  style={{
+                    color: "rgb(36, 167, 217)",
+                    textDecorationLine: "underline"
+                  }}
+                >
                   {this.props.navigation.getParam("recipientFirstName")}{" "}
                   {this.props.navigation.getParam("recipientLastName")}{" "}
                 </Text>
