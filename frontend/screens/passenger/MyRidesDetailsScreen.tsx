@@ -164,16 +164,10 @@ export default class MyRidesDetailsScreen extends React.Component<{
     }
   };
   private checkThings() {
-    if (
-      this.state.destinationHumanAddress &&
-      this.state.pickupHumanAddress &&
-      this.state.dropoffHumanAddress
-    ) {
-      if (this.state.type == "passenger") {
-        this.generateDirsFromRidePlan(this.state.match.ridePlan);
-      } else {
-        this.generateDrivingDirsFromRidePlan(this.state.match.ridePlan);
-      }
+    if (this.state.type == "passenger") {
+      this.generateDirsFromRidePlan(this.state.match.ridePlan);
+    } else {
+      this.generateDrivingDirsFromRidePlan(this.state.match.ridePlan);
     }
   }
 
