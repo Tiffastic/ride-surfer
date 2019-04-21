@@ -10,8 +10,11 @@ const app = express();
 app.use(bodyParser.json({ limit: "50mb" }));
 app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 
-// Setup a default catch-all route that sends back a welcome message in JSON format.
 require("./server/routes")(app);
+
+app.use(express.static("web-presence"));
+
+// Setup a default catch-all route that sends back a welcome message in JSON format.
 app.get("*", (req, res) =>
   res.status(200).send({
     message: "Welcome to the beginning of nothingness."
