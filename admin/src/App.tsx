@@ -341,6 +341,7 @@ class RideMap extends React.Component<{ ride: any | null }> {
 
         marker.on("dragend", () => {
           var lngLat = marker.getLngLat();
+          console.log("Mark: ", marker.userId);
           fetchAPI("/journeys/updateLocation/", {
             method: "PUT",
             headers: {
@@ -348,7 +349,7 @@ class RideMap extends React.Component<{ ride: any | null }> {
               "Content-Type": "application/json"
             },
             body: JSON.stringify({
-              userId: userId,
+              userId: marker.userId,
               currentLocation: [lngLat.lat, lngLat.lng]
             })
           })
@@ -370,6 +371,8 @@ class RideMap extends React.Component<{ ride: any | null }> {
           console.log("clicked: ", coordinates);
         });
       }
+
+      marker.userId = userId; // update every time, even if reusing marker
 
       if (coordinates !== null) {
         marker.setLngLat(coordinates).addTo(this.map);
@@ -409,6 +412,9 @@ class RideMap extends React.Component<{ ride: any | null }> {
         .coordinates;
       driverId = this.props.ride.driverJourney.userId;
     }
+
+    console.log("passenger Id: ", passengerId);
+    console.log("driver id: ", driverId);
 
     this.passengerMarker = updateMarker(
       this.passengerMarker,
