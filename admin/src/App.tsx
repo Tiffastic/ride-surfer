@@ -220,13 +220,13 @@ class Journey extends React.Component<{ journey: any }, { expanded: boolean }> {
 
 class ActiveRides extends React.Component {
   state = {
-    rides: [],
-    selectedRide: null,
+    rides: [] as any[],
+    selectedRide: null as number | null,
     loading: true
   };
 
-  componentWillMount() {
-    Promise.all([
+  private fetchRides = () => {
+    return Promise.all([
       fetchAPI("/journeys")
         .then(response => response.json())
         .then(json => {
@@ -239,7 +239,7 @@ class ActiveRides extends React.Component {
         }),
       fetchAPI("/passengerRides").then(response => response.json())
     ]).then(([journeys, rides]: [any, any]) => {
-      let activeRides = rides
+      return rides
         .filter((r: any) => r.driverAccepted)
         .map((r: any) => {
           return {
@@ -250,23 +250,34 @@ class ActiveRides extends React.Component {
             driverJourney: journeys.find((j: any) => j.id === r.driverJourneyId)
           };
         });
+    });
+  };
+
+  componentWillMount() {
+    this.fetchRides().then(activeRides => {
       this.setState({
         rides: activeRides,
-        selectedRide: activeRides.length > 0 ? activeRides[0] : null,
+        selectedRide: activeRides.length > 0 ? activeRides[0].id : null,
         loading: false
       });
     });
   }
 
   private selectRide = (ride: any) => {
-    this.setState({ selectedRide: ride });
+    this.setState({ selectedRide: ride.id });
+  };
+
+  private refresh = () => {
+    this.fetchRides().then(activeRides => {
+      this.setState({ rides: activeRides });
+    });
   };
 
   private renderRide = (ride: any, i: number) => {
-    let selected = ride === this.state.selectedRide;
+    let selected = ride.id === this.state.selectedRide;
 
     return (
-      <li
+      <div
         className={"rideListItem" + (selected ? " selected" : "")}
         key={ride.id}
         onClick={() => this.selectRide(ride)}
@@ -275,18 +286,21 @@ class ActiveRides extends React.Component {
           <UserNametag userId={ride.passengerJourney.userId} /> riding with{" "}
           <UserNametag userId={ride.driverJourney.userId} />
         </p>
-      </li>
+      </div>
     );
   };
 
-  renderSidebar() {
+  private renderSidebar() {
     if (this.state.loading) {
       return <div style={{ width: 250 }}>Loading . . . </div>;
     }
     return (
       <div style={{ width: 250 }}>
-        <p>{this.state.rides.length} active rides</p>
-        <ul>{this.state.rides.map(this.renderRide)}</ul>
+        <p>
+          {this.state.rides.length} active rides |{" "}
+          <a onClick={this.refresh}>[refresh]</a>
+        </p>
+        <div>{this.state.rides.map(this.renderRide)}</div>
       </div>
     );
   }
@@ -295,145 +309,151 @@ class ActiveRides extends React.Component {
     return (
       <section style={{ display: "flex", flex: 1 }}>
         {this.renderSidebar()}
-        <RideMap ride={this.state.selectedRide} />
+        <RideMap
+          onUpdate={this.refresh}
+          ride={
+            this.state.selectedRide
+              ? this.state.rides.find(r => r.id === this.state.selectedRide)
+              : null
+          }
+        />
       </section>
     );
   }
 }
 
-class RideMap extends React.Component<{ ride: any | null }> {
-  map = null as null | any;
+interface RideMapProps {
+  onUpdate: () => void;
+  ride: any | null;
+}
 
-  passengerMarker = null;
-  driverMarker = null;
+class RideMap extends React.Component<RideMapProps> {
+  state = {
+    map: null as null | any
+  };
 
   componentDidMount() {
-    console.log("map mount");
-
-    this.map = new mapboxgl.Map({
-      container: "active-rides-map",
-      style: "mapbox://styles/mapbox/outdoors-v11",
-      center: saltLakeCenter,
-      zoom: 12
+    this.setState({
+      map: new mapboxgl.Map({
+        container: "active-rides-map",
+        style: "mapbox://styles/mapbox/outdoors-v11",
+        center: saltLakeCenter,
+        zoom: 12
+      })
     });
-
-    this.updateMarkers();
-  }
-
-  private updateMarkers() {
-    const updateMarker = (
-      marker: any,
-      coordinates: [number, number] | null,
-      userId: null
-    ) => {
-      if (marker === null) {
-        if (coordinates === null) {
-          return null;
-        }
-        let el = document.createElement("img");
-        el.id = "marker";
-        el.width = 30;
-        el.height = 30;
-
-        marker = new mapboxgl.Marker(el, {
-          draggable: true
-        });
-
-        marker.on("dragend", () => {
-          var lngLat = marker.getLngLat();
-          console.log("Mark: ", marker.userId);
-          fetchAPI("/journeys/updateLocation/", {
-            method: "PUT",
-            headers: {
-              Accept: "application/json",
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-              userId: marker.userId,
-              currentLocation: [lngLat.lat, lngLat.lng]
-            })
-          })
-            .then(resp => {
-              marker.getElement().style.borderColor = "white";
-            })
-            .catch(error => {
-              console.log(error);
-            });
-          marker.getElement().style.borderColor = "orange";
-        });
-
-        // marker.on("dragend", onDragEnd);
-        el.addEventListener("dragstart", e => {
-          e.preventDefault();
-          return false;
-        });
-        el.addEventListener("click", () => {
-          console.log("clicked: ", coordinates);
-        });
-      }
-
-      marker.userId = userId; // update every time, even if reusing marker
-
-      if (coordinates !== null) {
-        marker.setLngLat(coordinates).addTo(this.map);
-        fetchAPI("/getUserImage/" + userId)
-          .then(resp => resp.json())
-          .then(json => {
-            if (json.userImage === null) {
-              marker.getElement().src = defaultProfile;
-            } else {
-              marker.getElement().src = json.userImage;
-            }
-          });
-      } else {
-        marker.remove();
-      }
-
-      return marker;
-    };
-
-    let passengerLocation = null;
-    let passengerId = null;
-    if (
-      this.props.ride !== null &&
-      this.props.ride.passengerJourney.currentLocation !== null
-    ) {
-      passengerLocation = this.props.ride.passengerJourney.currentLocation
-        .coordinates;
-      passengerId = this.props.ride.passengerJourney.userId;
-    }
-    let driverLocation = null;
-    let driverId = null;
-    if (
-      this.props.ride !== null &&
-      this.props.ride.driverJourney.currentLocation !== null
-    ) {
-      driverLocation = this.props.ride.driverJourney.currentLocation
-        .coordinates;
-      driverId = this.props.ride.driverJourney.userId;
-    }
-
-    console.log("passenger Id: ", passengerId);
-    console.log("driver id: ", driverId);
-
-    this.passengerMarker = updateMarker(
-      this.passengerMarker,
-      passengerLocation,
-      passengerId
-    );
-    this.driverMarker = updateMarker(
-      this.driverMarker,
-      driverLocation,
-      driverId
-    );
   }
 
   render() {
-    if (this.map !== null) {
-      this.updateMarkers();
-    }
-    return <div style={{ flex: 1 }} id="active-rides-map" />;
+    return (
+      <div style={{ flex: 1 }} id="active-rides-map">
+        {this.state.map !== null &&
+          this.props.ride !== null && [
+            this.props.ride.passengerJourney.currentLocation !== null && (
+              <RideMapMarker
+                key="passenger"
+                map={this.state.map}
+                journey={this.props.ride.passengerJourney}
+                onUpdate={this.props.onUpdate}
+              />
+            ),
+            this.props.ride.driverJourney.currentLocation !== null && (
+              <RideMapMarker
+                key="driver"
+                map={this.state.map}
+                journey={this.props.ride.driverJourney}
+                onUpdate={this.props.onUpdate}
+              />
+            )
+          ]}
+      </div>
+    );
   }
+}
+
+interface RideMapMarkerProps {
+  map: mapboxgl.Map;
+  journey: any;
+  onUpdate: () => void;
+}
+
+class RideMapMarker extends React.Component<RideMapMarkerProps> {
+  constructor(props: RideMapMarkerProps) {
+    super(props);
+    let el = document.createElement("img");
+    el.id = "marker";
+    el.width = 30;
+    el.height = 30;
+
+    el.src = defaultProfile;
+
+    el.addEventListener("dragstart", e => {
+      e.preventDefault();
+      return false;
+    });
+
+    this.marker = new mapboxgl.Marker(el, {
+      draggable: true
+    });
+
+    this.marker.on("dragend", this.onDrag);
+  }
+
+  marker: mapboxgl.Marker;
+
+  componentDidMount() {
+    this.marker.addTo(this.props.map);
+  }
+
+  componentWillUnmount() {
+    this.marker.remove();
+  }
+
+  render() {
+    let coordinates = this.props.journey.currentLocation.coordinates;
+    this.marker.setLngLat(coordinates);
+    (this.marker.getElement() as HTMLImageElement).src = defaultProfile;
+    fetchAPI("/getUserImage/" + this.props.journey.userId)
+      .then(resp => resp.json())
+      .then(json => {
+        if (json.userImage === null) {
+          (this.marker.getElement() as HTMLImageElement).src = defaultProfile;
+        } else {
+          (this.marker.getElement() as HTMLImageElement).src = json.userImage;
+        }
+      });
+    return null;
+  }
+
+  private onDrag = () => {
+    var lngLat = this.marker.getLngLat();
+    console.log(`moving user #${this.props.journey.userId} to new location: `, [
+      lngLat.lat,
+      lngLat.lng
+    ]);
+    fetchAPI("/journeys/updateLocation/", {
+      method: "PUT",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        userId: this.props.journey.userId,
+        currentLocation: [lngLat.lat, lngLat.lng]
+      })
+    })
+      .then(async resp => {
+        if (resp.status !== 200) {
+          throw new Error("backend responded with error");
+        }
+        let j = await resp.json();
+        this.marker.getElement().style.borderColor = "white";
+        this.props.onUpdate();
+      })
+      .catch(error => {
+        console.log(error);
+      });
+    this.marker.getElement().style.borderColor = "orange";
+  };
 }
 
 class Journeys extends React.Component {

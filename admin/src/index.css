@@ -24,6 +24,9 @@ code {
   cursor: pointer;
 }
 
+.rideListItem {
+  padding: 10px;
+}
 .rideListItem.selected {
   background-color: lightblue;
 }
