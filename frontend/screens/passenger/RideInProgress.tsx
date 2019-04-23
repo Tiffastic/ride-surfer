@@ -168,7 +168,7 @@ export default class RideInProgress extends React.Component<{
         <MapView
           style={{ flex: 1 }}
           provider="google"
-          region={{
+          initialRegion={{
             latitude: this.state.destination.coordinates.latitude,
             longitude: this.state.destination.coordinates.longitude,
             latitudeDelta: LATITUDE_DELTA,
